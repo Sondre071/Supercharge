@@ -1,9 +1,9 @@
 package main
 
 import (
-	"Supercharge071/internal/menu"
-	"Supercharge071/internal/openrouter"
 	"Supercharge071/internal/chat"
+	"Supercharge071/internal/menu"
+	"fmt"
 )
 
 func main() {
@@ -12,8 +12,12 @@ func main() {
 		Title: "Supercharge071",
 		Choices: []menu.Choice{
 			{
-				Title: "OpenRouter",
-				Next:  chat.Run,
+				Title: "Chat",
+				Next: func() *menu.Menu {
+					clearScreen()
+					chat.Run()
+					return nil
+				},
 			},
 		},
 	}
@@ -22,4 +26,11 @@ func main() {
 		Menu:   MainMenu,
 		Cursor: 0,
 	})
+}
+
+func clearScreen() {
+	entries := 2
+
+	fmt.Printf("\033[%dA", entries + 1)
+	print("\033[0J")
 }

@@ -17,11 +17,9 @@ while ($true) {
     if ($userInput -eq "") { continue }
 
     $messageHistory += @{ role = "user"; content = $userInput }
-
     $messagesJson = $messageHistory | ConvertTo-Json -AsArray -Compress
 
     $process = [System.Diagnostics.Process]::Start($processInfo)
-
     $process.StandardInput.WriteLine($messagesJson)
     $process.StandardInput.Close()
 

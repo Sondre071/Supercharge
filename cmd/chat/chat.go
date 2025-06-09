@@ -6,21 +6,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"strings"
+	"time"
 )
-
-const Reset = "\033[0m"
-const Yellow = "\033[33m"
-const Gray = "\033[37m"
-const Cyan = "\033[36m"
-
-var configPath = "config.json"
-var apiKey = ""
-var apiUrl = ""
-var currentModel = ""
 
 type Config struct {
 	ApiKey       string
@@ -46,35 +36,18 @@ type Message struct {
 	Content string `json:"content"`
 }
 
-type ResponseData struct {
-	Choices []struct {
-		Delta struct {
-			Content string `json:"content"`
-		} `json:"delta"`
-	} `json:"choices"`
+type Choice struct {
+	Delta Delta `json:"delta"`
 }
 
-func init() {
-	file, err := os.Open(configPath)
-	if err != nil {
-		log.Fatalf("could not load config: %v", err)
-	}
+type Delta struct { Content string `json:"content"` }
 
-	defer file.Close()
-
-	var config Config
-
-	decoder := json.NewDecoder(file)
-	if err := decoder.Decode(&config); err != nil {
-		log.Fatalf("could not decode config: %v", err)
-	}
-
-	apiKey = config.ApiKey
-	apiUrl = config.ApiUrl
-	currentModel = config.CurrentModel
+type ResponseData struct {
+	Choices []Choice `json:"choices"`
 }
 
 func main() {
+	const configPath = "config.json"
 
 	reader := bufio.NewReader(os.Stdin)
 	argument, err := reader.ReadString('\n')
@@ -86,16 +59,31 @@ func main() {
 	var messageHistory []Message
 	if err := json.Unmarshal([]byte(argument), &messageHistory); err != nil {
 		fmt.Fprintln(os.Stderr, "failed to unmarshal message history: ", err)
+		return
 	}
+
+	config, _ := loadConfig(configPath)
 
 	streamer := Streamer{
-		ApiKey:       apiKey,
-		ApiUrl:       apiUrl,
-		CurrentModel: currentModel,
-		Client:       &http.Client{Timeout: 0},
+		ApiKey:       config.ApiKey,
+		ApiUrl:       config.ApiUrl,
+		CurrentModel: config.CurrentModel,
+		Client: &http.Client{
+			Timeout: 5 * time.Minute,
+			Transport: &http.Transport{
+				MaxIdleConns:       5,
+				IdleConnTimeout:    90 * time.Second,
+				DisableCompression: true,
+			},
+		},
 	}
 
-	stream, _ := streamer.NewStream(messageHistory)
+	stream, err := streamer.NewStream(messageHistory)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to create stream: %v\n", err)
+		os.Exit(1)
+	}
+
 	scanner := bufio.NewScanner(stream)
 
 	for scanner.Scan() {
@@ -114,6 +102,7 @@ func main() {
 
 		var responseData ResponseData
 		if err := json.Unmarshal([]byte(data), &responseData); err != nil {
+			fmt.Fprintf(os.Stderr, "warning: failed to unmarshal response: %v\n", err)
 			continue
 		}
 
@@ -156,4 +145,20 @@ func (s *Streamer) NewStream(messageHistory []Message) (io.ReadCloser, error) {
 	}
 
 	return resp.Body, nil
+}
+
+func loadConfig(path string) (*Config, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open config file")
+	}
+
+	defer file.Close()
+
+	var config Config
+	if err := json.NewDecoder(file).Decode(&config); err != nil {
+		return nil, fmt.Errorf("could not decode config: %v", err)
+	}
+
+	return &config, nil
 }

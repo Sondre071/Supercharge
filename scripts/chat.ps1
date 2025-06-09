@@ -33,7 +33,12 @@ function New-Chat() {
             'Exit' { return }
 
             default { 
-                $promptData = Get-Content "$ProjectRoot/data/prompts/$selectedPrompt.txt"
+
+                # Select first file to match file name. This way we can use any file extension.
+                $promptData = Get-ChildItem `
+                    -Path "$ProjectRoot/data/prompts" | Where-Object {
+                    $_.BaseName -eq $selectedPrompt
+                }[0] | Get-Content
         
                 $messageHistory += @{
                     role = "system"; content = $promptData
@@ -73,8 +78,11 @@ function New-Chat() {
 
         $modelResponse = ""
 
+
         Write-Host 
         while ($null -ne ($jsonBytes = $process.StandardOutput.ReadLine())) {
+            # TODO: Add a way to cancel the stream. Perhaps by writing to the binary std.
+
             $responseChunk = $jsonBytes | ConvertFrom-Json
 
             Write-Host $responseChunk -ForegroundColor Cyan -NoNewLine

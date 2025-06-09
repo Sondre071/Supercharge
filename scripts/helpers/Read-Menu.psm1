@@ -74,8 +74,10 @@ function Read-Menu {
 
     while ($true) {
         for ($i = 0; $i -lt $combinedOptionsHeight; $i++) {
-            $color = if ($i -eq $currentIndex) { $MenuTextColor } else { 'Gray' }
-            Write-Host ">  $($combinedOptions[$i])" -ForegroundColor $color
+            $color = $i -eq $currentIndex ? $MenuTextColor : 'Gray'
+            $prefix = $i -eq $currentIndex ? '> ': '  '
+
+            Write-Host "$prefix $($combinedOptions[$i])" -ForegroundColor $color
         }
 
         $keyInfo = $null

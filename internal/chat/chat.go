@@ -114,7 +114,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.history = append(m.history, Message{"user", userInput})
 			m.streaming = true
 
-			stream, err := NewStreamer().NewStream(userInput, "", nil)
+			stream, err := NewStreamer().NewStream(userInput, "", m.history)
 			if err != nil {
 				m.err = err
 				m.streaming = false

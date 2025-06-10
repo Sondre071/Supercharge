@@ -1,10 +1,10 @@
 Import-Module "$PSScriptRoot/scripts/helpers/Read-Menu.psm1"
 
 # Recompile on every boot.
-$devMode = $true
+$devMode = $false
 
 function SU() {
-    if ($devMode -or (Get-ChildItem -Path "./bin" -Filter *.exe) -lt 1) {
+    if ($devMode -or (Get-ChildItem -Path "$PSScriptRoot/bin" -Filter *.exe).Length -lt 1) {
         . "$PSScriptRoot/scripts/helpers/build.ps1" -ProjectRoot $PSScriptRoot
     }
 

@@ -23,7 +23,11 @@ function Open-MainMenu() {
 function New-Chat() {
     $messageHistory = @()
 
-    $availablePrompts = Get-ChildItem -Path "$ProjectRoot/data/prompts" | ForEach-Object { $_.BaseName }
+    $availablePrompts = @()
+    
+    if (Test-Path -Path "$ProjectRoot/data/prompts") {
+        $availablePrompts += Get-ChildItem -Path "$ProjectRoot/data/prompts" | ForEach-Object { $_.BaseName }
+    }
 
     if ($availablePrompts.Length -gt 0) {
 

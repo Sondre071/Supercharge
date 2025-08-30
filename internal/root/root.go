@@ -1,10 +1,11 @@
 package ui
 
 import (
-	tea "github.com/charmbracelet/bubbletea"
 	chat "supercharge/internal/chat"
 	menu "supercharge/internal/menu"
 	notes "supercharge/internal/notes"
+
+	tea "github.com/charmbracelet/bubbletea"
 )
 
 type scene int
@@ -37,6 +38,21 @@ func (m *Root) Init() tea.Cmd {
 
 func (m *Root) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
+
+	switch msg := msg.(type) {
+
+	case menu.SelectMsg:
+
+		switch msg.Item {
+		case "chat":
+			m.active = sceneChat
+			cmd = m.chat.Init()
+
+		case "notes":
+			m.active = sceneNotes
+			cmd = m.notes.Init()
+		}
+	}
 
 	switch m.active {
 	case sceneMenu:

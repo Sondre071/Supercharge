@@ -9,6 +9,10 @@ type Model struct {
 	items  []string
 }
 
+type SelectMsg struct {
+	Item string
+}
+
 func New() Model {
 	return Model{items: []string{"Chat", "Notes"}, cursor: 0}
 }
@@ -18,6 +22,8 @@ func (m Model) Init() tea.Cmd {
 }
 
 func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
+	var cmd tea.Cmd
+
 	switch msg := msg.(type) {
 
 	case tea.KeyMsg:
@@ -35,12 +41,16 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			}
 
 		case "ctrl+c", "q":
-			return m, tea.Quit
-		}
+			cmd = tea.Quit
 
+		case "enter", "l":
+			cmd = func() tea.Msg {
+				return SelectMsg{Item: m.items[m.cursor]}
+			}
+		}
 	}
 
-	return m, nil
+	return m, cmd
 }
 
 func (m Model) View() string {

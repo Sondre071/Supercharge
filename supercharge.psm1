@@ -1,4 +1,3 @@
-
 function SU() {
     go build -o "$PSScriptRoot/bin/supercharge.exe" "$PSScriptRoot/cmd/supercharge/main.go"
 

@@ -4,14 +4,14 @@ function SU() {
 
     try {
 
-        if ($devMode) {
+        if ($devMode -or (-not (Test-Path -Path "$PSScriptRoot/bin/supercharge.exe"))) {
 
-            Build-Project
-        }
-        else {
-            if (-not (Test-Path -Path "$PSScriptRoot/bin/supercharge.exe")) {
-                Build-Project
-            }
+            Write-Host "Building..." -NoNewLine -ForegroundColor DarkGray
+
+            go build -o "$PSScriptRoot/bin/supercharge.exe" "$PSScriptRoot/cmd/supercharge/main.go"
+
+            Write-Host " Done!`n" -ForegroundColor DarkGray
+
         }
 
         & "$PSScriptRoot/bin/supercharge.exe"
@@ -20,14 +20,6 @@ function SU() {
     catch {
         Write-Host $_ -ForegroundColor Red
     }
-}
-
-function Build-Project() {
-            Write-Host "Building..." -NoNewLine -ForegroundColor DarkGray
-
-            go build -o "$PSScriptRoot/bin/supercharge.exe" "$PSScriptRoot/cmd/supercharge/main.go"
-
-            Write-Host " Done!`n" -ForegroundColor DarkGray
 }
 
 Export-ModuleMember -Function SU

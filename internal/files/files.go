@@ -13,8 +13,6 @@ type Config struct {
 		CurrentModel  string
 		CurrentPreset string
 	}
-
-	TestField string
 }
 
 func GetFile(path string) Config {

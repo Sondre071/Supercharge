@@ -2,39 +2,63 @@ param (
     [string]$ProjectRoot
 )
 
-$dataFolder = "$ProjectRoot/data"
-$currentFolder = ''
+$currentFolder = 'data'
 
 while ($true) {
-    $path = Join-Path $dataFolder $currentFolder
+    $path = Join-Path $ProjectRoot $currentFolder
 
-    $files = Get-ChildItem `
+    [psobject]$files = @()
+    
+    $files += Get-ChildItem `
         -Path $path `
     | Select-Object Name, PSIsContainer, @{
-        Name       = 'FormattedName'
-        Expression = { if ($_.PSIsContainer -eq $True) { "📂 $($_.Name)" } else { "📝 $($_.Name)" } }
-    } | Sort-Object FormattedName
+        Name       = 'Icon'
+        Expression = { $true -eq $_.PSIsContainer ? "📂" : "📝"  }
+    } | Sort-Object Icon
 
-    $choice = Read-Menu -Options ($files | Select-Object -ExpandProperty FormattedName)  -ExitOption '❌ Back'
-
-    $selectedFile = $files | Where-Object { $_.FormattedName -eq $choice }
-
-    switch ($choice) {
-        '❌ Back' {
-            if ($currentFolder -eq '') { return }
-
-            $currentFolder = Split-Path -Parent $currentFolder
-        }
-        default {
-
-            if ($selectedFile.PSIsContainer -eq $true) {
-                $currentFolder = $selectedFile.Name
-            }
-            else {
-                $filePath = Join-Path $dataFolder $currentFolder $selectedFile.Name
-                nvim $filePath
-            }
-        }
+    $files += [psobject]@{
+        Name = 'New'
+        Icon = '➕'
     }
 
+    $header = "$currentFolder"
+
+    $choice = Read-Menu -Header $header -HeaderSymbol '-' -HeaderWidth 25 -Options $files -ExitOption @{Name = 'Back'; Icon = '❌' }
+
+    if ($choice.Name -eq 'Back') {
+
+        if ($currentFolder -eq 'data') { return }
+
+        $currentFolder = Split-Path -Parent $currentFolder
+        continue
+    }
+
+    if ($choice.PSIsContainer -eq $true) {
+        $currentFolder = Join-Path $currentFolder $choice.Name
+        continue
+    }
+
+    if ($choice.Name -eq 'New') {
+        $typeChoice = Read-Menu -Options ('File', 'Folder') -ExitOption 'Cancel'
+
+        switch ($typeChoice) {
+            'File' {
+                $name = Read-Input -Header 'New file' -Instruction 'Name'
+                
+                New-Item -Name $name -Path "$path" | Out-Null
+            }
+
+            'Folder' {
+                $name = Read-Input -Header 'New folder' -Instruction 'Name'
+                
+                New-Item -Name $name -Path "$path" -ItemType Directory | Out-Null
+            }
+        }
+
+        continue
+    }
+
+    $filePath = Join-Path $ProjectRoot $currentFolder $choice.Name
+
+    nvim $filePath
 }

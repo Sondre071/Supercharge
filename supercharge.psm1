@@ -6,19 +6,22 @@ function su($Command) {
 
     Confirm-LocalFiles
 
-    [psobject[]]$options = @()
-
-    $options += Get-ChildItem `
+    [psobject[]]$options = Get-ChildItem `
         -Path (Join-Path $ProjectRoot 'scripts') `
         -File
     | Where-Object { $_.Extension -eq '.ps1' }
-    | Select-Object -ExpandProperty BaseName
+    | ForEach-Object {
+        @{
+            Name = $_.BaseName -creplace '(?<!^)([A-Z])', ' $1'
+            Path = $_.FullName
+        }
+    }
 
     $choice = Read-Menu -Options ($options) -ExitOption 'Exit'
 
     if ($choice -eq 'Exit') { return }
     
-    . (Join-Path "$ProjectRoot/scripts" $choice) -ProjectRoot $ProjectRoot
+    . $choice.Path -ProjectRoot $ProjectRoot
 }
 
 function Confirm-LocalFiles() {
@@ -44,10 +47,10 @@ function Confirm-LocalFiles() {
     }
 
     $filesToCopy = Get-ChildItem `
-        -Path (Join-Path $ProjectRoot 'build_scripts')
+        -Path (Join-Path $ProjectRoot 'BuildScripts')
 
     foreach ($file in $filesToCopy) {
-        Copy-Item -Path $file.FullName -Destination "$ProjectRoot/scripts/$($file.Name)"
+        Copy-Item -Path $file.FullName -Destination "$ProjectRoot/Scripts/$($file.Name)"
     }
 }
 

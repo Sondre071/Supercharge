@@ -30,18 +30,3 @@ $request.Method = 'POST'
 $request.RequestUri = $Url
 
 return $request
-
-
-return @{
-    Uri     = $Url
-    Method  = 'POST'
-    Headers = @{
-        'Authorization' = "Bearer $ApiKey"
-        'Content-Type'  = 'application/json'
-    }
-    Body    = (
-        ConvertTo-Json `
-            -InputObject @{model = $Model; input = $Messages } `
-            -Depth 7
-    )
-}

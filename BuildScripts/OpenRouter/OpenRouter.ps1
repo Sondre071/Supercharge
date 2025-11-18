@@ -2,15 +2,23 @@ param (
     [string]$ProjectRoot
 )
 
-$newChatScript = Join-Path $ProjectRoot 'Scripts' 'Helpers' 'OpenRouter' 'NewChat.ps1'
+#
+$HelpersPath = Join-Path $ProjectRoot 'Scripts' 'Helpers' 'OpenRouter'
 
-$configPath = Join-Path $env:UserProfile '.supercharge' 'openrouter2.json'
-$config = PSModuleManager -FilePath $configPath -InitialJSONContent '{"ApiKey":"","Url":"https://openrouter.ai/api/v1/chat/completions","CurrentModel":"",}'
+$newChatScript = Join-Path $HelpersPath 'NewChat.ps1'
+#
+
+$configPath = Join-Path $env:UserProfile '.supercharge' 'openrouter.json'
+$config = PSModuleManager `
+    -FilePath $configPath `
+    -InitialJSONContent '{"ApiKey":"","Url":"https://openrouter.ai/api/v1/responses","CurrentModel":"",}'
 
 $choice = Read-Menu -Header 'OpenRouter' -Options ('New chat')
 
 switch ($choice) {
     'New chat' {
-        & $newChatScript -config $config     
+        & $newChatScript `
+            -Config $config `
+            -HelpersPath $HelpersPath
     }
 }

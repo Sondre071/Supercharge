@@ -6,8 +6,8 @@ function su($Command) {
 
     Confirm-LocalFiles
 
-    [psobject[]]$options = Get-ChildItem `
-        -Path (Join-Path $ProjectRoot 'scripts') `
+    $options = Get-ChildItem `
+        -Path (Join-Path $ProjectRoot 'Scripts') `
         -File
     | Where-Object { $_.Extension -eq '.ps1' }
     | ForEach-Object {
@@ -25,27 +25,6 @@ function su($Command) {
 }
 
 function Confirm-LocalFiles() {
-    $path = Join-Path $ProjectRoot 'data'
-
-    if (-not (Test-Path $path)) {
-        New-Item -Path $path -ItemType Directory
-    }
-
-    if (-not (Test-Path (Join-Path $path 'config.json'))) {
-        $configContent = [psobject]@{
-            OpenRouter = [psobject]@{
-                ApiKey        = ''
-                ApiUrll       = ''
-                CurrentModel  = ''
-                CurrentPreset = ''
-            }
-        }
-
-        $jsonContent = $configContent | ConvertTo-Json -Depth 3
-
-        New-Item -Path (Join-Path $path 'config.json') -ItemType File -Value $jsonContent
-    }
-
     $filesToCopy = Get-ChildItem `
         -Path (Join-Path $ProjectRoot 'BuildScripts')
 

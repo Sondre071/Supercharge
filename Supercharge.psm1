@@ -25,11 +25,20 @@ function su($Command) {
 }
 
 function Confirm-LocalFiles() {
-    $filesToCopy = Get-ChildItem `
-        -Path (Join-Path $ProjectRoot 'BuildScripts')
+    $foldersToCopy = Get-ChildItem `
+        -Path (Join-Path $ProjectRoot 'BuildScripts') `
+        -Directory
 
-    foreach ($file in $filesToCopy) {
-        Copy-Item -Path $file.FullName -Destination "$ProjectRoot/Scripts/$($file.Name)"
+    foreach ($folder in $foldersToCopy) {
+        $categoryName = Split-Path $folder -Leaf
+
+        New-Item -Path (Join-Path $ProjectRoot 'Scripts' 'Helpers' $categoryName) -ItemType Directory -Force | Out-Null
+
+        # Copy helper scripts.
+        Get-ChildItem (Join-Path $folder.FullName 'Helpers') -File -Recurse | ForEach-Object { Copy-Item -Path $_.FullName -Destination (Join-Path $ProjectRoot 'Scripts' 'Helpers' $categoryName $_.Name) -Recurse -Force }
+
+        # Copy main scripts.
+        Get-ChildItem $folder.FullName -File | ForEach-Object { Copy-Item -Path $_.FullName -Destination (Join-Path $ProjectRoot 'Scripts') }
     }
 }
 

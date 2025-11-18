@@ -19,6 +19,11 @@ Write-MenuHeader -Header 'New chat' -Subheaders ($config.CurrentModel)
 
 while ($true) {
     $userInput = Read-Input
+
+    if ($userInput -eq '') {
+        continue
+    }
+
     Write-Host "You: $userInput`n"
 
     $messageHistory += (& $addToMessageHistoryScript -Text $userInput -Role 'user')

@@ -9,11 +9,11 @@ param (
 $createRequestScript = Join-Path $HelpersPath 'CreateRequest.ps1'
 $addToMessageHistoryScript = Join-Path $HelpersPath 'AddToMessageHistory.ps1'
 
-#$client = [System.Net.Http.HttpClient]::new()
+$client = [System.Net.Http.HttpClient]::new()
 
 [hashtable[]]$messageHistory = @()
 
-Write-Host
+Write-MenuHeader -Header 'New chat' -Subheaders ($config.CurrentModel)
 
 while ($true) {
     $userInput = Read-Input
@@ -27,11 +27,23 @@ while ($true) {
             -ApiKey $Config.ApiKey `
             -Url $Config.Url)
 
-    $response = Invoke-WebRequest @request
+    $response = $client.SendAsync($request).
+    GetAwaiter().
+    GetResult()
 
-    $output = ($response | ConvertFrom-Json -Depth 7).output[0].content.text
+    if ($response.IsSuccessStatusCode -ne $true) {
+        throw "Request failed: `'$($response.ReasonPhrase)`'."
+    }
 
-    $messageHistory += (& $addToMessageHistoryScript -Text $output -Role 'assistant')
+    $result = $response.
+    Content.
+    ReadAsStringAsync().
+    GetAwaiter().
+    GetResult() | ConvertFrom-Json
 
-    Write-Host "$output`n" -ForegroundColor Cyan
+    $message = $result.output[0].content.text
+
+    $messageHistory += (& $addToMessageHistoryScript -Text $message -Role 'assistant')
+
+    Write-Host "$message`n" -ForegroundColor Cyan
 }

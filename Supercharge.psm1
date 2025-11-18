@@ -17,7 +17,7 @@ function su($Command) {
         }
     }
 
-    $choice = Read-Menu -Options ($options) -ExitOption 'Exit'
+    $choice = Read-Menu -Header 'Supercharge' -Options ($options) -ExitOption 'Exit'
 
     if ($choice -eq 'Exit') { return }
     

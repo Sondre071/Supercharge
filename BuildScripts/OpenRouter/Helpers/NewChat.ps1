@@ -1,6 +1,5 @@
 param (
     [Parameter(Mandatory)]
-
     [hashtable]$Config,
 
     [Parameter(Mandatory)]
@@ -10,6 +9,8 @@ param (
 $createStreamRequestScript = Join-Path $HelpersPath 'CreateStreamRequest.ps1'
 $addToMessageHistoryScript = Join-Path $HelpersPath 'AddToMessageHistory.ps1'
 $parseStreamLineScript = Join-Path $HelpersPath 'ParseStreamLine.ps1'
+
+###
 
 $client = [System.Net.Http.HttpClient]::new()
 

@@ -2,11 +2,10 @@ param (
     [string]$ProjectRoot
 )
 
-#
 $HelpersPath = Join-Path $ProjectRoot 'Scripts' 'Helpers' 'OpenRouter'
-
 $newChatScript = Join-Path $HelpersPath 'NewChat.ps1'
-#
+
+###
 
 $configPath = Join-Path $env:UserProfile '.supercharge' 'openrouter.json'
 $config = PSModuleManager `

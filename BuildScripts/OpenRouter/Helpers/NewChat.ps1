@@ -1,13 +1,15 @@
 param (
     [Parameter(Mandatory)]
+
     [hashtable]$Config,
 
     [Parameter(Mandatory)]
     [string]$HelpersPath
 )
 
-$createRequestScript = Join-Path $HelpersPath 'CreateRequest.ps1'
+$createStreamRequestScript = Join-Path $HelpersPath 'CreateStreamRequest.ps1'
 $addToMessageHistoryScript = Join-Path $HelpersPath 'AddToMessageHistory.ps1'
+$parseStreamLineScript = Join-Path $HelpersPath 'ParseStreamLine.ps1'
 
 $client = [System.Net.Http.HttpClient]::new()
 
@@ -21,29 +23,25 @@ while ($true) {
 
     $messageHistory += (& $addToMessageHistoryScript -Text $userInput -Role 'user')
 
-    $request = (& $createRequestScript `
+    $stream = (& $createStreamRequestScript `
+            -HttpClient $client `
             -Messages $messageHistory `
             -Model $Config.CurrentModel `
             -ApiKey $Config.ApiKey `
             -Url $Config.Url)
 
-    $response = $client.SendAsync($request).
-    GetAwaiter().
-    GetResult()
 
-    if ($response.IsSuccessStatusCode -ne $true) {
-        throw "Request failed: `'$($response.ReasonPhrase)`'."
+    $reader = [System.IO.StreamReader]::new($stream)
+
+    $modelResponse = ''
+
+    while (-not $reader.EndOfStream) {
+        $modelResponse += & $parseStreamLineScript `
+            -Reader $reader `
+            -Color 'Cyan'
     }
 
-    $result = $response.
-    Content.
-    ReadAsStringAsync().
-    GetAwaiter().
-    GetResult() | ConvertFrom-Json
+    $messageHistory += & $addToMessageHistoryScript -Text $modelResponse -Role 'assistant'
 
-    $message = $result.output[0].content.text
-
-    $messageHistory += (& $addToMessageHistoryScript -Text $message -Role 'assistant')
-
-    Write-Host "$message`n" -ForegroundColor Cyan
+    Write-Host `n
 }

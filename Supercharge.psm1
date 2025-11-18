@@ -2,7 +2,7 @@ Set-StrictMode -Version Latest
 
 $ProjectRoot = $PSScriptRoot
 
-function su($Command) {
+function su() {
 
     Confirm-LocalFiles
 

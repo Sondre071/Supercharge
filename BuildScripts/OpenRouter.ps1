@@ -5,6 +5,7 @@ param (
 $HelpersPath = Join-Path $ProjectRoot 'Scripts' 'Helpers' 'OpenRouter'
 
 . (Join-Path $HelpersPath 'New-Chat.ps1') -HelpersPath $HelpersPath
+. (Join-Path $HelpersPath 'Open-Settings.ps1')
 . (Join-Path $ProjectRoot 'Scripts' 'Helpers' 'Shared' 'Get-Config.ps1')
 
 $configPath = Join-Path $env:UserProfile '.supercharge' 'openrouter.json'
@@ -14,7 +15,7 @@ $config = Get-Config `
 
 ###
 
-$choice = Read-Menu -Header 'OpenRouter' -Options ('New chat')
+$choice = Read-Menu -Header 'OpenRouter' -Options ('New chat', 'Settings')
 
 switch ($choice) {
     'New chat' {
@@ -24,5 +25,9 @@ switch ($choice) {
 
         New-Chat `
             -Config $config
+    }
+
+    'Settings' {
+        Open-Settings -Config $config
     }
 }

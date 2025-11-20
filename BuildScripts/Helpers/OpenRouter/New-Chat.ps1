@@ -3,16 +3,13 @@ param (
     [string]$HelpersPath
 )
 
-. (Join-Path $HelpersPath 'Format-Message.ps1')
-. (Join-Path $HelpersPath 'New-StreamReader.ps1')
-. (Join-Path $HelpersPath 'Read-StreamLine.ps1')
-
 function New-Chat {
     param (
         [Parameter(Mandatory)]
         [hashtable]$Config,
 
         [Parameter(Mandatory)]
+        [AllowEmptyString()]
         [string]$Prompt
     )
 

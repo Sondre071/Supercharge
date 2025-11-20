@@ -28,7 +28,8 @@ function New-StreamReader {
 
     $request.Content = [System.Net.Http.StringContent]::new(
         $body,
-        [System.Text.Encoding]::UTF8, 'application/json')
+        [System.Text.Encoding]::UTF8, 'application/json'
+    )
 
     $request.Method = 'POST'
     $request.RequestUri = $Url
@@ -38,7 +39,7 @@ function New-StreamReader {
     ).GetAwaiter().GetResult()
 
     if (-not $response.IsSuccessStatusCode) {
-        throw "Stream request failed: `'$($response.ReasonPhrase)`'."
+        throw "Request failed: `'$($response.ReasonPhrase)`'."
     }
 
     $stream = $response.`

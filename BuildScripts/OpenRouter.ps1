@@ -9,6 +9,7 @@ $helpersPath = Join-Path $ProjectRoot 'Scripts' 'Helpers' 'OpenRouter'
 . (Join-Path $helpersPath 'New-Chat.ps1')
 . (Join-Path $helpersPath 'Open-Prompts.ps1')
 . (Join-Path $helpersPath 'Open-Settings.ps1')
+. (Join-Path $helpersPath 'Get-Models.ps1')
 . (Join-Path $ProjectRoot 'Scripts' 'Helpers' 'Shared' 'Get-Config.ps1')
 
 # New chat

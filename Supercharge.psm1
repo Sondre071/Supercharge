@@ -25,20 +25,52 @@ function su() {
 }
 
 function Confirm-LocalFiles() {
-    $foldersToCopy = Get-ChildItem `
-        -Path (Join-Path $ProjectRoot 'BuildScripts') `
-        -Directory
+    $scripts = Get-ChildItem ` -Path (Join-Path $ProjectRoot 'BuildScripts') ` -File
 
-    foreach ($folder in $foldersToCopy) {
-        $categoryName = Split-Path $folder -Leaf
 
-        New-Item -Path (Join-Path $ProjectRoot 'Scripts' 'Helpers' $categoryName) -ItemType Directory -Force | Out-Null
+    if (-not (Test-Path (Join-Path $ProjectRoot 'Scripts'))) {
+        New-Item `
+            -Path (Join-Path $ProjectRoot 'Scripts') `
+            -ItemType Directory `
+        | Out-Null
+    }
 
-        # Copy helper scripts.
-        Get-ChildItem (Join-Path $folder.FullName 'Helpers') -File -Recurse | ForEach-Object { Copy-Item -Path $_.FullName -Destination (Join-Path $ProjectRoot 'Scripts' 'Helpers' $categoryName $_.Name) -Recurse -Force }
+    foreach ($script in $scripts) {
+        $destination = Join-Path $ProjectRoot 'Scripts' $script.Name
 
-        # Copy main scripts.
-        Get-ChildItem $folder.FullName -File | ForEach-Object { Copy-Item -Path $_.FullName -Destination (Join-Path $ProjectRoot 'Scripts') }
+        Copy-Item `
+            -Path $script.FullName `
+            -Destination $destination `
+            -Force
+    }
+
+    $scriptHelpers = Get-ChildItem `
+        -Path (Join-Path $ProjectRoot 'BuildScripts' 'Helpers') `
+        -File `
+        -Recurse
+
+    if (-not (Test-Path (Join-Path $ProjectRoot 'Scripts' 'Helpers'))) {
+        New-Item `
+            -Path (Join-Path $ProjectRoot 'Scripts' 'Helpers') `
+            -ItemType Directory `
+        | Out-Null
+    }
+
+
+    foreach ($script in $scriptHelpers) {
+        if (-not (Test-Path (Join-Path $ProjectRoot 'Scripts' 'Helpers' $script.Directory.Name))) {
+            New-Item `
+                -Path (Join-Path $ProjectRoot 'Scripts' 'Helpers' $script.Directory.Name) `
+                -ItemType Directory `
+            | Out-Null
+        }
+
+        $destination = Join-Path $ProjectRoot 'Scripts' 'Helpers' $script.Directory.Name $script.Name
+
+        Copy-Item `
+            -Path $script.FullName `
+            -Destination $destination `
+            -Force
     }
 }
 

@@ -27,7 +27,6 @@ function su() {
 function Confirm-LocalFiles() {
     $scripts = Get-ChildItem ` -Path (Join-Path $ProjectRoot 'BuildScripts') ` -File
 
-
     if (-not (Test-Path (Join-Path $ProjectRoot 'Scripts'))) {
         New-Item `
             -Path (Join-Path $ProjectRoot 'Scripts') `

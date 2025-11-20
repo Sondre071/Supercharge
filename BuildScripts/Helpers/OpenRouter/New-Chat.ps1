@@ -17,7 +17,7 @@ function New-Chat {
 
     [hashtable[]]$messageHistory = @()
 
-    Write-MenuHeader -Header 'New chat' -Subheaders ($config.CurrentModel)
+    Write-MenuHeader -Header 'New chat' -Subheaders ($config.Model)
 
     while ($true) {
         $userInput = Read-Input
@@ -33,7 +33,7 @@ function New-Chat {
         $stream = New-StreamRequest `
             -HttpClient $client `
             -Messages $messageHistory `
-            -Model $Config.CurrentModel `
+            -Model $Config.Model `
             -ApiKey $Config.ApiKey `
             -Url $Config.Url
 

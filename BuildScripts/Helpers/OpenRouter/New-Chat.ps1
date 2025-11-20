@@ -3,26 +3,33 @@ param (
     [string]$HelpersPath
 )
 
-. (Join-Path $HelpersPath 'New-StreamRequest.ps1')
 . (Join-Path $HelpersPath 'Format-Message.ps1')
+. (Join-Path $HelpersPath 'New-StreamRequest.ps1')
 . (Join-Path $HelpersPath 'Read-StreamLine.ps1')
 
 function New-Chat {
     param (
         [Parameter(Mandatory)]
-        [hashtable]$Config
+        [hashtable]$Config,
+
+        [Parameter(Mandatory)]
+        [string]$Prompt
     )
 
     $client = [System.Net.Http.HttpClient]::new()
 
     [hashtable[]]$messageHistory = @()
 
+    if ('' -ne $Prompt) {
+        $messageHistory += Format-Message -Text $Prompt -Role 'system'
+    }
+
     Write-MenuHeader -Header 'New chat' -Subheaders ($config.Model)
 
     while ($true) {
         $userInput = Read-Input
 
-        if ($userInput -eq '') {
+        if ($userInput.Trim() -eq '') {
             continue
         }
 

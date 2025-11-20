@@ -1,17 +1,17 @@
 function Get-Config {
     param(
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory = $true)]
         [string]$Path,
 
-        [Parameter(Mandatory)]
-        [string]$InitialJSONContent
+        [Parameter(Mandatory = $false)]
+        [hashtable]$InitialContent
     )
 
     if (-not ($Path -match ".json$")) { throw "File must be of type JSON." }
 
     if (-not (Test-Path $Path)) {
-        if ($InitialJSONContent -ne '') {
-            $content = $InitialJSONContent | ConvertFrom-Json -Depth 7 `
+        if ($null -ne $InitialContent) {
+            $content = $InitialContent `
             | ConvertTo-Json `
                 -Depth 7 `
                 -Compress
@@ -23,7 +23,7 @@ function Get-Config {
             | Out-Null
         }
         else {
-            throw 'No JSON provided to populate initial file.'
+            throw 'No file found, no initial content provided.'
         }
     }
 

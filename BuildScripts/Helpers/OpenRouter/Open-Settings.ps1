@@ -4,7 +4,7 @@ function Open-Settings {
         [hashtable]$Config
     )
 
-    $choice = Read-Menu -Header 'Settings' -Options ('Open settings file')
+    $choice = Read-Menu -Header 'Settings' -Options ('Open settings file') -ExitOption 'Back'
 
     switch ($choice) {
         'Open settings file' {
@@ -12,5 +12,7 @@ function Open-Settings {
 
             exit 0
         }
+
+        default { return }
     }
 }

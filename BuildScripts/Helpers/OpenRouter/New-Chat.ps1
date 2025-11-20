@@ -4,7 +4,7 @@ param (
 )
 
 . (Join-Path $HelpersPath 'Format-Message.ps1')
-. (Join-Path $HelpersPath 'New-StreamRequest.ps1')
+. (Join-Path $HelpersPath 'New-StreamReader.ps1')
 . (Join-Path $HelpersPath 'Read-StreamLine.ps1')
 
 function New-Chat {
@@ -15,8 +15,6 @@ function New-Chat {
         [Parameter(Mandatory)]
         [string]$Prompt
     )
-
-    $client = [System.Net.Http.HttpClient]::new()
 
     [hashtable[]]$messageHistory = @()
 
@@ -43,14 +41,12 @@ function New-Chat {
             -Text $userInput `
             -Role 'user'
 
-        $stream = New-StreamRequest `
-            -HttpClient $client `
+        $reader = New-StreamReader `
             -Messages $messageHistory `
-            -Model $Config.Model `
             -ApiKey $Config.ApiKey `
+            -Model $Config.Model `
             -Url $Config.Url
 
-        $reader = [System.IO.StreamReader]::new($stream)
 
         $modelResponse = ''
 
@@ -62,8 +58,8 @@ function New-Chat {
         }
 
         $messageHistory += Format-Message `
-                -Text $modelResponse `
-                -Role 'assistant'
+            -Text $modelResponse `
+            -Role 'assistant'
 
         Write-Host `n
     }

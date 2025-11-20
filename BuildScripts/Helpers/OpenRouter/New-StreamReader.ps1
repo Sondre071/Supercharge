@@ -1,20 +1,19 @@
-function New-StreamRequest {
+function New-StreamReader {
     param (
         [Parameter(Mandatory)]
         [hashtable[]]$Messages,
 
         [Parameter(Mandatory)]
-        [string]$Model,
+        [string]$ApiKey,
 
         [Parameter(Mandatory)]
-        [string]$ApiKey,
+        [string]$Model,
     
         [Parameter(Mandatory)]
-        [string]$Url,
-
-        [Parameter(Mandatory)]
-        [System.Net.Http.HttpClient]$HttpClient
+        [string]$Url
     )
+
+    $client = [System.Net.Http.HttpClient]::new()
 
     $body = @{
         model  = $Model
@@ -34,7 +33,7 @@ function New-StreamRequest {
     $request.Method = 'POST'
     $request.RequestUri = $Url
 
-    $response = $HttpClient.SendAsync(
+    $response = $client.SendAsync(
         $request, [System.Net.Http.HttpCompletionOption]::ResponseHeadersRead
     ).GetAwaiter().GetResult()
 
@@ -42,9 +41,11 @@ function New-StreamRequest {
         throw "Stream request failed: `'$($response.ReasonPhrase)`'."
     }
 
-    return $response.`
+    $stream = $response.`
         Content.`
         ReadAsStreamAsync().`
         GetAwaiter().`
         GetResult()
+
+    return [System.IO.StreamReader]::new($stream)
 }

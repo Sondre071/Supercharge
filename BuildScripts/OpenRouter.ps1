@@ -3,19 +3,18 @@ param (
 )
 
 $dataPath = Join-Path $env:UserProfile '.supercharge'
-
-$HelpersPath = Join-Path $ProjectRoot 'Scripts' 'Helpers' 'OpenRouter'
+$helpersPath = Join-Path $ProjectRoot 'Scripts' 'Helpers' 'OpenRouter'
 
 # General
-. (Join-Path $HelpersPath 'New-Chat.ps1') -HelpersPath $HelpersPath
-. (Join-Path $HelpersPath 'Open-Prompts.ps1')
-. (Join-Path $HelpersPath 'Open-Settings.ps1')
+. (Join-Path $helpersPath 'New-Chat.ps1')
+. (Join-Path $helpersPath 'Open-Prompts.ps1')
+. (Join-Path $helpersPath 'Open-Settings.ps1')
 . (Join-Path $ProjectRoot 'Scripts' 'Helpers' 'Shared' 'Get-Config.ps1')
 
 # New chat
-. (Join-Path $HelpersPath 'Format-Message.ps1')
-. (Join-Path $HelpersPath 'New-StreamReader.ps1')
-. (Join-Path $HelpersPath 'Read-StreamLine.ps1')
+. (Join-Path $helpersPath 'Format-Message.ps1')
+. (Join-Path $helpersPath 'New-StreamReader.ps1')
+. (Join-Path $helpersPath 'Read-StreamLine.ps1')
 
 $initialContent = @{
     ApiKey = ""

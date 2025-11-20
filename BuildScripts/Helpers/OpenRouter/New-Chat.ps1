@@ -1,8 +1,3 @@
-param (
-    [Parameter(Mandatory)]
-    [string]$HelpersPath
-)
-
 function New-Chat {
     param (
         [Parameter(Mandatory)]

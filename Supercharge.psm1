@@ -17,11 +17,13 @@ function su() {
         }
     }
 
-    $choice = Read-Menu -Header 'Supercharge' -Options $options -ExitOption 'Exit'
+    while ($true) {
+        $choice = Read-Menu -Header 'Supercharge' -Options $options -ExitOption 'Exit'
 
-    if ($choice -eq 'Exit') { return }
+        if ($choice -eq 'Exit') { return }
 
-    . $choice.Path -ProjectRoot $ProjectRoot
+        . $choice.Path -ProjectRoot $ProjectRoot
+    }
 }
 
 function Confirm-LocalFiles() {

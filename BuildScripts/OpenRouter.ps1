@@ -27,7 +27,7 @@ $config = Get-Config `
 ###
 
 while ($true) {
-    $choice = Read-Menu -Header 'OpenRouter' -Options ('New chat', 'Settings')
+    $choice = Read-Menu -Header 'OpenRouter' -Options ('New chat', 'Settings') -ExitOption 'Back'
 
     switch ($choice) {
         'New chat' {
@@ -47,6 +47,10 @@ while ($true) {
 
         'Settings' {
             Open-Settings -Config $config
+        }
+
+        'Back' {
+            return
         }
     }
 }

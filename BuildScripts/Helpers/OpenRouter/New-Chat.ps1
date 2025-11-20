@@ -21,10 +21,14 @@ function New-Chat {
     [hashtable[]]$messageHistory = @()
 
     if ('' -ne $Prompt) {
-        $messageHistory += Format-Message -Text $Prompt -Role 'system'
+        $messageHistory += Format-Message `
+            -Text $Prompt `
+            -Role 'system'
     }
 
-    Write-MenuHeader -Header 'New chat' -Subheaders ($config.Model)
+    Write-MenuHeader `
+        -Header 'New chat' `
+        -Subheaders ($config.Model)
 
     while ($true) {
         $userInput = Read-Input
@@ -35,7 +39,9 @@ function New-Chat {
 
         Write-Host "You: $userInput`n"
 
-        $messageHistory += Format-Message -Text $userInput -Role 'user'
+        $messageHistory += Format-Message `
+            -Text $userInput `
+            -Role 'user'
 
         $stream = New-StreamRequest `
             -HttpClient $client `
@@ -55,7 +61,9 @@ function New-Chat {
                 -Color 'Cyan'
         }
 
-        $messageHistory += Format-Message -Text $modelResponse -Role 'assistant'
+        $messageHistory += Format-Message `
+                -Text $modelResponse `
+                -Role 'assistant'
 
         Write-Host `n
     }

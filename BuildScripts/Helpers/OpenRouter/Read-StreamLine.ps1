@@ -18,6 +18,7 @@ function Read-StreamLine {
 
         if ($line.type -eq 'response.output_text.delta') {
             Write-Host $line.delta -NoNewLine -ForegroundColor $Color
+
             return $line.delta
         }
     }

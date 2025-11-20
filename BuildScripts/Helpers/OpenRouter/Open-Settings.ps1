@@ -4,7 +4,10 @@ function Open-Settings {
         [hashtable]$Config
     )
 
-    $choice = Read-Menu -Header 'Settings' -Options ('Open settings file') -ExitOption 'Back'
+    $choice = Read-Menu `
+        -Header 'Settings' `
+        -Options ('Open settings file') `
+        -ExitOption 'Back'
 
     switch ($choice) {
         'Open settings file' {

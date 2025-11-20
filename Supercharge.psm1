@@ -18,7 +18,10 @@ function su() {
     }
 
     while ($true) {
-        $choice = Read-Menu -Header 'Supercharge' -Options $options -ExitOption 'Exit'
+        $choice = Read-Menu `
+            -Header 'Supercharge' `
+            -Options $options `
+            -ExitOption 'Exit'
 
         if ($choice -eq 'Exit') { return }
 
@@ -27,7 +30,9 @@ function su() {
 }
 
 function Confirm-LocalFiles() {
-    $scripts = Get-ChildItem ` -Path (Join-Path $ProjectRoot 'BuildScripts') ` -File
+    $scripts = Get-ChildItem `
+        -Path (Join-Path $ProjectRoot 'BuildScripts') `
+        -File
 
     if (-not (Test-Path (Join-Path $ProjectRoot 'Scripts'))) {
         New-Item `

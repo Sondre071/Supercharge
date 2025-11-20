@@ -13,7 +13,7 @@ while ($true) {
         -Path $path `
     | Select-Object Name, PSIsContainer, @{
         Name       = 'Icon'
-        Expression = { $true -eq $_.PSIsContainer ? "📂" : "📝"  }
+        Expression = { $true -eq $_.PSIsContainer ? "📂" : "📝" }
     } | Sort-Object Icon
 
     $files += [psobject]@{
@@ -23,7 +23,12 @@ while ($true) {
 
     $header = "$currentFolder"
 
-    $choice = Read-Menu -Header $header -HeaderSymbol '-' -HeaderWidth 25 -Options $files -ExitOption @{Name = 'Back'; Icon = '❌' }
+    $choice = Read-Menu `
+        -Header $header `
+        -HeaderSymbol '-' `
+        -HeaderWidth 25 `
+        -Options $files `
+        -ExitOption @{Name = 'Back'; Icon = '❌' }
 
     if ($choice.Name -eq 'Back') {
 
@@ -39,19 +44,32 @@ while ($true) {
     }
 
     if ($choice.Name -eq 'New') {
-        $typeChoice = Read-Menu -Options ('File', 'Folder') -ExitOption 'Cancel'
+        $typeChoice = Read-Menu `
+            -Options ('File', 'Folder') `
+            -ExitOption 'Cancel'
 
         switch ($typeChoice) {
             'File' {
-                $name = Read-Input -Header 'New file' -Instruction 'Name'
+                $name = Read-Input `
+                    -Header 'New file' `
+                    -Instruction 'Name'
                 
-                New-Item -Name $name -Path "$path" | Out-Null
+                New-Item `
+                    -Name $name `
+                    -Path "$path" `
+                | Out-Null
             }
 
             'Folder' {
-                $name = Read-Input -Header 'New folder' -Instruction 'Name'
+                $name = Read-Input `
+                    -Header 'New folder' `
+                    -Instruction 'Name'
                 
-                New-Item -Name $name -Path "$path" -ItemType Directory | Out-Null
+                New-Item `
+                    -Name $name `
+                    -Path "$path" `
+                    -ItemType Directory `
+                | Out-Null
             }
         }
 

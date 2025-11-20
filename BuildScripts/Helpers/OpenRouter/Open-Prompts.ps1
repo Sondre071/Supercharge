@@ -22,7 +22,10 @@ function Open-Prompts {
     @{ Name = 'Name'; Expression = { $_.BaseName } }, `
     @{ Name = 'Path'; Expression = { $_.FullName } }
 
-    $choice = Read-Menu -Header 'Select prompt' -Options $('None'; $prompts) -ExitOption 'Back'
+    $choice = Read-Menu `
+        -Header 'Select prompt' `
+        -Options $('None'; $prompts) `
+        -ExitOption 'Back'
 
     switch ($choice) {
         'None' {
@@ -34,10 +37,12 @@ function Open-Prompts {
         }
 
         default {
-            $prompt = Get-Content -Path $choice.Path -Raw
+            $prompt = Get-Content `
+                -Path $choice.Path `
+                -Raw
 
             # If file is empty.
-            if ($null -eq $prompt) { return ''}
+            if ($null -eq $prompt) { return '' }
 
             return $prompt
         }

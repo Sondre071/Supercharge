@@ -15,19 +15,21 @@ $config = Get-Config `
 
 ###
 
-$choice = Read-Menu -Header 'OpenRouter' -Options ('New chat', 'Settings')
+while ($true) {
+    $choice = Read-Menu -Header 'OpenRouter' -Options ('New chat', 'Settings')
 
-switch ($choice) {
-    'New chat' {
-        if ((-not $config.ApiKey) -or (-not $config.Model)) {
-            throw 'Config missing api-key or model.'
+    switch ($choice) {
+        'New chat' {
+            if ((-not $config.ApiKey) -or (-not $config.Model)) {
+                throw 'Config missing api-key or model.'
+            }
+
+            New-Chat `
+                -Config $config
         }
 
-        New-Chat `
-            -Config $config
-    }
-
-    'Settings' {
-        Open-Settings -Config $config
+        'Settings' {
+            Open-Settings -Config $config
+        }
     }
 }

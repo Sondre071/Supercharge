@@ -17,10 +17,10 @@ function su() {
         }
     }
 
-    $choice = Read-Menu -Header 'Supercharge' -Options ($options) -ExitOption 'Exit'
+    $choice = Read-Menu -Header 'Supercharge' -Options $options -ExitOption 'Exit'
 
     if ($choice -eq 'Exit') { return }
-    
+
     . $choice.Path -ProjectRoot $ProjectRoot
 }
 

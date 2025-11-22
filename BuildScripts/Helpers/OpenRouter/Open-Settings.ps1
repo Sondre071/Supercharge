@@ -18,23 +18,9 @@ function Open-Settings {
         }
 
         'Select model' {
-            $models = Get-Models `
-                -Config $Config
-
-            $choice = Read-Menu -Header 'Select model' -Options $models -ExitOption 'Back'
-
-            switch ($choice) {
-                'Back' { return }
-
-                default {
-                    $Config.Model = $choice
-                    $Config._Save()
-
-                    Write-Host "Model set to: `'$choice`'.`n" -ForegroundColor Green
-
-                    return
-                }
-            }
+            Select-Model `
+                -Config $Config `
+                -UseApi
         }
 
         default { return }

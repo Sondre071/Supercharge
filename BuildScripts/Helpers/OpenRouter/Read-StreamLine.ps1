@@ -11,7 +11,7 @@ function Read-StreamLine {
     if ($lineStr -in $valuesToSkip) { return '' }
 
     try {
-        $line = $lineStr -replace 'data: ', '' | ConvertFrom-Json
+        $line = $lineStr -replace '^data: ', '' | ConvertFrom-Json
 
         if ($line.type -eq 'response.output_text.delta') {
             return $line.delta

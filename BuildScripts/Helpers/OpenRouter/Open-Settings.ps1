@@ -14,13 +14,12 @@ function Open-Settings {
         'Open settings file' {
             & $Config._SavePath
 
-            exit 0
+            return
         }
 
         'Select model' {
             Select-Model `
-                -Config $Config `
-                -UseApi
+                -Config $Config
         }
 
         default { return }

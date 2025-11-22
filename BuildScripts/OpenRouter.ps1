@@ -20,6 +20,7 @@ $helpersPath = Join-Path $ProjectRoot 'Scripts' 'Helpers' 'OpenRouter'
 $initialContent = @{
     ApiKey = ""
     Model  = ""
+    Models = @()
     Url    = "https://openrouter.ai/api/v1/responses"
     Paths  = @{
         Prompts = (Join-Path $dataPath 'prompts')

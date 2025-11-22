@@ -11,7 +11,7 @@ function Open-Settings {
 
     switch ($choice) {
         'Open settings file' {
-            & $Config._savePath
+            & $Config._SavePath
 
             exit 0
         }
@@ -27,7 +27,7 @@ function Open-Settings {
 
                 default {
                     $Config.Model = $choice
-                    $Config.Save()
+                    $Config._Save()
 
                     Write-Host "Model set to: `'$choice`'.`n" -ForegroundColor Green
 

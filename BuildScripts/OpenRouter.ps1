@@ -9,7 +9,7 @@ $helpersPath = Join-Path $ProjectRoot 'Scripts' 'Helpers' 'OpenRouter'
 . (Join-Path $helpersPath 'Select-Prompt.ps1')
 . (Join-Path $helpersPath 'Open-Settings.ps1')
 . (Join-Path $helpersPath 'Select-Model.ps1')
-. (Join-Path $ProjectRoot 'Scripts' 'Helpers' 'Shared' 'Get-Config.ps1')
+. (Join-Path $ProjectRoot 'Scripts' 'Helpers' 'Shared' 'Use-Config.ps1')
 
 # New chat
 . (Join-Path $helpersPath 'Format-Message.ps1')
@@ -30,7 +30,7 @@ $initialContent = @{
     }
 }
 
-$config = Get-Config `
+$config = Use-Config `
     -Path (Join-Path $dataPath 'openrouter.json') `
     -InitialContent $initialContent
 

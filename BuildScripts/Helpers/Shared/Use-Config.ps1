@@ -1,4 +1,4 @@
-function Get-Config {
+function Use-Config {
     [OutputType([hashtable])]
     param(
         [Parameter(Mandatory = $true)]

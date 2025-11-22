@@ -1,4 +1,5 @@
 function Open-Settings {
+    [OutputType([void])]
     param (
         [Parameter(Mandatory)]
         [hashtable]$Config

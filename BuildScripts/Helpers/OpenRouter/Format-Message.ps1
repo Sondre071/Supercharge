@@ -1,4 +1,5 @@
 function Format-Message {
+    [OutputType([hashtable])]
     param (
         [Parameter(Mandatory)]
         [string]$Text,

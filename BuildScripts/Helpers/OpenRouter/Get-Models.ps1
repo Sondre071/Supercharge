@@ -1,4 +1,5 @@
 function Get-Models {
+    [OutputType([string[]])]
     param (
         [Parameter(Mandatory)]
         [hashtable]$Config

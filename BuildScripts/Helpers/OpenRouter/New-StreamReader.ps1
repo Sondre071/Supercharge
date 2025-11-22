@@ -1,4 +1,5 @@
 function New-StreamReader {
+    [OutputType([System.IO.StreamReader])]
     param (
         [Parameter(Mandatory)]
         [hashtable[]]$Messages,

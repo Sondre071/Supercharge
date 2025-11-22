@@ -1,4 +1,5 @@
 function Read-StreamLine {
+    [OutputType([string])]
     param (
         [Parameter(Mandatory)]
         [System.IO.StreamReader]$Reader,

@@ -1,4 +1,5 @@
 function Open-Prompts {
+    [OutputType([string])]
     param (
         [Parameter(Mandatory)]
         [string]$Path

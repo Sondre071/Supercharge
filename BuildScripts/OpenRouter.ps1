@@ -2,7 +2,6 @@ param (
     [string]$ProjectRoot
 )
 
-$dataPath = Join-Path $env:UserProfile '.supercharge'
 $helpersPath = Join-Path $ProjectRoot 'Scripts' 'Helpers' 'OpenRouter'
 
 # General
@@ -16,6 +15,10 @@ $helpersPath = Join-Path $ProjectRoot 'Scripts' 'Helpers' 'OpenRouter'
 . (Join-Path $helpersPath 'Format-Message.ps1')
 . (Join-Path $helpersPath 'New-StreamReader.ps1')
 . (Join-Path $helpersPath 'Read-StreamLine.ps1')
+
+# Settings
+
+$dataPath = Join-Path $env:UserProfile '.supercharge'
 
 $initialContent = @{
     ApiKey = ""
@@ -41,14 +44,16 @@ while ($true) {
 
     switch ($choice) {
         'New chat' {
-            if ((-not $config.ApiKey) -or (-not $config.Model)) {
+            if (-not $config.ApiKey) {
                 throw 'Config missing api-key or model.'
+            }
+
+            if (-not $config.Model) {
+                throw 'Config missing model.'
             }
 
             $prompt = Open-Prompts `
                 -Path $config.Paths.Prompts
-
-            if ($null -eq $prompt) { continue }
 
             New-Chat `
                 -Config $config `

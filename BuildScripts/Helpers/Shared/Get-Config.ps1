@@ -1,4 +1,5 @@
 function Get-Config {
+    [OutputType([hashtable])]
     param(
         [Parameter(Mandatory = $true)]
         [string]$Path,

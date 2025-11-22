@@ -3,7 +3,6 @@ Set-StrictMode -Version Latest
 $ProjectRoot = $PSScriptRoot
 
 function su() {
-
     Confirm-LocalFiles
 
     $options = Get-ChildItem `

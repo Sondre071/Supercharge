@@ -1,4 +1,5 @@
 function New-Chat {
+    [OutputType([void])]
     param (
         [Parameter(Mandatory)]
         [hashtable]$Config,

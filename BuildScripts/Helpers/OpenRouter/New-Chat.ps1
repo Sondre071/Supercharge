@@ -6,14 +6,14 @@ function New-Chat {
 
         [Parameter(Mandatory)]
         [AllowEmptyString()]
-        [string]$Prompt
+        [string]$SystemPrompt
     )
 
     [hashtable[]]$messageHistory = @()
 
-    if ('' -ne $Prompt) {
+    if ('' -ne $SystemPrompt) {
         $messageHistory += Format-Message `
-            -Text $Prompt `
+            -Text $SystemPrompt `
             -Role 'system'
     }
 

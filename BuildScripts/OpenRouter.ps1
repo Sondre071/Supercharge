@@ -52,12 +52,12 @@ while ($true) {
                 throw 'Config missing model.'
             }
 
-            $prompt = Open-Prompts `
+            $systemPrompt = Open-Prompts `
                 -Path $config.Paths.Prompts
 
             New-Chat `
                 -Config $config `
-                -Prompt $prompt
+                -SystemPrompt $systemPrompt
         }
 
         'Settings' {

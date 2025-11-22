@@ -44,10 +44,14 @@ function New-Chat {
         $modelResponse = ''
 
         while (-not $reader.EndOfStream) {
+            $text = Read-StreamLine `
+                -LineStr $reader.ReadLine()
+            
+            if (-not $text) { continue }
 
-            $modelResponse += Read-StreamLine `
-                -Reader $reader `
-                -Color 'Cyan'
+            Write-Host $text -NoNewLine -ForegroundColor 'Cyan'
+
+            $modelResponse += $text
         }
 
         $messageHistory += Format-Message `

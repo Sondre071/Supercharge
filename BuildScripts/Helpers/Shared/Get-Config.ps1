@@ -4,7 +4,6 @@ function Get-Config {
         [Parameter(Mandatory = $true)]
         [string]$Path,
 
-        [Parameter(Mandatory = $false)]
         [hashtable]$InitialContent
     )
 
@@ -21,6 +20,8 @@ function Get-Config {
                 -Value $content `
                 -Force
             | Out-Null
+
+            Write-Debug "File created: `'$Path`'. with content: `'$content`'."
         }
         else {
             throw 'No file found, no initial content provided.'

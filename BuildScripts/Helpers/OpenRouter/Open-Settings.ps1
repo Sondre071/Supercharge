@@ -7,7 +7,7 @@ function Open-Settings {
 
     $choice = Read-Menu `
         -Header 'Settings' `
-        -Options ('Select model', 'Open settings file') `
+        -Options 'Select model', 'Open settings file' `
         -ExitOption 'Back'
 
     switch ($choice) {
@@ -18,8 +18,8 @@ function Open-Settings {
         }
 
         'Select model' {
-            $models = (Get-Models `
-                -Config $Config)
+            $models = Get-Models `
+                -Config $Config
 
             $choice = Read-Menu -Header 'Select model' -Options $models -ExitOption 'Back'
 

@@ -45,7 +45,7 @@ while ($true) {
 
     if ($choice.Name -eq 'New') {
         $typeChoice = Read-Menu `
-            -Options ('File', 'Folder') `
+            -Options 'File', 'Folder' `
             -ExitOption 'Cancel'
 
         switch ($typeChoice) {

@@ -1,5 +1,5 @@
-function Open-Prompts {
-    [OutputType([string])]
+function Select-Prompt {
+    [OutputType([array])]
     param (
         [Parameter(Mandatory)]
         [string]$Path
@@ -16,7 +16,9 @@ function Open-Prompts {
         -Path $Path `
         -File 
 
-    if ($null -eq $prompts) { return '' }
+    if ($prompts.Length -eq 0) {
+        return $null, $false
+    }
 
     $prompts = $prompts `
     | Select-Object `
@@ -30,22 +32,19 @@ function Open-Prompts {
 
     switch ($choice) {
         'None' {
-            return ''
+            return $null, $false
         }
 
         'Back' {
-            return $null
+            return $null, $true
         }
 
         default {
             $prompt = Get-Content `
                 -Path $choice.Path `
                 -Raw
-
-            # If file is empty.
-            if ($null -eq $prompt) { return '' }
-
-            return $prompt
+                
+            return $prompt, $false
         }
     }
 }

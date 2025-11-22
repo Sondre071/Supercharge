@@ -6,7 +6,7 @@ $helpersPath = Join-Path $ProjectRoot 'Scripts' 'Helpers' 'OpenRouter'
 
 # General
 . (Join-Path $helpersPath 'New-Chat.ps1')
-. (Join-Path $helpersPath 'Open-Prompts.ps1')
+. (Join-Path $helpersPath 'Select-Prompt.ps1')
 . (Join-Path $helpersPath 'Open-Settings.ps1')
 . (Join-Path $helpersPath 'Get-Models.ps1')
 . (Join-Path $ProjectRoot 'Scripts' 'Helpers' 'Shared' 'Get-Config.ps1')
@@ -39,7 +39,7 @@ $config = Get-Config `
 while ($true) {
     $choice = Read-Menu `
         -Header 'OpenRouter' `
-        -Options ('New chat', 'Settings') `
+        -Options 'New chat', 'Settings' `
         -ExitOption 'Back'
 
     switch ($choice) {
@@ -52,12 +52,14 @@ while ($true) {
                 throw 'Config missing model.'
             }
 
-            $systemPrompt = Open-Prompts `
+            $prompt, $cancel = Select-Prompt `
                 -Path $config.Paths.Prompts
+            
+            if ($cancel) { continue }
 
             New-Chat `
                 -Config $config `
-                -SystemPrompt $systemPrompt
+                -SystemPrompt $prompt
         }
 
         'Settings' {

@@ -2,14 +2,14 @@ Set-StrictMode -Version Latest
 
 $ProjectRoot = $PSScriptRoot
 
-function su() {
+function SU() {
     $options = Get-ChildItem `
         -Path (Join-Path $ProjectRoot 'Scripts') `
         -File
     | Where-Object { $_.Extension -eq '.ps1' }
     | ForEach-Object {
         @{
-            Name = $_.BaseName -creplace '(?<!^)([A-Z])', ' $1'
+            Name = $_.BaseName -creplace '(?<!^)(_)', ' '
             Path = $_.FullName
         }
     }
@@ -26,4 +26,4 @@ function su() {
     }
 }
 
-Export-ModuleMember -Function su
+Export-ModuleMember -Function SU

@@ -1,9 +1,5 @@
 function Open-Settings {
     [OutputType([void])]
-    param (
-        [Parameter(Mandatory)]
-        [hashtable]$Config
-    )
 
     $choice = Read-Menu `
         -Header 'Settings' `
@@ -18,8 +14,7 @@ function Open-Settings {
         }
 
         'Select model' {
-            Select-Model `
-                -Config $Config
+            Select-Model
         }
 
         default { return }

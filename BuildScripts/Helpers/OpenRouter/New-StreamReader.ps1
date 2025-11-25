@@ -2,13 +2,13 @@ function New-StreamReader {
     [OutputType([System.IO.StreamReader])]
     param (
         [Parameter(Mandatory)]
-        [hashtable[]]$Messages,
-
-        [Parameter(Mandatory)]
-        [hashtable]$Config
+        [hashtable[]]$Messages
     )
 
     $client = [System.Net.Http.HttpClient]::new()
+
+
+    Set-Clipboard ($Config | ConvertTo-Json)
 
     $body = @{
         input              = $Messages 

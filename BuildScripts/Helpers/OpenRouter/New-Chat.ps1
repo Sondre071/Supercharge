@@ -2,9 +2,6 @@ function New-Chat {
     [OutputType([void])]
     param (
         [Parameter(Mandatory)]
-        [hashtable]$Config,
-
-        [Parameter(Mandatory)]
         [AllowEmptyString()]
         [string]$SystemPrompt
     )
@@ -35,8 +32,7 @@ function New-Chat {
             -Role 'user'
 
         $reader = New-StreamReader `
-            -Messages $messageHistory `
-            -Config $Config
+            -Messages $messageHistory
 
         $modelResponse = ''
 

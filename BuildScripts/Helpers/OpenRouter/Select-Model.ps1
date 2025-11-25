@@ -1,9 +1,5 @@
 function Select-Model {
     [OutputType([void])]
-    param (
-        [Parameter(Mandatory)]
-        [hashtable]$Config
-    )
 
     $models = & {
         $response = Invoke-RestMethod `

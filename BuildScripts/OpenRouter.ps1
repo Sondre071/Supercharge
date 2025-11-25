@@ -3,23 +3,21 @@ param (
 )
 
 $helpersPath = Join-Path $ProjectRoot 'Scripts' 'Helpers' 'OpenRouter'
+$dataPath = Join-Path $env:UserProfile '.supercharge'
 
 # General
-. (Join-Path $helpersPath 'New-Chat.ps1')
 . (Join-Path $helpersPath 'Select-Prompt.ps1')
+. (Join-Path $helpersPath 'New-Chat.ps1')
 . (Join-Path $helpersPath 'Open-Settings.ps1')
 . (Join-Path $helpersPath 'Select-Model.ps1')
 . (Join-Path $ProjectRoot 'Scripts' 'Helpers' 'Shared' 'Use-Config.ps1')
 
 # New chat
-. (Join-Path $helpersPath 'Format-Message.ps1')
 . (Join-Path $helpersPath 'New-StreamReader.ps1')
+. (Join-Path $helpersPath 'Format-Message.ps1')
 . (Join-Path $helpersPath 'Read-StreamLine.ps1')
 
 # Settings
-
-$dataPath = Join-Path $env:UserProfile '.supercharge'
-
 $initialContent = @{
     ApiKey     = ""
     Model      = ""
@@ -39,7 +37,7 @@ $initialContent = @{
     }
 }
 
-$config = Use-Config `
+$Config = Use-Config `
     -Path (Join-Path $dataPath 'openrouter.json') `
     -InitialContent $initialContent
 
@@ -53,26 +51,24 @@ while ($true) {
 
     switch ($choice) {
         'New chat' {
-            if (-not $config.ApiKey) {
+            if (-not $Config.ApiKey) {
                 throw 'Config missing api-key or model.'
             }
 
-            if (-not $config.Model) {
+            if (-not $Config.Model) {
                 throw 'Config missing model.'
             }
 
             $prompt, $cancel = Select-Prompt `
-                -Path $config.Paths.Prompts
+                -Path $Config.Paths.Prompts
             
             if ($cancel) { continue }
 
-            New-Chat `
-                -Config $config `
-                -SystemPrompt $prompt
+            New-Chat -SystemPrompt $prompt
         }
 
         'Settings' {
-            Open-Settings -Config $config
+            Open-Settings
         }
 
         'Back' {

@@ -1,2 +1,8 @@
-data/
-scripts/
+Scripts/*
+!Scripts/OpenRouter.ps1
+!Scripts/Files.ps1
+!Scripts/Helpers
+
+Scripts/Helpers/*
+!Scripts/Helpers/OpenRouter
+!Scripts/Helpers/Shared

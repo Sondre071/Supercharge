@@ -21,11 +21,20 @@ $helpersPath = Join-Path $ProjectRoot 'Scripts' 'Helpers' 'OpenRouter'
 $dataPath = Join-Path $env:UserProfile '.supercharge'
 
 $initialContent = @{
-    ApiKey = ""
-    Model  = ""
-    Models = @()
-    Url    = "https://openrouter.ai/api/v1/responses"
-    Paths  = @{
+    ApiKey     = ""
+    Model      = ""
+    Models     = @()
+    Parameters = @{
+        Temperature        = 1.0
+        Top_P              = 1.0
+        Top_K              = 0
+        Frequency_Penalty  = 0.0
+        Presence_Penalty   = 0.0
+        Repetition_Penalty = 0.0
+        Min_P              = 0.0
+        Top_A              = 0.0
+    }
+    Paths      = @{
         Prompts = (Join-Path $dataPath 'prompts')
     }
 }

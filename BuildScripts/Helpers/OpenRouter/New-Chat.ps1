@@ -36,10 +36,7 @@ function New-Chat {
 
         $reader = New-StreamReader `
             -Messages $messageHistory `
-            -ApiKey $Config.ApiKey `
-            -Model $Config.Model `
-            -Url $Config.Url
-
+            -Config $Config
 
         $modelResponse = ''
 

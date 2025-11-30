@@ -1,114 +1,160 @@
 use std::process::exit;
 use windows_sys::Win32::System::Console::{GetStdHandle, STD_INPUT_HANDLE, STD_OUTPUT_HANDLE};
 
-use crate::{init, input};
-use std::io::{self, Write};
+use crate::{cursor, init, input};
+//use std::io::{self, Write};
 
-struct Opt {
-    index: i32,
-    text: String,
+pub enum MenuId {
+    Home,
+    Settings,
+    OpenRouter,
 }
 
-pub fn run(
-    header: Option<String>,
-    subheaders: Option<Vec<String>>,
-    options: Vec<String>,
-    exit_option: Option<String>,
-    width: usize,
-) {
-    let stdin = unsafe { GetStdHandle(STD_INPUT_HANDLE) };
-    let stdout = unsafe { GetStdHandle(STD_OUTPUT_HANDLE) };
+pub fn to_home() -> MenuId {
+    MenuId::Home
+}
 
-    init::init_console(stdout);
+pub fn to_settings() -> MenuId {
+    MenuId::Settings
+}
 
-    let mut combined_opts: Vec<Opt> = options
-        .into_iter()
-        .enumerate()
-        .map(|(index, text)| Opt {
-            index: index as i32,
-            text: text,
-        })
-        .collect();
+pub fn to_openrouter() -> MenuId {
+    MenuId::OpenRouter
+}
 
-    if let Some(exit_text) = exit_option {
-        combined_opts.push(Opt {
-            index: -1,
-            text: exit_text,
-        })
+pub struct Item {
+    pub name: &'static str,
+    pub next: fn() -> MenuId,
+}
+
+pub struct Menu {
+    pub header: &'static str,
+    pub subheaders: &'static [&'static str],
+    pub options: &'static [Item],
+}
+
+static HOME: Menu = Menu {
+    header: "Supercharge",
+    subheaders: &[],
+    options: &[
+        Item {
+            name: "OpenRouter",
+            next: to_openrouter,
+        },
+        Item {
+            name: "Settings",
+            next: to_settings,
+        },
+    ],
+};
+
+static SETTINGS: Menu = Menu {
+    header: "Settings",
+    subheaders: &[],
+    options: &[Item {
+        name: "Back",
+        next: to_home,
+    }],
+};
+
+static OPENROUTER: Menu = Menu {
+    header: "OpenRouter",
+    subheaders: &[],
+    options: &[Item {
+        name: "Back",
+        next: to_home,
+    }],
+};
+
+struct Opt<'a> {
+    index: i32,
+    text: &'a str,
+}
+
+fn lookup_menu(id: MenuId) -> &'static Menu {
+    match id {
+        MenuId::Home => &HOME,
+        MenuId::Settings => &SETTINGS,
+        MenuId::OpenRouter => &OPENROUTER,
     }
+}
 
-    let mut menu_len = combined_opts.len();
-
-    if let Some(header) = header {
-        menu_len += 1;
-
-        println!("\x1b[0;93m========== {} ==========\x1b[0m\n", header);
-    }
-
-    if let Some(subheaders) = subheaders {
-        menu_len += subheaders.len();
-
-        subheaders
-            .into_iter()
-            .for_each(|subheader| println!("\x1b[0;93m{}\x1b[0m", subheader));
-    }
-
-    let mut current_index = 0;
-    let mut startRow = 0;
-
-    render_menu(&combined_opts, current_index, width);
+pub fn run(start: MenuId) {
+    let mut currentId = start;
 
     loop {
-        let key = input::read_key_blocking(stdin);
+        let menu = lookup_menu(currentId);
 
-        // 👇 Restore to start of menu and clear everything below
-        print!("\x1b[u"); // restore cursor to saved position
-        print!("\x1b[J"); // clear from cursor down
-        io::stdout().flush().unwrap();
+        let stdin = unsafe { GetStdHandle(STD_INPUT_HANDLE) };
+        let stdout = unsafe { GetStdHandle(STD_OUTPUT_HANDLE) };
 
-        print!("\x1b[{}A\r", combined_opts.len());
+        init::init_console(stdout);
 
-        if let Some(ch) = key.ch {
-            match ch {
-                'q' | 'h' => exit(-1),
+        println!("\x1b[0;93m========== {} ==========\x1b[0m\n", menu.header);
 
-                'j' => {
-                    if current_index != combined_opts.len() - 1 {
-                        current_index += 1
-                    }
-                }
-                'k' => {
-                    if current_index != 0 {
-                        current_index -= 1
-                    }
-                }
-
-                'l' => {
-                    clear_menu(menu_len, combined_opts.len());
-
-                    exit(combined_opts[current_index].index as i32)
-                }
-
-                _ => continue,
-            }
+        if (!menu.subheaders.is_empty()) {
+            menu.subheaders
+                .into_iter()
+                .for_each(|subheader| println!("\x1b[0;93m{}\x1b[0m", subheader));
         }
 
-        render_menu(&combined_opts, current_index, width);
+        let cursor = cursor::Cursor::new(stdin, stdout, menu.options.len(), 5);
+
+        let mut current_index = 0;
+        let mut startRow = 0;
+
+        render_menu(&menu.options, current_index, 90);
+
+        loop {
+            let key = input::read_key_blocking(stdin);
+
+            cursor.clear_options();
+
+            print!("\x1b[{}A\r", menu.options.len());
+
+            if let Some(ch) = key.ch {
+                match ch {
+                    'q' | 'h' => exit(-1),
+
+                    'j' => {
+                        if current_index != menu.options.len() - 1 {
+                            current_index += 1
+                        }
+                    }
+                    'k' => {
+                        if current_index != 0 {
+                            current_index -= 1
+                        }
+                    }
+
+                    'l' => {
+                        currentId = (menu.options[current_index].next)();
+                        clear_menu(5, menu.options.len());
+
+                        break;
+                    }
+
+                    _ => continue,
+                }
+            }
+
+            render_menu(&menu.options, current_index, 90);
+        }
     }
 }
 
-fn render_menu(options: &Vec<Opt>, current: usize, width: usize) {
+fn render_menu(options: &&'static [Item], current: usize, width: usize) {
     let content_width = width.saturating_sub(2);
 
     for i in 0..options.len() {
         if i == current {
             println!(
                 "\x1b[0;93m> {: <num$}\x1b[0m",
-                options[i].text,
+                options[i].name,
                 num = content_width
             );
         } else {
-            println!("  {: <num$}", options[i].text, num = content_width);
+            println!("  {: <num$}", options[i].name, num = content_width);
         }
     }
 }

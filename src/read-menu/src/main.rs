@@ -1,5 +1,4 @@
 mod cursor;
-mod init;
 mod input;
 mod menu;
 

@@ -2,6 +2,16 @@ Set-StrictMode -Version Latest
 
 $ProjectRoot = $PSScriptRoot
 
+if (-not (Test-Path (Join-Path $PSScriptRoot 'bin' 'release' 'read-menu.exe'))) {
+    $buildScript = Join-Path $PSScriptRoot 'Build' 'Build.ps1'
+
+    Write-Host 'Compiling binaries..... ' -NoNewLine -ForegroundColor DarkGray
+    & $buildScript
+    Write-Host 'Done!' -ForegroundColor DarkGray
+}
+
+. (Join-Path $PSScriptRoot 'Scripts' 'Helpers' 'Shared' 'Read-Menu.ps1')
+
 function SU() {
     $options = Get-ChildItem `
         -Path (Join-Path $ProjectRoot 'Scripts') `

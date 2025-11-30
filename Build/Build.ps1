@@ -27,7 +27,14 @@ $json = $initialContent | ConvertTo-Json `
     -Depth 7 `
     -Compress
 
+
 New-Item `
     -Path (Join-Path $dataPath 'openrouter.json') `
     -Value $json `
     -Force:$Force
+
+
+$bin = Join-Path (Split-Path $PSScriptRoot -Parent) 'bin'
+$workspace = Join-Path (Split-Path $PSScriptRoot -Parent) 'Cargo.toml'
+
+cargo build --release --manifest-path $workspace --target-dir $bin

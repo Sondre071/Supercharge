@@ -6,3 +6,6 @@ Scripts/*
 Scripts/Helpers/*
 !Scripts/Helpers/OpenRouter
 !Scripts/Helpers/Shared
+
+bin/*
+target

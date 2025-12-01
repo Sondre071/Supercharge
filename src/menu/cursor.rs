@@ -7,18 +7,19 @@ use windows_sys::Win32::System::Console::{
     GetStdHandle, STD_OUTPUT_HANDLE, SetConsoleCursorInfo, SetConsoleCursorPosition,
 };
 
-use crate::menu;
-
 pub struct Cursor<'a> {
-    pub current: Cell<usize>,
+    header: &'a str,
+    subheaders: Vec<&'a str>,
 
-    menu: &'a menu::Menu,
+    pub items: Vec<&'a str>,
     width: usize,
+
+    pub current: usize,
     stdout_handle: HANDLE,
 }
 
 impl<'a> Cursor<'a> {
-    pub fn new(menu: &'a menu::Menu) -> Self {
+    pub fn new(header: &'a str, subheaders: Option<Vec<&'a str>>, items: Vec<&'a str>) -> Self {
         let stdout = unsafe { GetStdHandle(STD_OUTPUT_HANDLE) };
 
         // Init console.
@@ -38,10 +39,12 @@ impl<'a> Cursor<'a> {
         let width = (csbi.srWindow.Right - csbi.srWindow.Left + 1) as usize;
 
         Self {
+            header,
+            subheaders: subheaders.unwrap_or(vec![]),
             stdout_handle: stdout,
-            menu,
+            items,
             width: width,
-            current: Cell::new(0),
+            current: 0,
         }
     }
 
@@ -63,7 +66,7 @@ impl<'a> Cursor<'a> {
     }
 
     pub fn clear_menu(&self) {
-        let rows_to_jump = 1 + self.menu.subheaders.len() + self.menu.options.len();
+        let rows_to_jump = 1 + self.subheaders.len() + self.items.len();
 
         print!("\x1b[{}A", rows_to_jump);
         print!("\x1b[0J");
@@ -74,19 +77,15 @@ impl<'a> Cursor<'a> {
     pub fn render_menu(&self) {
         let content_width = self.width.saturating_sub(2);
 
-        for i in 0..self.menu.options.len() {
-            if i == self.current.get() {
+        for i in 0..self.items.len() {
+            if i == self.current {
                 println!(
                     "\x1b[0;93m> {: <width$}\x1b[0m",
-                    self.menu.options[i].name,
+                    self.items[i],
                     width = content_width
                 );
             } else {
-                println!(
-                    "  {: <width$}",
-                    self.menu.options[i].name,
-                    width = content_width
-                );
+                println!("  {: <width$}", self.items[i], width = content_width);
             }
         }
     }
@@ -96,7 +95,7 @@ impl<'a> Cursor<'a> {
             let width: usize = 30;
 
             // Truncate
-            let mut header_str = self.menu.header.to_string();
+            let mut header_str = self.header.to_string();
 
             if header_str.chars().count() > width {
                 let truncated: String = header_str.chars().take(width - 2).collect();
@@ -113,8 +112,20 @@ impl<'a> Cursor<'a> {
 
         println!("{header_text}");
 
-        for subheader in self.menu.subheaders.iter() {
+        for subheader in self.subheaders.iter() {
             println!("\x1b[0;93m{}\x1b[0m", subheader)
+        }
+    }
+
+    pub fn increment(&mut self) {
+        if self.current < self.items.len() - 1 {
+            self.current += 1;
+        }
+    }
+
+    pub fn decrement(&mut self) {
+        if self.current > 0 {
+            self.current -= 1;
         }
     }
 }

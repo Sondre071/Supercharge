@@ -92,23 +92,26 @@ impl<'a> Cursor<'a> {
     }
 
     pub fn write_headers(&self) {
-        let width: usize = 30;
+        let header_text = {
+            let width: usize = 30;
 
-        // Truncate
-        let mut header_str = self.menu.header.to_string();
+            // Truncate
+            let mut header_str = self.menu.header.to_string();
 
-        if header_str.chars().count() > width {
-            let truncated: String = header_str.chars().take(width - 2).collect();
-            header_str = format!("{truncated}..");
-        }
+            if header_str.chars().count() > width {
+                let truncated: String = header_str.chars().take(width - 2).collect();
+                header_str = format!("{truncated}..");
+            }
 
-        let pad_left_len = (width.saturating_sub(header_str.chars().count()) - 2) / 2;
-        let pad_right_len = width - pad_left_len - header_str.chars().count();
+            let pad_left_len = (width.saturating_sub(header_str.chars().count()) - 2) / 2;
+            let pad_right_len = width - pad_left_len - header_str.chars().count();
 
-        let pad_left: String = std::iter::repeat("=").take(pad_left_len).collect();
-        let pad_right: String = std::iter::repeat("=").take(pad_right_len).collect();
+            let pad_left: String = std::iter::repeat("=").take(pad_left_len).collect();
+            let pad_right: String = std::iter::repeat("=").take(pad_right_len).collect();
+            format!("\x1b[0;93m{} {} {}\x1b[0m", pad_left, header_str, pad_right)
+        };
 
-        println!("\x1b[0;93m{} {} {}\x1b[0m", pad_left, header_str, pad_right);
+        println!("{header_text}");
 
         for subheader in self.menu.subheaders.iter() {
             println!("\x1b[0;93m{}\x1b[0m", subheader)

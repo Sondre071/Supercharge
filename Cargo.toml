@@ -1,2 +1,10 @@
-[workspace]
-members = ["./src/read-menu"]
+[package]
+name = "supercharge"
+version = "0.2.0"
+edition = "2024"
+
+[dependencies]
+clap = { version = "4.5.53", features = ["derive"] }
+windows-sys = { version = "0.61.2", features = [
+    "Win32_System_Console"
+]}

@@ -124,14 +124,28 @@ impl<'a> Cursor<'a> {
     }
 
     pub fn increment(&mut self) {
+        let offset = &self.offset;
+
+        let pos_from_bottom = self.height - (self.current - offset + 1);
+
         if self.current < self.items.len() - 1 {
             self.current += 1;
+        }
+
+        if pos_from_bottom == 1 && self.current < self.items.len() - 1 {
+            self.offset += 1
         }
     }
 
     pub fn decrement(&mut self) {
+        let pos_from_top = self.current - self.offset;
+
         if self.current > 0 {
             self.current -= 1;
+        }
+
+        if self.offset > 0 && pos_from_top <= 1 {
+            self.offset -= 1
         }
     }
 }

@@ -1,8 +1,7 @@
 use serde::Deserialize;
 use std::env;
 use std::fs::File;
-use std::io;
-use std::io::{BufReader};
+use std::io::BufReader;
 use std::path::Path;
 
 #[allow(dead_code)]

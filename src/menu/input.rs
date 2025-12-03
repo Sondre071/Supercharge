@@ -1,5 +1,4 @@
 use windows_sys::Win32::System::Console::{INPUT_RECORD, KEY_EVENT, ReadConsoleInputW};
-
 use windows_sys::Win32::Foundation::HANDLE;
 
 #[derive(Debug)]
@@ -7,7 +6,7 @@ pub struct KeyEvent {
     pub ch: Option<char>,
 }
 
-pub unsafe fn read_key_unsafe(stdin: HANDLE) -> Option<KeyEvent> {
+pub fn read_key(stdin: HANDLE) -> Option<KeyEvent> {
     let mut records: [INPUT_RECORD; 16] = unsafe { std::mem::zeroed() };
     let mut read = 0;
 
@@ -38,11 +37,9 @@ pub unsafe fn read_key_unsafe(stdin: HANDLE) -> Option<KeyEvent> {
 }
 
 pub fn read_key_blocking(stdin: HANDLE) -> KeyEvent {
-    unsafe {
         loop {
-            if let Some(ev) = read_key_unsafe(stdin) {
+            if let Some(ev) = read_key(stdin) {
                 return ev;
             }
         }
-    }
 }

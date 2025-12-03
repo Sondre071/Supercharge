@@ -69,7 +69,7 @@ impl<'a> Cursor<'a> {
     }
 
     pub fn clear_menu(&self) {
-        let rows_to_jump = 1 + self.subheaders.len() + self.items.len();
+        let rows_to_jump = 1 + self.subheaders.len() + self.height;
 
         print!("\x1b[{}A", rows_to_jump);
         print!("\x1b[0J");

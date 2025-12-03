@@ -23,21 +23,20 @@ impl<'a> Cursor<'a> {
     pub fn new(header: &'a str, subheaders: Option<Vec<&'a str>>, items: Vec<&'a str>) -> Self {
         let stdout = unsafe { GetStdHandle(STD_OUTPUT_HANDLE) };
 
-        // Init console.
         let cursor_info = CONSOLE_CURSOR_INFO {
             dwSize: 100,
             bVisible: 0,
         };
         unsafe {
             if SetConsoleCursorInfo(stdout, &cursor_info) == 0 {
-                panic!("Could not get cursor info.");
+                panic!("Could not set cursor info.");
             };
         }
 
         let height = items.len().min(20);
 
         // Get console info.
-        let csbi = unsafe { get_console_info(stdout).expect("Could not get console info.") };
+        let csbi = get_console_info(stdout);
         let console_width = (csbi.srWindow.Right - csbi.srWindow.Left + 1) as usize;
 
         Self {
@@ -53,7 +52,7 @@ impl<'a> Cursor<'a> {
     }
 
     pub fn get_cursor_pos(&self) -> CONSOLE_SCREEN_BUFFER_INFO {
-        unsafe { get_console_info(self.stdout_handle).expect("Could not get console info.") }
+        get_console_info(self.stdout_handle)
     }
 
     pub fn set_cursor_pos(&self, x: i16, y: i16) {
@@ -108,6 +107,7 @@ impl<'a> Cursor<'a> {
                 header_str = format!("{truncated}..");
             }
 
+            // Format
             let pad_left_len = (width.saturating_sub(header_str.chars().count()) - 2) / 2;
             let pad_right_len = width - pad_left_len - header_str.chars().count();
 
@@ -150,14 +150,14 @@ impl<'a> Cursor<'a> {
     }
 }
 
-unsafe fn get_console_info(handle: HANDLE) -> Option<CONSOLE_SCREEN_BUFFER_INFO> {
+fn get_console_info(handle: HANDLE) -> CONSOLE_SCREEN_BUFFER_INFO {
     let mut info = MaybeUninit::<CONSOLE_SCREEN_BUFFER_INFO>::uninit();
 
     unsafe {
         if GetConsoleScreenBufferInfo(handle, info.as_mut_ptr()) == 0 {
-            None
-        } else {
-            Some(info.assume_init())
+            panic!("Failed to get console screen buffer info.")
         }
+
+        info.assume_init()
     }
 }

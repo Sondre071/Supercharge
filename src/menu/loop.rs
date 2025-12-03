@@ -39,7 +39,7 @@ pub fn run<'a>(
 
                 'l' => {
                     cursor.clear_menu();
-                    return Some(cursor.items[cursor.current].clone());
+                    return Some(cursor.items[cursor.current]);
                 }
 
                 _ => {

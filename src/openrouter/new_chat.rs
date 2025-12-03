@@ -1,5 +1,7 @@
 use crate::data;
 
 pub fn run() {
-    //data::get_app_data();
+    let data = data::get_app_data().expect("Faild to get app data.");
+
+    println!("{}", data.api_key);
 }

@@ -28,19 +28,17 @@ pub struct Data {
     pub prompts: String,
 }
 
-pub fn get_app_data() -> Result<Data, io::Error> {
-    let home_dir = env::home_dir()
-        .ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "No home directory found."))?;
+pub fn get_app_data() -> Data {
+    let home_dir = env::home_dir().unwrap();
 
     let relative_path = Path::new(".supercharge").join("supercharge.json");
 
     let full_path = home_dir.join(relative_path);
 
-    let file = File::open(full_path)?;
+    let file = File::open(full_path).unwrap();
     let reader = BufReader::new(file);
 
-    let data: Data = serde_json::from_reader(reader)
-        .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
+    let data: Data = serde_json::from_reader(reader).unwrap();
 
-    Ok(data)
+    data
 }

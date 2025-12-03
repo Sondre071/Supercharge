@@ -48,6 +48,6 @@ pub fn run<'a>(
             }
         }
 
-        start_y = cursor.get_cursor_pos().dwCursorPosition.Y - cursor.items.len() as i16;
+        start_y = cursor.get_cursor_pos().dwCursorPosition.Y - cursor.height as i16;
     }
 }

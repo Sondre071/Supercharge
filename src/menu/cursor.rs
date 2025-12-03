@@ -11,9 +11,11 @@ pub struct Cursor<'a> {
     subheaders: Vec<&'a str>,
 
     pub items: Vec<&'a str>,
-    width: usize,
-
     pub current: usize,
+    offset: usize,
+    pub height: usize,
+    console_width: usize,
+
     stdout_handle: HANDLE,
 }
 
@@ -32,18 +34,21 @@ impl<'a> Cursor<'a> {
             };
         }
 
-        // Get screen info.
-        let csbi = unsafe { get_console_info(stdout).expect("Could not get console info.") };
+        let height = items.len().min(20);
 
-        let width = (csbi.srWindow.Right - csbi.srWindow.Left + 1) as usize;
+        // Get console info.
+        let csbi = unsafe { get_console_info(stdout).expect("Could not get console info.") };
+        let console_width = (csbi.srWindow.Right - csbi.srWindow.Left + 1) as usize;
 
         Self {
             header,
             subheaders: subheaders.unwrap_or(vec![]),
-            stdout_handle: stdout,
-            items,
-            width: width,
+            items: items,
             current: 0,
+            offset: 0,
+            height,
+            console_width,
+            stdout_handle: stdout,
         }
     }
 
@@ -74,9 +79,11 @@ impl<'a> Cursor<'a> {
     }
 
     pub fn render_menu(&self) {
-        let content_width = self.width.saturating_sub(2);
+        let content_width = self.console_width.saturating_sub(2);
+        let height = self.items.len().min(20);
+        let offset = self.offset;
 
-        for i in 0..self.items.len() {
+        for i in offset..(height + offset) {
             if i == self.current {
                 println!(
                     "\x1b[0;93m> {: <width$}\x1b[0m",

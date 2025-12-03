@@ -1,15 +1,17 @@
 use std::process::exit;
 
-mod menu;
 mod data;
+mod menu;
 mod openrouter;
+mod settings;
 
 fn run() {
-    let options = vec!["OpenRouter", "Quit"];
-
-    if let Some(result) = menu::r#loop::run("Supercharge", None, options) {
+    if let Some(result) =
+        menu::r#loop::run("Supercharge", None, vec!["OpenRouter", "Settings", "Exit"])
+    {
         match result {
             "OpenRouter" => openrouter::run(),
+            "Settings" => settings::run(),
             _ => exit(0),
         }
     }

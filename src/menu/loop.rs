@@ -3,6 +3,7 @@ use windows_sys::Win32::System::Console::{GetStdHandle, STD_INPUT_HANDLE};
 
 use super::cursor;
 use super::input;
+use crate::menu;
 
 pub fn run<'a>(
     header: &'a str,
@@ -12,8 +13,9 @@ pub fn run<'a>(
     let stdin: HANDLE = unsafe { GetStdHandle(STD_INPUT_HANDLE) };
 
     let mut cursor = cursor::Cursor::new(header, subheaders, items);
+    cursor.set_cursor_visibility(false);
 
-    cursor.write_headers();
+    menu::write_headers(&cursor.header, Some(&cursor.subheaders));
 
     let mut start_y = cursor.get_cursor_pos().dwCursorPosition.Y;
 
@@ -26,7 +28,8 @@ pub fn run<'a>(
         if let Some(ch) = key.ch {
             match ch {
                 'q' | 'h' => {
-                    cursor.clear_menu();
+                    menu::clear_menu(cursor.total_height);
+                    cursor.set_cursor_visibility(true);
                     return None;
                 }
 
@@ -38,7 +41,8 @@ pub fn run<'a>(
                 }
 
                 'l' => {
-                    cursor.clear_menu();
+                    menu::clear_menu(cursor.total_height);
+                    cursor.set_cursor_visibility(true);
                     return Some(cursor.items[cursor.current]);
                 }
 
@@ -48,6 +52,6 @@ pub fn run<'a>(
             }
         }
 
-        start_y = cursor.get_cursor_pos().dwCursorPosition.Y - cursor.height as i16;
+        start_y = cursor.get_cursor_pos().dwCursorPosition.Y - cursor.visible_items as i16;
     }
 }

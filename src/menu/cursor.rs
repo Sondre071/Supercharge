@@ -7,33 +7,26 @@ use windows_sys::Win32::System::Console::{
 };
 
 pub struct Cursor<'a> {
-    header: &'a str,
-    subheaders: Vec<&'a str>,
+    pub header: &'a str,
+    pub subheaders: Vec<&'a str>,
 
     pub items: Vec<&'a str>,
     pub current: usize,
     offset: usize,
-    pub height: usize,
+    pub visible_items: usize,
+    pub total_height: usize,
     console_width: usize,
 
-    stdout_handle: HANDLE,
+    pub stdout_handle: HANDLE,
 }
 
 impl<'a> Cursor<'a> {
     pub fn new(header: &'a str, subheaders: Option<Vec<&'a str>>, items: Vec<&'a str>) -> Self {
         let stdout = unsafe { GetStdHandle(STD_OUTPUT_HANDLE) };
 
-        let cursor_info = CONSOLE_CURSOR_INFO {
-            dwSize: 100,
-            bVisible: 0,
-        };
-        unsafe {
-            if SetConsoleCursorInfo(stdout, &cursor_info) == 0 {
-                panic!("Could not set cursor info.");
-            };
-        }
-
-        let height = items.len().min(20);
+        let subheaders = subheaders.unwrap_or(vec![]);
+        let visible_items = items.len().min(20);
+        let total_height = 1 + subheaders.len() + visible_items;
 
         // Get console info.
         let csbi = get_console_info(stdout);
@@ -41,13 +34,28 @@ impl<'a> Cursor<'a> {
 
         Self {
             header,
-            subheaders: subheaders.unwrap_or(vec![]),
-            items: items,
+            subheaders,
+            items,
             current: 0,
             offset: 0,
-            height,
+            visible_items,
+            total_height,
             console_width,
             stdout_handle: stdout,
+        }
+    }
+
+    pub fn set_cursor_visibility(&self, visible: bool) {
+        let num = { if visible { 1 } else { 0 } };
+
+        let cursor_info = CONSOLE_CURSOR_INFO {
+            dwSize: 100,
+            bVisible: num,
+        };
+        unsafe {
+            if SetConsoleCursorInfo(self.stdout_handle, &cursor_info) == 0 {
+                panic!("Could not set cursor info.");
+            };
         }
     }
 
@@ -68,15 +76,6 @@ impl<'a> Cursor<'a> {
         };
     }
 
-    pub fn clear_menu(&self) {
-        let rows_to_jump = 1 + self.subheaders.len() + self.height;
-
-        print!("\x1b[{}A", rows_to_jump);
-        print!("\x1b[0J");
-
-        io::stdout().flush().unwrap();
-    }
-
     pub fn render_menu(&self) {
         let content_width = self.console_width.saturating_sub(2);
         let height = self.items.len().min(20);
@@ -95,38 +94,10 @@ impl<'a> Cursor<'a> {
         }
     }
 
-    pub fn write_headers(&self) {
-        let header_text = {
-            let width: usize = 30;
-
-            // Truncate
-            let mut header_str = self.header.to_string();
-
-            if header_str.chars().count() > width {
-                let truncated: String = header_str.chars().take(width - 2).collect();
-                header_str = format!("{truncated}..");
-            }
-
-            // Format
-            let pad_left_len = (width.saturating_sub(header_str.chars().count()) - 2) / 2;
-            let pad_right_len = width - pad_left_len - header_str.chars().count();
-
-            let pad_left: String = std::iter::repeat("=").take(pad_left_len).collect();
-            let pad_right: String = std::iter::repeat("=").take(pad_right_len).collect();
-            format!("\x1b[0;93m{} {} {}\x1b[0m", pad_left, header_str, pad_right)
-        };
-
-        println!("{header_text}");
-
-        for subheader in self.subheaders.iter() {
-            println!("\x1b[0;93m{}\x1b[0m", subheader)
-        }
-    }
-
     pub fn increment(&mut self) {
         let offset = &self.offset;
 
-        let pos_from_bottom = self.height - (self.current - offset + 1);
+        let pos_from_bottom = self.visible_items - (self.current - offset + 1);
 
         if self.current < self.items.len() - 1 {
             self.current += 1;

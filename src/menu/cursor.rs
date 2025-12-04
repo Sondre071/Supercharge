@@ -1,4 +1,3 @@
-use std::io::{self, Write};
 use std::mem::MaybeUninit;
 use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::System::Console::{

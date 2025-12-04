@@ -42,3 +42,4 @@ async fn select_model() {
         }
     }
 }
+

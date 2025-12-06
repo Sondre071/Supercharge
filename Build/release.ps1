@@ -1,3 +1,10 @@
+$projectRoot = Split-Path $(Split-Path -Path $MyInvocation.MyCommand.Path -Parent) -Parent
+
+if ($projectRoot -ne (Get-Location).Path) {
+    Write-Host "Script has to be invoked from within the project."
+    return
+}
+
 Write-Host "Compiling rust code..." -ForegroundColor DarkGray
 cargo build --release --target-dir target
 
@@ -17,6 +24,7 @@ Write-Host "Copying binaries..." -ForegroundColor DarkGray
 $releasePath = Join-Path '.' 'target' 'release'
 $targetPath = Join-Path $env:USERPROFILE '.supercharge'
 
-Write-Host "Done!" -ForegroundColor Green
-Copy-Item -Path $(Join-Path $releasePath 'su.exe') -Destination $targetPath -Recurse -Force
+Copy-Item -Path $(Join-Path $releasePath 'su.exe') -Destination $targetPath -Force
 Copy-Item -Path $(Join-Path $releasePath 'bin') -Destination $targetPath -Recurse -Force
+
+Write-Host "Done!" -ForegroundColor Green

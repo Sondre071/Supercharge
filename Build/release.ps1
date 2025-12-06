@@ -1,7 +1,7 @@
 $projectRoot = Split-Path $(Split-Path -Path $MyInvocation.MyCommand.Path -Parent) -Parent
 
 if ($projectRoot -ne (Get-Location).Path) {
-    Write-Host "Script has to be invoked from within the project."
+    Write-Host "Script has to be invoked from within the project root."
     return
 }
 

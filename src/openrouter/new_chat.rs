@@ -48,7 +48,7 @@ fn send_message(messages: &Vec<Message>) -> String {
     let mut binary_path = std::env::current_exe().unwrap();
     binary_path.pop();
     binary_path.push("bin");
-    binary_path.push("stream_reader_request.exe");
+    binary_path.push("post_message.exe");
 
     let mut reader = match binary::run_streaming(binary_path.to_str().unwrap(), args) {
         Ok(r) => r,

@@ -26,7 +26,6 @@ pub struct Data {
 }
 
 pub fn get_app_data() -> Data {
-
     let mut path = env::home_dir().unwrap();
     path.push(".supercharge");
     path.push("data");

@@ -19,7 +19,7 @@ fn select_model() {
     let mut binary_path = std::env::current_exe().unwrap();
     binary_path.pop();
     binary_path.push("bin");
-    binary_path.push("models_request.exe");
+    binary_path.push("fetch_models.exe");
 
     match binary::run_and_collect_lines(binary_path.to_str().unwrap(), args) {
         Ok(models) => {

@@ -1,11 +1,9 @@
-use serde::Deserialize;
 use std::env;
 use std::fs::File;
 use std::io::BufReader;
-use std::path::Path;
 
 #[allow(dead_code)]
-#[derive(Deserialize)]
+#[derive(serde::Deserialize)]
 pub struct Parameters {
     temperature: f64,
     top_p: f64,
@@ -18,7 +16,7 @@ pub struct Parameters {
 }
 
 #[allow(dead_code)]
-#[derive(Deserialize)]
+#[derive(serde::Deserialize)]
 pub struct Data {
     pub api_key: String,
     pub model: String,
@@ -28,13 +26,13 @@ pub struct Data {
 }
 
 pub fn get_app_data() -> Data {
-    let home_dir = env::home_dir().unwrap();
 
-    let relative_path = Path::new(".supercharge").join("supercharge.json");
+    let mut path = env::home_dir().unwrap();
+    path.push(".supercharge");
+    path.push("data");
+    path.push("supercharge.json");
 
-    let full_path = home_dir.join(relative_path);
-
-    let file = File::open(full_path).unwrap();
+    let file = File::open(path).unwrap();
     let reader = BufReader::new(file);
 
     let data: Data = serde_json::from_reader(reader).unwrap();

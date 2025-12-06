@@ -14,12 +14,14 @@ pub fn run() {
 fn select_model() {
     let data = data::get_app_data();
 
-    let args = vec![
-        "--api-key".to_string(),
-        data.api_key.clone(),
-    ];
+    let args = vec!["--api-key".to_string(), data.api_key.clone()];
 
-    match binary::run_and_collect_lines("bin/models_request.exe", args) {
+    let mut binary_path = std::env::current_exe().unwrap();
+    binary_path.pop();
+    binary_path.push("bin");
+    binary_path.push("models_request.exe");
+
+    match binary::run_and_collect_lines(binary_path.to_str().unwrap(), args) {
         Ok(models) => {
             let mods: Vec<&str> = models.iter().map(|s| s.as_str()).collect();
 

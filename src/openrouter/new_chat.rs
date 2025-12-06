@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::io::{self, Read, Write};
+use std::io::{self, Write};
 
 use crate::binary;
 use crate::data;
@@ -33,9 +33,9 @@ pub fn run() {
 
 fn send_message(messages: &Vec<Message>) -> String {
     let data = data::get_app_data();
-    
+
     let messages_json = serde_json::to_string(&messages).expect("Failed to serialize messages");
-    
+
     let args = vec![
         "--api-key".to_string(),
         data.api_key.clone(),
@@ -45,19 +45,24 @@ fn send_message(messages: &Vec<Message>) -> String {
         messages_json,
     ];
 
-    let mut reader = match binary::run_streaming("bin/stream_reader_request.exe", args) {
+    let mut binary_path = std::env::current_exe().unwrap();
+    binary_path.pop();
+    binary_path.push("bin");
+    binary_path.push("stream_reader_request.exe");
+
+    let mut reader = match binary::run_streaming(binary_path.to_str().unwrap(), args) {
         Ok(r) => r,
         Err(e) => {
             eprintln!("Failed to start binary: {}", e);
             return String::new();
         }
     };
-    
+
     let mut full_response = String::new();
-    
+
     print!("\x1b[0;96m");
     io::stdout().flush().unwrap();
-    
+
     let mut buffer = [0u8; 1024];
     loop {
         match reader.stdout().read(&mut buffer) {
@@ -76,13 +81,13 @@ fn send_message(messages: &Vec<Message>) -> String {
             }
         }
     }
-    
+
     print!("\x1b[0m\n");
-    
+
     if let Err(e) = reader.wait() {
         eprintln!("{}", e);
     }
-    
+
     full_response
 }
 

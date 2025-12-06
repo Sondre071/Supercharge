@@ -6,7 +6,7 @@ mod menu;
 mod openrouter;
 mod settings;
 
-fn run() {
+fn main() {
     if let Some(result) =
         menu::r#loop::run("Supercharge", None, vec!["OpenRouter", "Settings", "Exit"])
     {
@@ -16,8 +16,4 @@ fn run() {
             _ => exit(0),
         }
     }
-}
-
-fn main() {
-    run()
 }

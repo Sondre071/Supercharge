@@ -1,5 +1,7 @@
+use futures_util::StreamExt;
 use reqwest;
 use serde::{Deserialize, Serialize};
+use std::io::{self, Write};
 
 use crate::data;
 use crate::menu;
@@ -21,7 +23,7 @@ pub fn run() {
         });
 
         let res = send_message(&message_history);
-        println!("\x1b[0;96m{}\x1b[0m\n", res);
+        println!();
 
         message_history.push(Message {
             role: "assistant",
@@ -37,6 +39,7 @@ async fn send_message(messages: &Vec<Message>) -> String {
     let body = RequestBody {
         model: &data.model,
         input: messages.clone(),
+        stream: true,
     };
 
     let res = reqwest::Client::new()
@@ -49,9 +52,47 @@ async fn send_message(messages: &Vec<Message>) -> String {
         .error_for_status()
         .expect("Non success status from API.");
 
-    let content: Response = res.json().await.expect("Failed to read response body.");
+    let mut stream = res.bytes_stream();
+    let mut full_response = String::new();
 
-    content.output[0].content[0].text.clone()
+    print!("\x1b[0;96m");
+
+    while let Some(chunk) = stream.next().await {
+        match chunk {
+            Ok(bytes) => {
+                let text = String::from_utf8_lossy(&bytes);
+
+                for line in text.lines() {
+                    if line.is_empty() || line == ": OPENROUTER PROCESSING" {
+                        continue;
+                    }
+
+                    if let Some(json_str) = line.strip_prefix("data: ") {
+                        if json_str == "[DONE]" {
+                            continue;
+                        }
+
+                        if let Ok(event) = serde_json::from_str::<StreamEvent>(json_str) {
+                            if event.r#type == "response.output_text.delta" {
+                                print!("{}", event.delta);
+                                io::stdout().flush().unwrap();
+
+                                full_response.push_str(&event.delta);
+                            }
+                        }
+                    }
+                }
+            }
+            Err(e) => {
+                eprintln!("Error reading stream: {}", e);
+                break;
+            }
+        }
+    }
+
+    print!("\x1b[0m\n");
+
+    full_response
 }
 
 #[derive(Serialize, Clone)]
@@ -64,26 +105,29 @@ struct Message<'a> {
 struct RequestBody<'a> {
     model: &'a str,
     input: Vec<Message<'a>>,
+    stream: bool,
 }
 
 #[allow(dead_code)]
 #[derive(Debug, Deserialize)]
-struct ResponseMessage {
+struct StreamEvent {
     r#type: String,
-    text: String,
-}
 
-#[allow(dead_code)]
-#[derive(Debug, Deserialize)]
-struct Output {
-    id: String,
-    role: String,
-    r#type: String,
-    status: String,
-    content: Vec<ResponseMessage>,
-}
+    #[serde(default)]
+    logprobs: Vec<serde_json::Value>,
 
-#[derive(Debug, Deserialize)]
-struct Response {
-    output: Vec<Output>,
+    #[serde(default)]
+    output_index: u32,
+
+    #[serde(default)]
+    item_id: String,
+
+    #[serde(default)]
+    content_index: u32,
+
+    #[serde(default)]
+    delta: String,
+
+    #[serde(default)]
+    sequence_number: u32,
 }

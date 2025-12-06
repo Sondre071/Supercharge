@@ -1,10 +1,5 @@
 $projectRoot = Split-Path $(Split-Path -Path $MyInvocation.MyCommand.Path -Parent) -Parent
-
-if ($projectRoot -ne (Get-Location).Path) {
-    Write-Host "Script has to be invoked from within the project root."
-    return
-}
-
+Set-Location $projectRoot
 
 Write-Host "Building rust code..." -ForegroundColor DarkGray
 cargo build --target-dir target

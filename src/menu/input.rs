@@ -14,7 +14,7 @@ pub fn read_key(stdin: HANDLE) -> Option<KeyEvent> {
         unsafe { ReadConsoleInputW(stdin, records.as_mut_ptr(), records.len() as u32, &mut read) };
 
     if ok == 0 {
-        return None; // OS call failed.
+        return None;
     }
 
     for rec in &records[..read as usize] {

@@ -27,7 +27,6 @@ impl<'a> Cursor<'a> {
         let visible_items = items.len().min(20);
         let total_height = 1 + subheaders.len() + visible_items;
 
-        // Get console info.
         let csbi = get_console_info(stdout);
         let console_width = (csbi.srWindow.Right - csbi.srWindow.Left + 1) as usize;
 

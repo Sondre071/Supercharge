@@ -1,5 +1,6 @@
 use std::process::exit;
 
+mod binary;
 mod data;
 mod menu;
 mod openrouter;

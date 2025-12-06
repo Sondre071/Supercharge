@@ -1,5 +1,4 @@
-use serde::Deserialize;
-
+use crate::binary;
 use crate::data;
 use crate::menu;
 
@@ -12,34 +11,26 @@ pub fn run() {
     }
 }
 
-#[derive(Debug, Deserialize)]
-struct ModelsResponse {
-    data: Vec<ModelInfo>,
-}
-
-#[derive(Debug, Deserialize)]
-struct ModelInfo {
-    id: String,
-}
-
-#[tokio::main]
-async fn select_model() {
+fn select_model() {
     let data = data::get_app_data();
 
-    let client = reqwest::Client::new()
-        .get("https://openrouter.ai/api/v1/models")
-        .bearer_auth(&data.api_key);
+    let args = vec![
+        "--api-key".to_string(),
+        data.api_key.clone(),
+    ];
 
-    let res = client.send().await.expect("Request failed.");
+    match binary::run_and_collect_lines("bin/models_request.exe", args) {
+        Ok(models) => {
+            let mods: Vec<&str> = models.iter().map(|s| s.as_str()).collect();
 
-    let models: ModelsResponse = res.json().await.expect("Failed to read response body.");
-
-    let mods: Vec<&str> = models.data.iter().map(|model| model.id.as_str()).collect();
-
-    if let Some(result) = menu::r#loop::run("Select model", None, mods) {
-        match result {
-            _ => {}
+            if let Some(result) = menu::r#loop::run("Select model", None, mods) {
+                match result {
+                    _ => {}
+                }
+            }
+        }
+        Err(e) => {
+            eprintln!("Failed to get models: {}", e);
         }
     }
 }
-

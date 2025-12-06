@@ -3,6 +3,10 @@ name = "supercharge"
 version = "0.2.0"
 edition = "2024"
 
+[[bin]]
+name = "su"
+path = "src/main.rs"
+
 [dependencies]
 windows-sys = { version = "0.61.2", features = [
     "Win32_System_Console"

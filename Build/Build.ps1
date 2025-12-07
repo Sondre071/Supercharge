@@ -1,22 +1,25 @@
 $projectRoot = Split-Path $(Split-Path -Path $MyInvocation.MyCommand.Path -Parent) -Parent
 Set-Location $projectRoot
 
-Write-Host "Building rust code..." -ForegroundColor DarkGray
+Write-Host "Compiling rust code..." -ForegroundColor DarkGray
 cargo build --target-dir target
 
-Write-Host "Building go code..." -ForegroundColor DarkGray
-$binPath = Join-Path '.' 'target' 'debug' 'bin'
+Write-Host "Compiling go code..." -ForegroundColor DarkGray
 
-go build `
-    -o "$(Join-Path $binPath 'fetch_models.exe')" `
-    "$(Join-Path '.' 'cmd' 'openrouter' 'fetch_models')"
+$binPath = Join-Path $projectRoot 'cmd'
+$binTargetPath = Join-Path $projectRoot 'target' 'debug' 'bin'
 
-go build `
-    -o "$(Join-Path $binPath 'post_message.exe')" `
-    "$(Join-Path '.' 'cmd' 'openrouter' 'post_message')"
+Get-ChildItem -Path $binPath -File -Recurse | ForEach-Object {
+    $name = $_.Directory.Name
+    $packagePath = Split-Path $_.FullName -Parent
+    $domainPath = Split-Path $packagePath -Parent
+    $domainName = Split-Path $domainPath -Leaf
 
-go build `
-    -o "$(Join-Path $binPath 'blobstorage' 'fetch_containers.exe')" `
-    "$(Join-Path '.' 'cmd' 'blobstorage' 'fetch_containers')"
+    Write-Host "$domainName/$name.exe" -ForegroundColor DarkGray
+
+    go build `
+    -o "$(Join-Path $binTargetPath $domainName $name).exe" `
+    $packagePath
+}
 
 cargo run

@@ -13,24 +13,29 @@ import (
 
 func main() {
 	connection_string := flag.String("connectionstring", "", "Storage account connection string")
+	container := flag.String("container", "", "Storage account name")
 	flag.Parse()
 
 	if *connection_string == "" {
 		log.Fatalf("Missing connection string.")
 	}
 
-	if err := fetch_containers(*connection_string); err != nil {
+	if *container == "" {
+		log.Fatalf("Missing storage account name.")
+	}
+
+	if err := fetch_blobs(*connection_string, *container); err != nil {
 		log.Fatalf("Failed to fetch containers: %v\n", err)
 	}
 }
 
-func fetch_containers(con_str string) error {
+func fetch_blobs(con_str string, container string) error {
 	kvs := strings.Split(con_str, ";")
 
 	url := strings.TrimPrefix(kvs[0], "BlobEndpoint=")
 	sas := strings.TrimPrefix(kvs[4], "SharedAccessSignature=")
 
-	url = fmt.Sprintf("%s?comp=list&%s", url, sas)
+	url = fmt.Sprintf("%s%s?comp=list&%s", url, container, sas)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

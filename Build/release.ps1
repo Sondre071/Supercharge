@@ -1,26 +1,31 @@
 $projectRoot = Split-Path $(Split-Path -Path $MyInvocation.MyCommand.Path -Parent) -Parent
 Set-Location $projectRoot
 
+$rustBinaryPath = Join-Path $projectRoot 'target' 'release' 'su.exe'
+
+$binPath = Join-Path $projectRoot 'cmd'
+$targetDirectory = Join-Path $env:USERPROFILE '.supercharge'
+$targetBin = Join-Path $targetDirectory 'bin'
+
+# Compile Rust.
 Write-Host "Compiling rust code..." -ForegroundColor DarkGray
 cargo build --release --target-dir target
 
+# Copy Rust binary over.
+Copy-Item -Path $rustBinaryPath -Destination $targetDirectory -Force
+
+# Compile Go.
 Write-Host "Compiling go code..." -ForegroundColor DarkGray
-$binPath = Join-Path '.' 'target' 'release' 'bin'
 
-go build `
-    -o "$(Join-Path $binPath 'fetch_models.exe')" `
-    "$(Join-Path '.' 'cmd' 'openrouter' 'fetch_models')"
+Get-ChildItem -Path $binPath -File -Recurse | ForEach-Object {
+    $name = $_.Directory.Name
+    $packagePath = Split-Path $_.FullName -Parent
+    $domainPath = Split-Path $packagePath -Parent
+    $domainName = Split-Path $domainPath -Leaf
 
-go build `
-    -o "$(Join-Path $binPath 'post_message.exe')" `
-    "$(Join-Path '.' 'cmd' 'openrouter' 'post_message')"
+    Write-Host "$domainName/$name.exe" -ForegroundColor DarkGray
 
-
-Write-Host "Copying binaries..." -ForegroundColor DarkGray
-$releasePath = Join-Path '.' 'target' 'release'
-$targetPath = Join-Path $env:USERPROFILE '.supercharge'
-
-Copy-Item -Path $(Join-Path $releasePath 'su.exe') -Destination $targetPath -Force
-Copy-Item -Path $(Join-Path $releasePath 'bin') -Destination $targetPath -Recurse -Force
-
-Write-Host "Done!" -ForegroundColor Green
+    go build `
+    -o "$(Join-Path $targetBin $domainName $name).exe" `
+    $packagePath
+}

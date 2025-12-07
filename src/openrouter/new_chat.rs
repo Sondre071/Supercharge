@@ -10,6 +10,27 @@ pub fn run() {
 
     let mut message_history: Vec<Message> = vec![];
 
+    let prompts = get_prompts().unwrap();
+    let prompt_names: Vec<&str> = prompts.iter().map(|p| p.name.as_str()).collect();
+
+    let mut selected_prompt_text = String::new();
+
+    if let Some(selected_name) = menu::r#loop::run("Select prompt", None, prompt_names) {
+        if let Some(selected) = prompts.iter().find(|p| p.name == selected_name) {
+            selected_prompt_text =
+                std::fs::read_to_string(&selected.path).expect("Failed to read prompt file");
+        }
+    }
+
+    if selected_prompt_text != "" {
+        let sys_prompt = Message {
+            role: "assistant".to_string(),
+            content: selected_prompt_text
+        };
+
+        message_history.push(sys_prompt)
+    }
+
     menu::write_headers("New chat", Some(&vec![&data.model, ""]));
 
     loop {
@@ -29,6 +50,36 @@ pub fn run() {
             content: res.clone(),
         });
     }
+}
+
+#[derive(Debug)]
+struct PromptFile {
+    name: String,
+    path: std::path::PathBuf,
+}
+
+fn get_prompts() -> Option<Vec<PromptFile>> {
+    let mut path = std::env::home_dir()?;
+    path.push(".supercharge");
+    path.push("data");
+    path.push("prompts");
+
+    let entries = std::fs::read_dir(&path).ok()?;
+
+    let prompts: Vec<PromptFile> = entries
+        .filter_map(|entry| {
+            let entry = entry.ok()?;
+            let file_name = entry.file_name().to_str()?.to_string();
+            let file_path = entry.path(); // <-- Full path
+
+            Some(PromptFile {
+                name: file_name,
+                path: file_path,
+            })
+        })
+        .collect();
+
+    Some(prompts)
 }
 
 fn send_message(messages: &Vec<Message>) -> String {

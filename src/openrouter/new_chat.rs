@@ -9,28 +9,28 @@ use crate::statics;
 pub fn run() {
     let data = data::get_openrouter_data();
 
-    let mut message_history = vec![];
+    let mut message_history: Vec<Message> = {
+        let prompts = get_prompts();
 
-    let prompts = get_prompts().unwrap();
-    let prompt_names = prompts.iter().map(|p| p.name.as_str()).collect();
+        if prompts.len() > 0 {
+            let mut prompt_names = vec!["None"];
+            prompt_names.extend(prompts.iter().map(|p| p.name.as_str()));
 
-    let mut selected_prompt_text = String::new();
+            let choice = menu::r#loop::run("Select prompt", None, prompt_names).unwrap();
 
-    if let Some(selected_name) = menu::r#loop::run("Select prompt", None, prompt_names) {
-        if let Some(selected) = prompts.iter().find(|p| p.name == selected_name) {
-            selected_prompt_text =
-                std::fs::read_to_string(&selected.path).expect("Failed to read prompt file");
+            if choice != "None" {
+                let file = prompts.iter().find(|f| f.name == choice).unwrap();
+                let prompt = std::fs::read_to_string(&file.path).expect("Failed to parse prompt.");
+
+                vec![Message {
+                    role: "system".to_string(),
+                    content: prompt,
+                }];
+            }
         }
-    }
 
-    if selected_prompt_text != "" {
-        let sys_prompt = Message {
-            role: "assistant".to_string(),
-            content: selected_prompt_text,
-        };
-
-        message_history.push(sys_prompt)
-    }
+        vec![]
+    };
 
     menu::write_headers("New chat", Some(&vec![&data.model, ""]));
 
@@ -59,14 +59,15 @@ struct PromptFile {
     path: std::path::PathBuf,
 }
 
-fn get_prompts() -> Option<Vec<PromptFile>> {
-    let entries = std::fs::read_dir(statics::prompts_dir()).ok()?;
+fn get_prompts() -> Vec<PromptFile> {
+    let entries =
+        std::fs::read_dir(statics::prompts_dir()).expect("Failed to read from prompts folder.");
 
     let prompts: Vec<PromptFile> = entries
-        .filter_map(|entry| {
-            let entry = entry.ok()?;
-            let file_name = entry.file_name().to_str()?.to_string();
-            let file_path = entry.path(); // <-- Full path
+        .filter_map(|file| {
+            let file = file.expect("Failed to parse file.");
+            let file_name = file.file_name().to_str().unwrap().to_string();
+            let file_path = file.path();
 
             Some(PromptFile {
                 name: file_name,
@@ -75,7 +76,7 @@ fn get_prompts() -> Option<Vec<PromptFile>> {
         })
         .collect();
 
-    Some(prompts)
+    prompts
 }
 
 fn send_message(messages: &Vec<Message>) -> String {

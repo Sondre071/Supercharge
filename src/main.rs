@@ -7,6 +7,7 @@ mod openrouter;
 mod settings;
 mod blobstorage;
 mod statics;
+mod api;
 
 fn main() {
     if let Some(result) =

@@ -20,12 +20,3 @@ type MessageResponseStreamEvent struct {
 	Delta          string                   `json:"delta,omitempty"`
 	SequenceNumber int                      `json:"sequence_number,omitempty"`
 }
-
-
-type FetchModelsResponse struct {
-	Data []ModelInfo `json:"data"`
-}
-
-type ModelInfo struct {
-	Id string `json:"id"`
-}

@@ -66,8 +66,6 @@ fn get_blobs(account: StorageAccount, container: &str) -> Option<Vec<String>> {
 
     let client = reqwest::blocking::Client::new();
 
-    println!("{:?}", &url);
-
     let response = client.get(&url).send().expect("Failed to fetch blobs.");
 
     if !response.status().is_success() {
@@ -85,8 +83,6 @@ fn get_blobs(account: StorageAccount, container: &str) -> Option<Vec<String>> {
     }
 
     let body_text = response.text().expect("Failed to read response body");
-
-    println!("{:?}", &body_text);
 
     let result: BlobEnumerationResults =
         serde_xml_rs::from_str(&body_text).expect("Failed to parse XML response");

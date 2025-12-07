@@ -22,6 +22,4 @@ Get-ChildItem -Path $binPath -File -Recurse | ForEach-Object {
     $packagePath
 }
 
-return
-
 cargo run

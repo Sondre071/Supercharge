@@ -1,7 +1,12 @@
 use std::io::{BufRead, BufReader, Read};
 use std::process::{Child, Command, Stdio};
 
-pub fn run_and_collect_lines(binary: &str, args: Vec<String>) -> Result<Vec<String>, String> {
+pub enum ProcessResult {
+    Success(Vec<String>),
+    NotFound, // exit code 3 – blob container (or other thing) not found
+}
+
+pub fn run_and_collect_lines(binary: &str, args: Vec<String>) -> Result<ProcessResult, String> {
     let mut child = Command::new(binary)
         .args(&args)
         .stdout(Stdio::piped())
@@ -19,7 +24,15 @@ pub fn run_and_collect_lines(binary: &str, args: Vec<String>) -> Result<Vec<Stri
     let mut stderr_buf = String::new();
     stderr_reader.read_to_string(&mut stderr_buf).unwrap_or(0);
 
-    let status = child.wait().expect("Failed to wait for child process");
+    let status = child
+        .wait()
+        .map_err(|e| format!("Failed to wait for child process: {}", e))?;
+
+    if let Some(code) = status.code() {
+        if code == 3 {
+            return Ok(ProcessResult::NotFound);
+        }
+    }
 
     if !status.success() {
         return Err(format!(
@@ -29,7 +42,7 @@ pub fn run_and_collect_lines(binary: &str, args: Vec<String>) -> Result<Vec<Stri
         ));
     }
 
-    Ok(lines)
+    Ok(ProcessResult::Success(lines))
 }
 
 pub fn run_streaming(binary: &str, args: Vec<String>) -> Result<StreamingReader, String> {

@@ -5,11 +5,15 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"os"
 	"log"
 	"net/http"
 	"strings"
+	"errors"
 	. "supercharge/internal/blobstorage"
 )
+
+var ErrContainerNotFound = errors.New("Container not found.")
 
 func main() {
 	connection_string := flag.String("connectionstring", "", "Storage account connection string")
@@ -25,7 +29,10 @@ func main() {
 	}
 
 	if err := fetch_blobs(*connection_string, *container); err != nil {
-		log.Fatalf("Failed to fetch containers: %v\n", err)
+		if errors.Is(err, ErrContainerNotFound) {
+			os.Exit(3)
+		}
+		log.Fatalf("Failed to fetch blobs: %v\n", err)
 	}
 }
 
@@ -35,7 +42,7 @@ func fetch_blobs(con_str string, container string) error {
 	url := strings.TrimPrefix(kvs[0], "BlobEndpoint=")
 	sas := strings.TrimPrefix(kvs[4], "SharedAccessSignature=")
 
-	url = fmt.Sprintf("%s%s?comp=list&%s", url, container, sas)
+	url = fmt.Sprintf("%s%s?restype=container&comp=list&%s", url, container, sas)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -50,6 +57,10 @@ func fetch_blobs(con_str string, container string) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
+		if resp.StatusCode == http.StatusNotFound {
+			return ErrContainerNotFound
+		}
+
 		bodyBytes, _ := io.ReadAll(resp.Body)
 
 		return fmt.Errorf("Non-successful HTTP status: %d, %s", resp.StatusCode, string(bodyBytes))
@@ -60,12 +71,12 @@ func fetch_blobs(con_str string, container string) error {
 		return fmt.Errorf("Failed to read response body: %w", err)
 	}
 
-	var result EnumerationResults
+	var result BlobEnumerationResults
 	if err := xml.Unmarshal(bodyBytes, &result); err != nil {
 		return fmt.Errorf("Failed to unmarshal XML: %w", err)
 	}
 
-	for _, c := range result.Containers {
+	for _, c := range result.Blobs {
 		fmt.Println(c.Name)
 	}
 

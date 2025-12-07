@@ -1,4 +1,5 @@
 use std::mem::MaybeUninit;
+use std::os;
 use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::System::Console::{
     CONSOLE_CURSOR_INFO, CONSOLE_SCREEN_BUFFER_INFO, COORD, GetConsoleScreenBufferInfo,

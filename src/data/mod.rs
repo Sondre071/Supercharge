@@ -3,7 +3,7 @@ use std::fs::File;
 use std::io::BufReader;
 use types::{BlobStorageData, OpenRouterData};
 
-mod types;
+pub mod types;
 
 pub fn get_blob_data() -> BlobStorageData {
     let mut path = env::home_dir().unwrap();

@@ -5,7 +5,7 @@ pub struct BlobStorageData {
 }
 
 #[allow(dead_code)]
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Clone)]
 pub struct StorageAccount {
     pub name: String,
     pub local_files_path: String,

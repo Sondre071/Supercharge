@@ -21,6 +21,7 @@ pub fn run<'a>(
 
     loop {
         cursor.set_cursor_pos(0, start_y);
+
         cursor.render_menu();
 
         let key = input::read_key_blocking(stdin);

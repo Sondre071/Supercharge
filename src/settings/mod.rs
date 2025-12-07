@@ -22,18 +22,19 @@ fn select_model() {
     binary_path.push("openrouter");
     binary_path.push("fetch_models.exe");
 
-    match binary::run_and_collect_lines(binary_path.to_str().unwrap(), args) {
-        Ok(models) => {
+    let result = match binary::run_and_collect_lines(binary_path.to_str().unwrap(), args) {
+        Ok(r) => r,
+        Err(e) => {
+            panic!("Failed to get models: {}", e);
+        }
+    };
+
+    match result {
+        binary::ProcessResult::Success(models) => {
             let mods: Vec<&str> = models.iter().map(|s| s.as_str()).collect();
 
-            if let Some(result) = menu::r#loop::run("Select model", None, mods) {
-                match result {
-                    _ => {}
-                }
-            }
+            if let Some(model) = menu::r#loop::run("Select model", None, mods) {}
         }
-        Err(e) => {
-            eprintln!("Failed to get models: {}", e);
-        }
+        binary::ProcessResult::NotFound => {}
     }
 }

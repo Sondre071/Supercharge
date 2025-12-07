@@ -55,7 +55,7 @@ func fetch_containers(con_str string) error {
 		return fmt.Errorf("Failed to read response body: %w", err)
 	}
 
-	var result EnumerationResults
+	var result ContainerEnumerationResults
 	if err := xml.Unmarshal(bodyBytes, &result); err != nil {
 		return fmt.Errorf("Failed to unmarshal XML: %w", err)
 	}

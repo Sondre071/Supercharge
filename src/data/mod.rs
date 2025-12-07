@@ -1,31 +1,25 @@
 use std::env;
 use std::fs::File;
 use std::io::BufReader;
+use types::{BlobStorageData, OpenRouterData};
 
-#[allow(dead_code)]
-#[derive(serde::Deserialize)]
-pub struct Parameters {
-    temperature: f64,
-    top_p: f64,
-    top_k: usize,
-    frequency_penalty: f64,
-    presence_penalty: f64,
-    repetition_penalty: f64,
-    min_p: f64,
-    top_a: f64,
+mod types;
+
+pub fn get_blob_data() -> BlobStorageData {
+    let mut path = env::home_dir().unwrap();
+    path.push(".supercharge");
+    path.push("data");
+    path.push("blob-storage.json");
+
+    let file = File::open(path).unwrap();
+    let reader = BufReader::new(file);
+
+    let data: BlobStorageData = serde_json::from_reader(reader).unwrap();
+
+    data
 }
 
-#[allow(dead_code)]
-#[derive(serde::Deserialize)]
-pub struct Data {
-    pub api_key: String,
-    pub model: String,
-    pub models: Vec<String>,
-    pub parameters: Parameters,
-    pub prompts: String,
-}
-
-pub fn get_app_data() -> Data {
+pub fn get_openrouter_data() -> OpenRouterData {
     let mut path = env::home_dir().unwrap();
     path.push(".supercharge");
     path.push("data");
@@ -34,7 +28,7 @@ pub fn get_app_data() -> Data {
     let file = File::open(path).unwrap();
     let reader = BufReader::new(file);
 
-    let data: Data = serde_json::from_reader(reader).unwrap();
+    let data: OpenRouterData = serde_json::from_reader(reader).unwrap();
 
     data
 }

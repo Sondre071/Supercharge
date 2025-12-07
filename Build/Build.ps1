@@ -15,4 +15,8 @@ go build `
     -o "$(Join-Path $binPath 'post_message.exe')" `
     "$(Join-Path '.' 'cmd' 'openrouter' 'post_message')"
 
+go build `
+    -o "$(Join-Path $binPath 'blobstorage' 'fetch_containers.exe')" `
+    "$(Join-Path '.' 'cmd' 'blobstorage' 'fetch_containers')"
+
 cargo run

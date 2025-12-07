@@ -12,7 +12,7 @@ pub fn run() {
 }
 
 fn select_model() {
-    let data = data::get_app_data();
+    let data = data::get_openrouter_data();
 
     let args = vec!["--api-key".to_string(), data.api_key.clone()];
 

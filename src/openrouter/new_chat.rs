@@ -6,7 +6,7 @@ use crate::data;
 use crate::menu;
 
 pub fn run() {
-    let data = data::get_app_data();
+    let data = data::get_openrouter_data();
 
     let mut message_history: Vec<Message> = vec![];
 
@@ -32,7 +32,7 @@ pub fn run() {
 }
 
 fn send_message(messages: &Vec<Message>) -> String {
-    let data = data::get_app_data();
+    let data = data::get_openrouter_data();
 
     let messages_json = serde_json::to_string(&messages).expect("Failed to serialize messages");
 

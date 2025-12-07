@@ -4,14 +4,15 @@ use std::io::{self, Write};
 use crate::binary;
 use crate::data;
 use crate::menu;
+use crate::statics;
 
 pub fn run() {
     let data = data::get_openrouter_data();
 
-    let mut message_history: Vec<Message> = vec![];
+    let mut message_history = vec![];
 
     let prompts = get_prompts().unwrap();
-    let prompt_names: Vec<&str> = prompts.iter().map(|p| p.name.as_str()).collect();
+    let prompt_names = prompts.iter().map(|p| p.name.as_str()).collect();
 
     let mut selected_prompt_text = String::new();
 
@@ -25,7 +26,7 @@ pub fn run() {
     if selected_prompt_text != "" {
         let sys_prompt = Message {
             role: "assistant".to_string(),
-            content: selected_prompt_text
+            content: selected_prompt_text,
         };
 
         message_history.push(sys_prompt)
@@ -59,12 +60,7 @@ struct PromptFile {
 }
 
 fn get_prompts() -> Option<Vec<PromptFile>> {
-    let mut path = std::env::home_dir()?;
-    path.push(".supercharge");
-    path.push("data");
-    path.push("prompts");
-
-    let entries = std::fs::read_dir(&path).ok()?;
+    let entries = std::fs::read_dir(statics::prompts_dir()).ok()?;
 
     let prompts: Vec<PromptFile> = entries
         .filter_map(|entry| {

@@ -19,7 +19,6 @@ pub struct OpenRouterData {
     pub model: String,
     pub models: Vec<String>,
     pub parameters: Parameters,
-    pub prompts: String,
 }
 
 #[allow(dead_code)]

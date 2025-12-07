@@ -1,5 +1,4 @@
 use api::openrouter::InputMessage;
-use serde::{Deserialize, Serialize};
 use std::io::{self, Write};
 
 use crate::api;

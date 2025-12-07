@@ -1,11 +1,13 @@
+use serde::Deserialize;
+
 #[allow(dead_code)]
-#[derive(serde::Deserialize)]
+#[derive(Deserialize)]
 pub struct BlobStorageData {
     pub storage_accounts: Vec<StorageAccount>,
 }
 
 #[allow(dead_code)]
-#[derive(serde::Deserialize, Clone)]
+#[derive(Deserialize, Clone)]
 pub struct StorageAccount {
     pub name: String,
     pub local_files_path: String,
@@ -13,7 +15,7 @@ pub struct StorageAccount {
 }
 
 #[allow(dead_code)]
-#[derive(serde::Deserialize)]
+#[derive(Deserialize)]
 pub struct OpenRouterData {
     pub api_key: String,
     pub model: String,
@@ -22,7 +24,7 @@ pub struct OpenRouterData {
 }
 
 #[allow(dead_code)]
-#[derive(serde::Deserialize)]
+#[derive(Deserialize)]
 pub struct Parameters {
     temperature: f64,
     top_p: f64,

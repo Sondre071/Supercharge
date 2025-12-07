@@ -1,13 +1,24 @@
-use crate::binary;
 use crate::data;
 use crate::menu;
+use types::*;
 
 use data::types::StorageAccount;
+
+mod types;
 
 pub fn run() {
     let (account, container) = select_scope().unwrap();
 
-    let blobs = get_blobs(account, container.as_str());
+    if let Some(blobs) = get_blobs(account, container.as_str()) {
+        if blobs.is_empty() {
+            println!("No blobs found in container.");
+            return;
+        }
+
+        for blob in blobs {
+            println!("\x1b[0;93m{}\x1b[0m", blob);
+        }
+    }
 }
 
 fn select_scope() -> Option<(StorageAccount, String)> {
@@ -36,45 +47,51 @@ fn select_scope() -> Option<(StorageAccount, String)> {
     Some((account, container.to_string()))
 }
 
-fn get_blobs(account: StorageAccount, container: &str) -> Option<()> {
-    let container_name = container.to_lowercase().replace(" ", "-").to_string();
+fn get_blobs(account: StorageAccount, container: &str) -> Option<Vec<String>> {
+    let url = {
+        let f_container = container.to_lowercase().replace(" ", "-").to_string();
 
-    let args = vec![
-        "--connectionstring".to_string(),
-        account.connection_string.clone(),
-        "--container".to_string(),
-        container_name,
-    ];
+        let con_values: Vec<&str> = account.connection_string.split(';').collect();
 
-    let mut binary_path = std::env::current_exe().unwrap();
-    binary_path.pop();
-    binary_path.push("bin");
-    binary_path.push("blobstorage");
-    binary_path.push("fetch_blobs.exe");
+        let base_url = con_values[0].strip_prefix("BlobEndpoint=").unwrap();
+        let sv = con_values[4]
+            .strip_prefix("SharedAccessSignature=")
+            .unwrap();
 
-    let result = match binary::run_and_collect_lines(binary_path.to_str().unwrap(), args) {
-        Ok(r) => r,
-        Err(e) => {
-            panic!("Failed to run binary: {}", e);
-        }
+        format!(
+            "{}{}?restype=container&comp=list&{}",
+            base_url, f_container, sv
+        )
     };
 
-    match result {
-        binary::ProcessResult::Success(result) => {
-            if result.is_empty() {
-                return Some(())
-            }
+    let client = reqwest::blocking::Client::new();
 
-            result
-                .iter()
-                .enumerate()
-                .for_each(|(_, v)| println!("\x1b[0;93m{}\x1b[0m", v));
-        }
-        binary::ProcessResult::NotFound => {
+    println!("{:?}", &url);
+
+    let response = client.get(&url).send().expect("Failed to fetch blobs.");
+
+    if !response.status().is_success() {
+        if response.status() == reqwest::StatusCode::NOT_FOUND {
             println!("Storage container not found.");
             return None;
         }
+
+        let status = response.status();
+        let body_text = response
+            .text()
+            .unwrap_or_else(|_| String::from("Unable to read response body"));
+
+        panic!("Non-success HTTP status: {}, {}", status, body_text);
     }
 
-    Some(())
+    let body_text = response.text().expect("Failed to read response body");
+
+    println!("{:?}", &body_text);
+
+    let result: BlobEnumerationResults =
+        serde_xml_rs::from_str(&body_text).expect("Failed to parse XML response");
+
+    let blob_names: Vec<String> = result.blobs.blob.iter().map(|b| b.name.clone()).collect();
+
+    Some(blob_names)
 }

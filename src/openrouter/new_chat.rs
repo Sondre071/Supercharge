@@ -1,6 +1,8 @@
+use api::openrouter::InputMessage;
 use serde::{Deserialize, Serialize};
 use std::io::{self, Write};
 
+use crate::api;
 use crate::binary;
 use crate::data;
 use crate::menu;
@@ -9,7 +11,7 @@ use crate::statics;
 pub fn run() {
     let data = data::get_openrouter_data();
 
-    let mut message_history: Vec<Message> = {
+    let mut message_history: Vec<InputMessage> = {
         let prompts = get_prompts();
 
         if prompts.len() > 0 {
@@ -22,7 +24,7 @@ pub fn run() {
                 let file = prompts.iter().find(|f| f.name == choice).unwrap();
                 let prompt = std::fs::read_to_string(&file.path).expect("Failed to parse prompt.");
 
-                vec![Message {
+                vec![InputMessage {
                     role: "system".to_string(),
                     content: prompt,
                 }];
@@ -38,18 +40,20 @@ pub fn run() {
         let message = menu::read_line("You: ");
         println!();
 
-        message_history.push(Message {
+        message_history.push(InputMessage {
             role: "user".to_string(),
             content: message.clone(),
         });
 
-        let res = send_message(&message_history);
-        println!();
+        let res = api::openrouter::stream_chat(&message_history);
+        println!("\n");
 
-        message_history.push(Message {
-            role: "assistant".to_string(),
-            content: res.clone(),
-        });
+        if let Ok(text) = res {
+            message_history.push(InputMessage {
+                role: "assistant".to_string(),
+                content: text.clone(),
+            });
+        }
     }
 }
 
@@ -79,7 +83,7 @@ fn get_prompts() -> Vec<PromptFile> {
     prompts
 }
 
-fn send_message(messages: &Vec<Message>) -> String {
+fn send_message(messages: &Vec<api::openrouter::InputMessage>) -> String {
     let data = data::get_openrouter_data();
 
     let messages_json = serde_json::to_string(&messages).expect("Failed to serialize messages");
@@ -138,10 +142,4 @@ fn send_message(messages: &Vec<Message>) -> String {
     }
 
     full_response
-}
-
-#[derive(Serialize, Deserialize, Clone)]
-struct Message {
-    role: String,
-    content: String,
 }

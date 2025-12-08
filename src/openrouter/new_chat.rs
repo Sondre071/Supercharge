@@ -50,7 +50,7 @@ pub fn run() {
         if let Ok(text) = res {
             message_history.push(InputMessage {
                 role: "assistant".to_string(),
-                content: text.clone(),
+                content: text,
             });
         }
     }

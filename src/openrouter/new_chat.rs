@@ -11,7 +11,9 @@ pub fn run() {
     let mut message_history: Vec<InputMessage> = {
         let prompts = get_prompts();
 
-        if prompts.len() > 0 {
+        if prompts.len() < 1 {
+            vec![]
+        } else {
             let mut prompt_names = vec!["None"];
             prompt_names.extend(prompts.iter().map(|p| p.name.as_str()));
 
@@ -24,11 +26,11 @@ pub fn run() {
                 vec![InputMessage {
                     role: "system".to_string(),
                     content: prompt,
-                }];
+                }]
+            } else {
+                vec![]
             }
         }
-
-        vec![]
     };
 
     menu::write_headers("New chat", Some(&vec![&data.model, ""]));

@@ -1,37 +1,17 @@
-use api::openrouter::InputMessage;
-
 use crate::api;
 use crate::data;
 use crate::menu;
-use crate::statics;
+
+use super::types::*;
+use api::openrouter::InputMessage;
+use data::openrouter::get_openrouter_data;
 
 pub fn run() {
-    let data = data::get_openrouter_data();
+    let data = get_openrouter_data();
 
-    let mut message_history: Vec<InputMessage> = {
-        let prompts = get_prompts();
+    let mut message_history: Vec<InputMessage> = vec![];
 
-        if prompts.len() < 1 {
-            vec![]
-        } else {
-            let mut prompt_names = vec!["None"];
-            prompt_names.extend(prompts.iter().map(|p| p.name.as_str()));
-
-            let choice = menu::r#loop::run("Select prompt", None, prompt_names).unwrap();
-
-            if choice != "None" {
-                let file = prompts.iter().find(|f| f.name == choice).unwrap();
-                let prompt = std::fs::read_to_string(&file.path).expect("Failed to parse prompt.");
-
-                vec![InputMessage {
-                    role: "system".to_string(),
-                    content: prompt,
-                }]
-            } else {
-                vec![]
-            }
-        }
-    };
+    let prompt = select_prompt();
 
     menu::write_headers("New chat", Some(&vec![&data.model, ""]));
 
@@ -44,10 +24,14 @@ pub fn run() {
             content: message.clone(),
         });
 
-        let res = api::openrouter::stream_chat(&message_history);
+        let mut all_messages: Vec<InputMessage> = message_history.clone();
+
+        set_sys_prompts(&prompt, &mut all_messages);
+
+        let response_message = api::openrouter::stream_chat(&all_messages);
         println!("\n");
 
-        if let Ok(text) = res {
+        if let Ok(text) = response_message {
             message_history.push(InputMessage {
                 role: "assistant".to_string(),
                 content: text,
@@ -56,28 +40,74 @@ pub fn run() {
     }
 }
 
-#[derive(Debug)]
-struct PromptFile {
-    name: String,
-    path: std::path::PathBuf,
+fn set_sys_prompts(prompt: &Option<Prompt>, messages: &mut Vec<InputMessage>) {
+    if let Some(p) = prompt {
+        if !p.base.is_empty() {
+            let m = InputMessage {
+                role: "system".to_string(),
+                content: p.base.clone()
+            };
+
+            let index = messages.len().saturating_sub(8);
+
+            messages.insert(index, m)
+        }
+
+        if !p.r#static.is_empty() {
+            let m = InputMessage {
+                role: "system".to_string(),
+                content: p.r#static.clone()
+            };
+
+            let index = messages.len().saturating_sub(2);
+
+            messages.insert(index, m)
+        }
+    } 
 }
 
-fn get_prompts() -> Vec<PromptFile> {
-    let entries =
-        std::fs::read_dir(statics::prompts_dir()).expect("Failed to read from prompts folder.");
+fn select_prompt() -> Option<Prompt> {
+    let prompts = data::openrouter::get_prompts();
 
-    let prompts: Vec<PromptFile> = entries
-        .filter_map(|file| {
-            let file = file.expect("Failed to parse file.");
-            let file_name = file.file_name().to_str().unwrap().to_string();
-            let file_path = file.path();
+    if prompts.len() < 1 {
+        return None;
+    } else {
+        let mut prompt_names = vec!["None"];
+        prompt_names.extend(prompts.iter().map(|p| p.name.as_str()));
 
-            Some(PromptFile {
-                name: file_name,
-                path: file_path,
-            })
-        })
-        .collect();
+        let choice = menu::r#loop::run("Select prompt", None, prompt_names).unwrap();
 
-    prompts
+        if choice != "None" {
+            let file = prompts.iter().find(|f| f.name == choice).expect("Failed to find prompt.");
+            let prompt = std::fs::read_to_string(&file.path).expect("Failed to parse prompt.");
+
+            let mut above = Vec::new();
+            let mut below = Vec::new();
+
+            let mut in_below = false;
+
+            for line in prompt.lines() {
+                if !in_below && line.trim_start().starts_with("-----") {
+
+                    in_below = true;
+                    continue;
+                }
+
+                if in_below {
+                    below.push(line);
+                } else {
+                    above.push(line);
+                }
+            }
+
+            let above_text = above.join("\n");
+            let below_text = below.join("\n");
+
+            return Some(Prompt {
+                base: above_text,
+                r#static: below_text,
+            });
+        }
+    }
+    None
 }

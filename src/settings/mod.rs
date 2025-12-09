@@ -2,6 +2,9 @@ use crate::api;
 use crate::data;
 use crate::menu;
 
+use data::openrouter::get_openrouter_data;
+use api::openrouter::fetch_models;
+
 pub fn run() {
     if let Some(result) = menu::r#loop::run("Settings", None, vec!["Select model", "Back"]) {
         match result {
@@ -12,9 +15,9 @@ pub fn run() {
 }
 
 fn select_model() {
-    let data = data::get_openrouter_data();
+    let data = get_openrouter_data();
 
-    let models = api::openrouter::fetch_models(&data.api_key);
+    let models = fetch_models(&data.api_key);
 
     let selected = menu::r#loop::run(
         "Select model",

@@ -1,6 +1,8 @@
-use crate::{data};
+use crate::data;
+
 use serde::{Deserialize, Serialize};
 use std::io::{BufRead, BufReader, Write};
+use data::openrouter::get_openrouter_data;
 
 #[allow(dead_code)]
 #[derive(Debug, Deserialize, Serialize)]
@@ -62,7 +64,7 @@ pub fn fetch_models(api_key: &str) -> Vec<String> {
 }
 
 pub fn stream_chat(messages: &Vec<InputMessage>) -> Result<String, String> {
-    let data = data::get_openrouter_data();
+    let data = get_openrouter_data();
 
     let body = MessageRequestBody {
         model: data.model,

@@ -1,6 +1,13 @@
 use serde::Deserialize;
 
 #[allow(dead_code)]
+#[derive(Debug)]
+pub struct PromptFile {
+    pub name: String,
+    pub path: std::path::PathBuf,
+}
+
+#[allow(dead_code)]
 #[derive(Deserialize)]
 pub struct BlobStorageData {
     pub storage_accounts: Vec<StorageAccount>,

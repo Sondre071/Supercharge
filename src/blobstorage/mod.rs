@@ -1,8 +1,9 @@
 use crate::data;
 use crate::menu;
-use types::*;
 
+use types::*;
 use data::types::StorageAccount;
+use data::blobstorage::get_blob_data;
 
 mod types;
 
@@ -22,7 +23,7 @@ pub fn run() {
 }
 
 fn select_scope() -> Option<(StorageAccount, String)> {
-    let data = data::get_blob_data();
+    let data = get_blob_data();
 
     let account_name = menu::r#loop::run(
         "Select storage account",

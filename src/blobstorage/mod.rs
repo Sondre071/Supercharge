@@ -11,7 +11,7 @@ pub mod types;
 
 pub fn run() {
     let account = {
-        let data = data::blobstorage::get_blob_data();
+        let data = get_blob_data();
 
         if data.storage_accounts.len() == 0 {
             panic!("No storage accounts found.")
@@ -35,12 +35,44 @@ pub fn run() {
         }
     };
 
-    let choice = menu::r#loop::run("Blob Storage", None, vec!["Browse containers"]).unwrap();
+    let choice = menu::r#loop::run(
+        "Blob Storage",
+        None,
+        vec!["Browse containers", "Sync container"],
+    )
+    .unwrap();
 
     match choice {
         "Browse containers" => browse_containers(&account),
-        //"Sync container" => sync_container(),
+        "Sync container" => sync_container(&account),
         _ => {}
+    }
+}
+
+fn sync_container(account: &StorageAccount) {
+    let Some(name) = select_directory() else {
+        return;
+    };
+
+    println!(
+        "{}Selected container: {}{}",
+        COLORS.DarkGray, &name, COLORS.Gray
+    );
+
+    let blobs = fetch_blobs(account, name.as_str());
+
+    if blobs.is_none() {
+        let choice = menu::r#loop::run(
+            "Container not found",
+            Some(vec!["Create one?", ""]),
+            vec!["Yes", "No"],
+        )
+        .unwrap();
+
+        match choice {
+            "Yes" => create_container(account, &name),
+            _ => {}
+        }
     }
 }
 
@@ -65,28 +97,11 @@ fn browse_containers(account: &StorageAccount) {
     }
 }
 
-fn select_scope() -> Option<(StorageAccount, String)> {
-    let data = get_blob_data();
-
-    let account_name = menu::r#loop::run(
-        "Select storage account",
-        None,
-        data.storage_accounts
-            .iter()
-            .map(|i| i.name.as_str())
-            .collect::<Vec<&str>>(),
-    )
-    .unwrap();
-
-    let account = data
-        .storage_accounts
-        .iter()
-        .find(|e| e.name == account_name)
-        .unwrap()
-        .clone();
-
+fn select_directory() -> Option<String> {
     let path = rfd::FileDialog::new().pick_folder().unwrap();
-    let container = path.file_name().unwrap().to_str().unwrap();
+    let unparsed_name = path.file_name().unwrap().to_str().unwrap();
 
-    Some((account, container.to_string()))
+    let name = unparsed_name.to_lowercase().replace(" ", "-");
+
+    Some(name)
 }

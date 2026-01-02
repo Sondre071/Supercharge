@@ -1,9 +1,12 @@
-use crate::api::types::{BlobEnumerationResults};
+use crate::api::types::BlobEnumerationResults;
 use crate::blobstorage::types::*;
 use crate::data::types::StorageAccount;
 use crate::terminal::colors;
 
 use colors::COLORS;
+use reqwest::header::{CONTENT_TYPE, HeaderMap, HeaderName, HeaderValue};
+use std::time;
+use time::SystemTime;
 
 pub fn fetch_containers(account: &StorageAccount) -> Option<Vec<String>> {
     let url = format!(
@@ -113,4 +116,53 @@ pub fn create_container(account: &StorageAccount, name: &str) {
         "{}Container: {}{}{} created!{}",
         COLORS.Yellow, COLORS.White, name, COLORS.Yellow, COLORS.Gray
     );
+}
+
+pub fn upload_file(
+    account: &StorageAccount,
+    container_name: &str,
+    file: &BlobFile,
+    file_content: Vec<u8>,
+) {
+    let url = format!(
+        "{}{}/{}?{}",
+        account.blob_endpoint, container_name, file.name, account.shared_access_signature
+    );
+
+    let client = reqwest::blocking::Client::new();
+
+    let mut headers = HeaderMap::new();
+    headers.insert(
+        CONTENT_TYPE,
+        HeaderValue::from_static("application/octet-stream"),
+    );
+
+    let x_ms_date = httpdate::fmt_http_date(SystemTime::now());
+
+    headers.insert(
+        HeaderName::from_static("x-ms-date"),
+        HeaderValue::from_str(&x_ms_date).expect("Failed to apply timestamp."),
+    );
+
+    headers.insert(
+        HeaderName::from_static("x-ms-blob-type"),
+        HeaderValue::from_static("blockblob"),
+    );
+
+    let response = client
+        .put(url)
+        .body(file_content)
+        .headers(headers)
+        .send()
+        .expect("Failed to upload file.");
+
+    let status = response.status();
+
+    if !status.is_success() {
+        let body_text = response
+            .text()
+            .unwrap_or_else(|_| String::from("Unable to parse response body."));
+
+        panic!("Non-successful HTTP status: {}, {}", status, body_text)
+    }
 }

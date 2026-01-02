@@ -4,10 +4,10 @@ use base64::{Engine as _, engine::general_purpose};
 use serde::Deserialize;
 use std::fs::{self, DirEntry};
 use std::path::PathBuf;
-use std::time::{SystemTime, UNIX_EPOCH};
-use time::{OffsetDateTime, format_description};
+use std::time::{SystemTime};
+use time::{OffsetDateTime};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct BlobFile {
     pub name: String,
     pub content_length: usize,

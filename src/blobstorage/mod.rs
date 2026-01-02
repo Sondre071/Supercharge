@@ -1,24 +1,67 @@
+use crate::api::blobstorage::*;
 use crate::data;
 use crate::menu;
+use crate::terminal;
 
-use types::*;
-use data::types::StorageAccount;
 use data::blobstorage::get_blob_data;
+use data::types::StorageAccount;
+use terminal::colors::COLORS;
 
-mod types;
+pub mod types;
 
 pub fn run() {
-    let (account, container) = select_scope().unwrap();
+    let account = {
+        let data = data::blobstorage::get_blob_data();
 
-    if let Some(blobs) = get_blobs(account, container.as_str()) {
-        if blobs.is_empty() {
-            println!("No blobs found in container.");
-            return;
+        if data.storage_accounts.len() == 0 {
+            panic!("No storage accounts found.")
         }
 
-        for blob in blobs {
-            println!("\x1b[0;93m{}\x1b[0m", blob);
+        if data.storage_accounts.len() == 1 {
+            data.storage_accounts.first().unwrap().to_owned()
+        } else {
+            let options = data
+                .storage_accounts
+                .iter()
+                .map(|a| a.name.as_str())
+                .collect();
+            let name = menu::r#loop::run("Select account", None, options).unwrap();
+
+            data.storage_accounts
+                .iter()
+                .find(|a| a.name == name)
+                .unwrap()
+                .to_owned()
         }
+    };
+
+    let choice = menu::r#loop::run("Blob Storage", None, vec!["Browse containers"]).unwrap();
+
+    match choice {
+        "Browse containers" => browse_containers(&account),
+        //"Sync container" => sync_container(),
+        _ => {}
+    }
+}
+
+fn browse_containers(account: &StorageAccount) {
+    let containers = fetch_containers(account).unwrap();
+
+    let mut options: Vec<&str> = containers.iter().map(|s| s.as_str()).collect();
+    options.push("Back");
+
+    let container = menu::r#loop::run("Containers", None, options).unwrap();
+
+    let blobs = fetch_blobs(&account, container).unwrap();
+
+    for blob in blobs {
+        println!("{}Name: {}", COLORS.White, blob.name);
+
+        println!("{}Size: {}kb", COLORS.Yellow, blob.content_length / 1024);
+
+        println!("{}Last modified: {}", COLORS.Green, blob.last_modified);
+
+        println!("{}", COLORS.Gray)
     }
 }
 
@@ -46,49 +89,4 @@ fn select_scope() -> Option<(StorageAccount, String)> {
     let container = path.file_name().unwrap().to_str().unwrap();
 
     Some((account, container.to_string()))
-}
-
-fn get_blobs(account: StorageAccount, container: &str) -> Option<Vec<String>> {
-    let url = {
-        let f_container = container.to_lowercase().replace(" ", "-").to_string();
-
-        let con_values: Vec<&str> = account.connection_string.split(';').collect();
-
-        let base_url = con_values[0].strip_prefix("BlobEndpoint=").unwrap();
-        let sv = con_values[4]
-            .strip_prefix("SharedAccessSignature=")
-            .unwrap();
-
-        format!(
-            "{}{}?restype=container&comp=list&{}",
-            base_url, f_container, sv
-        )
-    };
-
-    let client = reqwest::blocking::Client::new();
-
-    let response = client.get(&url).send().expect("Failed to fetch blobs.");
-
-    if !response.status().is_success() {
-        if response.status() == reqwest::StatusCode::NOT_FOUND {
-            println!("Storage container not found.");
-            return None;
-        }
-
-        let status = response.status();
-        let body_text = response
-            .text()
-            .unwrap_or_else(|_| String::from("Unable to read response body"));
-
-        panic!("Non-success HTTP status: {}, {}", status, body_text);
-    }
-
-    let body_text = response.text().expect("Failed to read response body");
-
-    let result: BlobEnumerationResults =
-        serde_xml_rs::from_str(&body_text).expect("Failed to parse XML response");
-
-    let blob_names: Vec<String> = result.blobs.blob.iter().map(|b| b.name.clone()).collect();
-
-    Some(blob_names)
 }

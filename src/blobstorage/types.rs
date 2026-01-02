@@ -3,54 +3,40 @@ use serde::Deserialize;
 #[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 #[serde(rename = "EnumerationResults")]
-pub struct BlobEnumerationResults {
+pub struct ContainerEnumerationResults {
     #[serde(rename = "@ServiceEndpoint")]
     pub service_endpoint: String,
-    #[serde(rename = "@ContainerName")]
-    pub container_name: String,
-    #[serde(rename = "Prefix", default)]
-    pub prefix: String,
-    #[serde(rename = "Marker", default)]
-    pub marker: String,
     #[serde(rename = "MaxResults", default)]
     pub max_results: i32,
-    #[serde(rename = "Blobs", default)]
-    pub blobs: BlobsList,
+    #[serde(rename = "Containers", default)]
+    pub containers: ContainersList,
     #[serde(rename = "NextMarker", default)]
     pub next_marker: String,
 }
 
 #[allow(dead_code)]
 #[derive(Debug, Deserialize, Default)]
-pub struct BlobsList {
-    #[serde(rename = "Blob", default)]
-    pub blob: Vec<Blob>,
+pub struct ContainersList {
+    #[serde(rename = "Container", default)]
+    pub container: Vec<Container>,
 }
 
 #[allow(dead_code)]
 #[derive(Debug, Deserialize)]
-pub struct Blob {
+pub struct Container {
     #[serde(rename = "Name")]
     pub name: String,
-    #[serde(rename = "Snapshot", default)]
-    pub snapshot: String,
-    #[serde(rename = "VersionId", default)]
-    pub version_id: String,
     #[serde(rename = "Properties")]
-    pub properties: BlobProps,
+    pub properties: ContainerProps,
 }
 
 #[allow(dead_code)]
 #[derive(Debug, Deserialize)]
-pub struct BlobProps {
-    #[serde(rename = "Content-Length")]
-    pub content_length: i64,
-    #[serde(rename = "Content-MD5", default)]
-    pub content_md5: String,
+pub struct ContainerProps {
     #[serde(rename = "Last-Modified")]
     pub last_modified: String,
-    #[serde(rename = "BlobType")]
-    pub blob_type: String,
-    #[serde(rename = "Creation-Time", default)]
-    pub creation_time: String,
+    #[serde(rename = "Etag")]
+    pub etag: String,
+    #[serde(rename = "PublicAccess", default)]
+    pub public_access: String,
 }

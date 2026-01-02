@@ -1,7 +1,7 @@
 #[allow(non_snake_case, dead_code)]
 pub struct Colors {
     pub Gray: &'static str,
-    pub DarkGray : &'static str,
+    pub DarkGray: &'static str,
     pub White: &'static str,
 
     pub Blue: &'static str,
@@ -10,6 +10,18 @@ pub struct Colors {
     pub Purple: &'static str,
     pub Red: &'static str,
     pub Yellow: &'static str,
+}
+
+#[allow(non_snake_case, dead_code)]
+pub struct Backgrounds {
+    pub Black: &'static str,
+    pub Red: &'static str,
+    pub Green: &'static str,
+    pub Yellow: &'static str,
+    pub Blue: &'static str,
+    pub Purple: &'static str,
+    pub Cyan: &'static str,
+    pub White: &'static str,
 }
 
 pub const COLORS: Colors = Colors {
@@ -23,4 +35,15 @@ pub const COLORS: Colors = Colors {
     Purple: "\x1b[1;35m",
     Red: "\x1b[1;31m",
     Yellow: "\x1b[1;33m",
+};
+
+pub const BACKGROUNDS: Backgrounds = Backgrounds {
+    Black: "\x1b[40m",
+    Red: "\x1b[41m",
+    Green: "\x1b[42m",
+    Yellow: "\x1b[43m",
+    Blue: "\x1b[44m",
+    Purple: "\x1b[45m",
+    Cyan: "\x1b[46m",
+    White: "\x1b[47m",
 };

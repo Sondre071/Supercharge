@@ -7,7 +7,8 @@ use crate::terminal;
 use blobstorage::types::BlobFile;
 use data::blobstorage::get_blob_data;
 use data::types::StorageAccount;
-use terminal::colors::COLORS;
+use std::collections::{HashMap};
+use terminal::colors::{COLORS};
 
 pub mod types;
 
@@ -58,8 +59,8 @@ fn sync_container(account: &StorageAccount) {
     };
 
     println!(
-        "{}Selected container: {}{}",
-        COLORS.DarkGray, &name, COLORS.Gray
+        "{}Selected container: {}{}{}",
+        COLORS.Yellow, COLORS.White, &name, COLORS.Gray
     );
 
     let blob_files = fetch_blobs(account, name.as_str());
@@ -89,20 +90,63 @@ fn sync_container(account: &StorageAccount) {
 }
 
 fn compare_files(local_files: Vec<BlobFile>, blob_files: Vec<BlobFile>) {
-    println!("Local files");
+    let local = {
+        let mut map = HashMap::new();
 
-    for file in local_files {
-        println!("{}", file.name);
-        println!("{}", file.content_length);
-        println!();
-    }
+        for f in local_files {
+            let hash = f.content_md5.clone();
 
-    println!("Blob files");
+            if let Some(existing) = map.insert(hash.clone(), f) {
+                panic!(
+                    "Duplicate hash in {} and {}.",
+                    existing.name, map[&hash].name
+                )
+            }
+        }
 
-    for file in blob_files {
-        println!("{}", file.name);
-        println!("{}", file.content_length);
-        println!();
+        map
+    };
+
+    let remote = {
+        let mut map = HashMap::new();
+
+        for f in blob_files {
+            let hash = f.content_md5.clone();
+
+            if let Some(existing) = map.insert(hash.clone(), f) {
+                panic!(
+                    "Duplicate hash in {} and {}.",
+                    existing.name, map[&hash].name
+                )
+            }
+        }
+
+        map
+    };
+
+    println!("{}Local files: {}", COLORS.Yellow, local.len());
+    println!("{}Remote files: {}\n", COLORS.Yellow, remote.len());
+
+    println!("Unsynced files:\n");
+
+    for (hash, file) in &local {
+        if !remote.contains_key(hash) {
+            println!("{}Name:      {}{}", COLORS.Yellow, COLORS.White, file.name);
+
+            println!(
+                "{}Size:      {}{}kb",
+                COLORS.Yellow,
+                COLORS.White,
+                file.content_length / 1024
+            );
+
+            println!(
+                "{}Modified:  {}{}",
+                COLORS.Yellow, COLORS.White, file.last_modified
+            );
+
+            println!("{}", COLORS.Gray)
+        }
     }
 }
 

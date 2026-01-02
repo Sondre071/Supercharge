@@ -1,10 +1,11 @@
-use crate::api::types::{Blob};
+use crate::api::types::Blob;
 
+use base64::{Engine as _, engine::general_purpose};
 use serde::Deserialize;
 use std::fs::{self, DirEntry};
 use std::path::PathBuf;
-use std::time;
-use base64::{engine::general_purpose, Engine as _};
+use std::time::{SystemTime, UNIX_EPOCH};
+use time::{OffsetDateTime, format_description};
 
 #[derive(Debug)]
 pub struct BlobFile {
@@ -22,19 +23,20 @@ impl From<DirEntry> for BlobFile {
 
         let name = entry.file_name().to_string_lossy().into_owned();
 
+        if name.contains(".jif") {
+            panic!("Found a .jif file. Get rid of it.")
+        }
+
         let content_length = metadata.len() as usize;
 
-        let last_modified =
-            time::SystemTime::from(metadata.modified().expect("Failed to parse last_modified."));
-        let last_modified = format!("{:?}", last_modified);
+        let last_modified = format_date(metadata.modified().unwrap());
 
-        let creation_time =
-            time::SystemTime::from(metadata.created().expect("Failed to get created_time."));
-        let creation_time = format!("{:?}", creation_time);
+        let creation_time = format_date(metadata.created().unwrap());
 
         let bytes = fs::read(path).expect("Failed to parse file content.");
-        
-        let content_md5 = general_purpose::STANDARD.encode(&bytes);
+
+        let digest = md5::compute(&bytes);
+        let content_md5 = general_purpose::STANDARD.encode(digest.0);
 
         BlobFile {
             name,
@@ -44,6 +46,12 @@ impl From<DirEntry> for BlobFile {
             creation_time,
         }
     }
+}
+
+fn format_date(t: SystemTime) -> String {
+    let fmt =
+        time::format_description::parse("[year]-[month]-[day] [hour]:[minute]:[second]").unwrap();
+    OffsetDateTime::from(t).format(&fmt).unwrap()
 }
 
 impl From<Blob> for BlobFile {

@@ -1,4 +1,4 @@
-use crate::api::types::*;
+use crate::api::types::{BlobEnumerationResults};
 use crate::blobstorage::types::*;
 use crate::data::types::StorageAccount;
 use crate::terminal::colors;
@@ -75,18 +75,11 @@ pub fn fetch_blobs(account: &StorageAccount, container: &str) -> Option<Vec<Blob
     let result: BlobEnumerationResults =
         serde_xml_rs::from_str(&body_text).expect("Failed to parse XML response");
 
-    let blobs: Vec<BlobFile> = result
+    let blobs = result
         .blobs
         .blob
         .into_iter()
-        .map(|b| BlobFile {
-            name: b.name,
-            content_length: b.properties.content_length,
-            last_modified: b.properties.last_modified,
-            creation_time: b.properties.creation_time,
-            version_id: b.version_id,
-            content_md5: b.properties.content_md5,
-        })
+        .map(|b| BlobFile::from(b))
         .collect();
 
     Some(blobs)

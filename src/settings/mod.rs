@@ -2,14 +2,14 @@ use crate::api;
 use crate::data;
 use crate::menu;
 
-use data::openrouter::get_openrouter_data;
 use api::openrouter::fetch_models;
+use data::openrouter::get_openrouter_data;
 
 pub fn run() {
     if let Some(result) = menu::r#loop::run("Settings", None, vec!["Select model", "Back"]) {
         match result {
             "Select model" => select_model(),
-            _ => {}
+            _ => super::main(),
         }
     }
 }
@@ -23,7 +23,8 @@ fn select_model() {
         "Select model",
         Some(vec![]),
         models.iter().map(|m| m.as_str()).collect(),
-    ).unwrap();
+    )
+    .unwrap();
 
     println!("{}", selected);
 }

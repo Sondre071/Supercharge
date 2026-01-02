@@ -1,17 +1,6 @@
 use serde::Deserialize;
 
 #[allow(dead_code)]
-#[derive(Debug)]
-pub struct BlobFile {
-    pub name: String,
-    pub content_length: i64,
-    pub last_modified: String,
-    pub creation_time: String,
-    pub version_id: String,
-    pub content_md5: String,
-}
-
-#[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 #[serde(rename = "EnumerationResults")]
 pub struct BlobEnumerationResults {

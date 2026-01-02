@@ -38,14 +38,14 @@ pub fn run() {
     let choice = menu::r#loop::run(
         "Blob Storage",
         None,
-        vec!["Browse containers", "Sync container"],
+        vec!["Browse containers", "Sync container", "Back"],
     )
     .unwrap();
 
     match choice {
         "Browse containers" => browse_containers(&account),
         "Sync container" => sync_container(&account),
-        _ => {}
+        _ => super::main(),
     }
 }
 
@@ -71,7 +71,7 @@ fn sync_container(account: &StorageAccount) {
 
         match choice {
             "Yes" => create_container(account, &name),
-            _ => {}
+            _ => super::blobstorage::run(),
         }
     }
 }
@@ -101,7 +101,10 @@ fn select_directory() -> Option<String> {
     let path = rfd::FileDialog::new().pick_folder().unwrap();
     let unparsed_name = path.file_name().unwrap().to_str().unwrap();
 
-    let name = unparsed_name.to_lowercase().replace(" ", "-");
-
+    let name = parse_container_name(&unparsed_name);
     Some(name)
+}
+
+fn parse_container_name(name: &str) -> String {
+    return name.to_lowercase().replace(" ", "-").replace("_", "-");
 }

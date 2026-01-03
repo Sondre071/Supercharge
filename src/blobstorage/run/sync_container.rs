@@ -10,61 +10,98 @@ use blobstorage::utils::types::StorageAccount;
 use terminal::console;
 
 use std::collections::HashMap;
+use std::fs;
 use std::io::{self, Write};
 use std::path::PathBuf;
 use terminal::COLORS;
 use walkdir::WalkDir;
 
 pub fn sync_container(account: &StorageAccount) {
-    let Some((name, path)) = utils::select_directory() else {
-        return;
-    };
+    let mut containers: HashMap<String, PathBuf> = HashMap::new();
 
-    println!(
-        "{}Selected container: {}{}{}",
-        COLORS.Yellow, COLORS.White, &name, COLORS.Gray
-    );
+    let choice = menu::run("Single or all?", None, vec!["All", "Single"]).unwrap();
 
-    let mut blob_files = api::fetch_blobs(account, name.as_str());
+    match choice {
+        "All" => {
+            let parent_dir = utils::select_directory().unwrap();
+            let parent_path = parent_dir.1;
 
-    if blob_files.is_none() {
-        let choice = menu::run(
-            "Container not found",
-            Some(vec!["Create one?", ""]),
-            vec!["Yes", "No"],
-        )
-        .unwrap();
+            let confirm = menu::run(
+                "Correct folder?",
+                Some(vec![&parent_dir.0, ""]),
+                vec!["Yes", "No"],
+            )
+            .unwrap();
 
-        match choice {
-            "Yes" => {
-                api::create_container(account, &name);
-                blob_files = api::fetch_blobs(account, name.as_str());
+            if confirm == "No" {
+                return;
             }
-            _ => run::run(),
+
+            for entry in fs::read_dir(&parent_path).unwrap() {
+                let entry = entry.unwrap();
+                let path = entry.path();
+
+                if path.is_dir() {
+                    let unparsed_name = entry.file_name().to_string_lossy().to_string();
+                    let name = utils::parse_container_name(&unparsed_name);
+
+                    containers.insert(name, path);
+                }
+            }
+        }
+        _ => {
+            let dir = utils::select_directory().unwrap();
+            containers.insert(dir.0, dir.1);
         }
     }
 
-    console::set_cursor_visibility(false);
+    for (name, path) in containers {
+        println!(
+            "{}Selected container: {}{}{}",
+            COLORS.Yellow, COLORS.White, &name, COLORS.Gray
+        );
 
-    let local_files: Vec<LocalFile> = fetch_local_files(&path);
+        let mut blob_files = api::fetch_blobs(account, name.as_str());
 
-    io::stdout().flush().unwrap();
+        if blob_files.is_none() {
+            let choice = menu::run(
+                "Container not found",
+                Some(vec!["Create one?", ""]),
+                vec!["Yes", "No"],
+            )
+            .unwrap();
 
-    let pending_uploads: Vec<LocalFile> = compare_files(local_files, blob_files.unwrap());
+            match choice {
+                "Yes" => {
+                    api::create_container(account, &name);
+                    blob_files = api::fetch_blobs(account, name.as_str());
+                }
+                _ => run::run(),
+            }
+        }
 
-    if pending_uploads.len() > 0 {
-        let subheader = format!("Pending changes: {}", pending_uploads.len());
+        console::set_cursor_visibility(false);
 
-        let choice = menu::run(
-            "Synchronize?",
-            Some(vec![subheader.as_str(), ""]),
-            vec!["Yes", "No"],
-        )
-        .unwrap();
+        let local_files: Vec<LocalFile> = fetch_local_files(&path);
 
-        match choice {
-            "Yes" => sync_blobs(account, &name, pending_uploads),
-            _ => {}
+        io::stdout().flush().unwrap();
+
+        let pending_uploads: Vec<LocalFile> = compare_files(local_files, blob_files.unwrap());
+
+        if pending_uploads.len() > 0 {
+            let subheader = format!("Pending changes: {}", pending_uploads.len());
+
+            let choice = menu::run(
+                "Synchronize?",
+                Some(vec![subheader.as_str(), ""]),
+                vec!["Yes", "No"],
+            )
+            .unwrap();
+
+            match choice {
+                "Yes" => sync_blobs(account, &name, pending_uploads),
+                _ => {}
+            }
         }
     }
 }

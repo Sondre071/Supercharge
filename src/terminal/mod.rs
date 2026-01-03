@@ -1,1 +1,3 @@
-pub mod colors;
+mod colors;
+
+pub use colors::COLORS;

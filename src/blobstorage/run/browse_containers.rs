@@ -4,7 +4,7 @@ use crate::terminal;
 
 use blobstorage::api;
 use blobstorage::utils::types::StorageAccount;
-use terminal::colors::COLORS;
+use terminal::COLORS;
 
 pub fn browse_containers(account: &StorageAccount) {
     let containers = api::fetch_containers(account).unwrap();

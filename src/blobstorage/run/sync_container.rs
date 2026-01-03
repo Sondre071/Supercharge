@@ -8,7 +8,7 @@ use blobstorage::utils;
 use blobstorage::types::{BlobFile, LocalFile};
 use blobstorage::utils::types::StorageAccount;
 
-use terminal::colors::COLORS;
+use terminal::COLORS;
 use std::collections::HashMap;
 use std::fs;
 use walkdir::WalkDir;

@@ -1619,6 +1619,7 @@ dependencies = [
  "serde-xml-rs",
  "serde_json",
  "time",
+ "urlencoding",
  "walkdir",
  "windows-sys 0.61.2",
 ]

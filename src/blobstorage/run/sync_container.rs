@@ -10,7 +10,6 @@ use blobstorage::utils::types::StorageAccount;
 
 use terminal::COLORS;
 use std::collections::HashMap;
-use std::fs;
 use walkdir::WalkDir;
 
 pub fn sync_container(account: &StorageAccount) {
@@ -70,9 +69,8 @@ pub fn sync_container(account: &StorageAccount) {
 
 fn sync_blobs(account: &StorageAccount, container_name: &str, pending_uploads: Vec<LocalFile>) {
     for file in pending_uploads {
-        let file_content = fs::read(&file.path).expect("Failed to parse file content.");
+        api::upload_blob(account, container_name, &file);
 
-        api::upload_blob(account, container_name, &file, file_content);
 
         println!(
             "{}Uploaded {}{}{}!{}",

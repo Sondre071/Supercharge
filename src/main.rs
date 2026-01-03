@@ -1,23 +1,19 @@
 use std::process::exit;
 
-mod data;
 mod menu;
 mod openrouter;
-mod settings;
 mod blobstorage;
 mod statics;
-mod api;
 mod terminal;
 mod utils;
 
 fn main() {
     if let Some(result) =
-        menu::r#loop::run("Supercharge", None, vec!["OpenRouter", "Blobstorage", "Settings", "Exit"])
+        menu::r#loop::run("Supercharge", None, vec!["OpenRouter", "Blobstorage", "Exit"])
     {
         match result {
-            "OpenRouter" => openrouter::run(),
+            "OpenRouter" => openrouter::run::run(),
             "Blobstorage" => blobstorage::run::run(),
-            "Settings" => settings::run(),
             _ => exit(0),
         }
     }

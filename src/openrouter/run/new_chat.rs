@@ -1,13 +1,14 @@
-use crate::api;
-use crate::data;
+use crate::openrouter;
 use crate::menu;
 
-use super::types::*;
-use api::openrouter::InputMessage;
-use data::openrouter::get_openrouter_data;
+use openrouter::utils;
+use openrouter::api;
+use openrouter::api::types::{InputMessage};
 
-pub fn run() {
-    let data = get_openrouter_data();
+use openrouter::types::Prompt;
+
+pub fn new_chat() {
+    let data = utils::get_local_data();
 
     let mut message_history: Vec<InputMessage> = vec![];
 
@@ -28,7 +29,7 @@ pub fn run() {
 
         set_sys_prompts(&prompt, &mut all_messages);
 
-        let response_message = api::openrouter::stream_chat(&all_messages);
+        let response_message = api::stream_chat(&all_messages);
         println!("\n");
 
         if let Ok(text) = response_message {
@@ -67,7 +68,7 @@ fn set_sys_prompts(prompt: &Option<Prompt>, messages: &mut Vec<InputMessage>) {
 }
 
 fn select_prompt() -> Option<Prompt> {
-    let prompts = data::openrouter::get_prompts();
+    let prompts = utils::get_prompts();
 
     if prompts.len() < 1 {
         return None;

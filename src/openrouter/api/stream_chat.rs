@@ -1,70 +1,13 @@
-use crate::data;
+use crate::openrouter;
 
-use serde::{Deserialize, Serialize};
-use std::io::{BufRead, BufReader, Write};
-use data::openrouter::get_openrouter_data;
+use openrouter::utils;
+use openrouter::api::types::{InputMessage, MessageRequestBody, MessageResponseStreamEvent};
 
-#[allow(dead_code)]
-#[derive(Debug, Deserialize, Serialize)]
-pub struct FetchModelsResponse {
-    pub data: Vec<ModelInfo>,
-}
-
-#[allow(dead_code)]
-#[derive(Debug, Deserialize, Serialize)]
-pub struct ModelInfo {
-    pub id: String,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct InputMessage {
-    pub role: String,
-    pub content: String,
-}
-
-#[derive(Debug, Serialize)]
-struct MessageRequestBody<'a> {
-    model: String,
-    input: &'a Vec<InputMessage>,
-    stream: bool,
-}
-
-#[derive(Debug, Deserialize)]
-struct MessageResponseStreamEvent {
-    #[serde(rename = "type")]
-    event_type: String,
-    #[serde(default)]
-    delta: String,
-}
-
-pub fn fetch_models(api_key: &str) -> Vec<String> {
-    let client = reqwest::blocking::Client::new();
-
-    let response = client
-        .get("https://openrouter.ai/api/v1/models")
-        .header("Authorization", format!("Bearer {}", api_key))
-        .send()
-        .expect("Failed to execute http call.");
-
-    if !response.status().is_success() {
-        let status = response.status();
-        let body = response
-            .text()
-            .unwrap_or_else(|_| String::from("Unable to read response body"));
-
-        panic!("Non-successful http call: {}, {}", status, body);
-    }
-
-    let models_resp: FetchModelsResponse =
-        response.json().expect("Failed to deserialize JSON body.");
-
-    let model_ids: Vec<String> = models_resp.data.into_iter().map(|model| model.id).collect();
-
-    model_ids
-}
+use std::io;
+use std::io::{BufRead, Write};
 
 pub fn stream_chat(messages: &Vec<InputMessage>) -> Result<String, String> {
-    let data = get_openrouter_data();
+    let data = utils::get_local_data();
 
     let body = MessageRequestBody {
         model: data.model,
@@ -97,7 +40,7 @@ pub fn stream_chat(messages: &Vec<InputMessage>) -> Result<String, String> {
         ));
     }
 
-    let reader = BufReader::new(response);
+    let reader = io::BufReader::new(response);
 
     let mut total_response = String::new();
 
@@ -119,7 +62,7 @@ pub fn stream_chat(messages: &Vec<InputMessage>) -> Result<String, String> {
             if let Ok(event) = serde_json::from_str::<MessageResponseStreamEvent>(json_str) {
                 if event.event_type == "response.output_text.delta" && !event.delta.is_empty() {
                     print!("\x1b[0;96m{}\x1b[0m", event.delta);
-                    std::io::stdout().flush().unwrap();
+                    io::stdout().flush().unwrap();
 
                     total_response.push_str(event.delta.as_str());
                 }

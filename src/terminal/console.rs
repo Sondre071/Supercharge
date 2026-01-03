@@ -1,8 +1,8 @@
 use std::mem::MaybeUninit;
 use windows_sys::Win32::System::Console::{
-    CONSOLE_SCREEN_BUFFER_INFO, COORD, GetConsoleScreenBufferInfo, GetStdHandle, STD_OUTPUT_HANDLE,
+    CONSOLE_CURSOR_INFO, CONSOLE_SCREEN_BUFFER_INFO, COORD, GetConsoleScreenBufferInfo,
+    GetStdHandle, STD_OUTPUT_HANDLE, SetConsoleCursorInfo,
 };
-
 pub fn get_console_width() -> usize {
     let stdout = unsafe { GetStdHandle(STD_OUTPUT_HANDLE) };
 
@@ -35,4 +35,20 @@ pub fn get_cursor_position() -> COORD {
     };
 
     csbi.dwCursorPosition
+}
+
+pub fn set_cursor_visibility(visible: bool) {
+    let stdout = unsafe { GetStdHandle(STD_OUTPUT_HANDLE) };
+
+    let num = { if visible { 1 } else { 0 } };
+
+    let cursor_info = CONSOLE_CURSOR_INFO {
+        dwSize: 100,
+        bVisible: num,
+    };
+    unsafe {
+        if SetConsoleCursorInfo(stdout, &cursor_info) == 0 {
+            panic!("Could not set cursor info.");
+        };
+    }
 }

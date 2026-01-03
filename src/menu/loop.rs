@@ -16,7 +16,7 @@ pub fn run<'a>(
     let stdin: HANDLE = unsafe { GetStdHandle(STD_INPUT_HANDLE) };
 
     let mut cursor = cursor::Cursor::new(header, subheaders, items);
-    cursor.set_cursor_visibility(false);
+    console::set_cursor_visibility(false);
 
     menu::write_headers(&cursor.header, Some(&cursor.subheaders));
 
@@ -33,7 +33,7 @@ pub fn run<'a>(
             match ch {
                 'q' | 'h' => {
                     menu::clear_menu(cursor.total_height);
-                    cursor.set_cursor_visibility(true);
+                    console::set_cursor_visibility(true);
                     return None;
                 }
 
@@ -46,7 +46,7 @@ pub fn run<'a>(
 
                 'l' => {
                     menu::clear_menu(cursor.total_height);
-                    cursor.set_cursor_visibility(true);
+                    console::set_cursor_visibility(true);
                     return Some(cursor.items[cursor.current]);
                 }
 

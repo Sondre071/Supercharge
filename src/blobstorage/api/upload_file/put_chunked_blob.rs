@@ -32,15 +32,17 @@ pub fn put_chunked_blob(url: &str, file: &LocalFile, file_size: usize) {
         }
 
         print!(
-            "\r{}Uploading {}{}{} ({} kb){}. Chunk {}/{}",
+            "\r{}Uploading {}{}{} ({} kb){}. Chunk {}{}/{}{}",
             COLORS.Yellow,
             COLORS.White,
             file.name,
             COLORS.Gray,
             file.content_length / 1024,
             COLORS.Yellow,
+            COLORS.White,
             block_index + 1,
             total_chunks,
+            COLORS.Gray
         );
 
         io::stdout().flush().unwrap();
@@ -54,7 +56,7 @@ pub fn put_chunked_blob(url: &str, file: &LocalFile, file_size: usize) {
         block_index += 1;
     }
 
-    commit_blocks(&client, url, &block_ids);
+    commit_blocks(&client, url, &block_ids, &file.content_md5);
 
     println!();
 }
@@ -100,7 +102,7 @@ fn upload_block(client: &Client, base_url: &str, data: &[u8], block_index: u32) 
     }
 }
 
-fn commit_blocks(client: &Client, base_url: &str, block_ids: &[String]) {
+fn commit_blocks(client: &Client, base_url: &str, block_ids: &[String], content_md5: &str) {
     let mut xml = String::from(r#"<?xml version="1.0" encoding="utf-8"?><BlockList>"#);
     for id in block_ids {
         xml.push_str(&format!("<Latest>{}</Latest>", id));
@@ -115,6 +117,10 @@ fn commit_blocks(client: &Client, base_url: &str, block_ids: &[String]) {
         HeaderName::from_static("x-ms-date"),
         HeaderValue::from_str(&httpdate::fmt_http_date(SystemTime::now()))
             .expect("Failed to apply timestamp."),
+    );
+    commit_headers.insert(
+        "x-ms-blob-content-md5",
+        HeaderValue::from_str(content_md5).expect("Failed to prase content-md5"),
     );
 
     let resp = client

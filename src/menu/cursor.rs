@@ -3,8 +3,7 @@ use crate::terminal;
 use terminal::console;
 use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::System::Console::{
-    CONSOLE_CURSOR_INFO, COORD, GetStdHandle, STD_OUTPUT_HANDLE,
-    SetConsoleCursorInfo, SetConsoleCursorPosition,
+    COORD, GetStdHandle, STD_OUTPUT_HANDLE, SetConsoleCursorPosition,
 };
 
 pub struct Cursor<'a> {
@@ -29,7 +28,6 @@ impl<'a> Cursor<'a> {
         let visible_items = items.len().min(20);
         let total_height = 1 + subheaders.len() + visible_items;
 
-        
         let console_width = console::get_console_width();
 
         Self {
@@ -42,20 +40,6 @@ impl<'a> Cursor<'a> {
             total_height,
             console_width,
             stdout_handle: stdout,
-        }
-    }
-
-    pub fn set_cursor_visibility(&self, visible: bool) {
-        let num = { if visible { 1 } else { 0 } };
-
-        let cursor_info = CONSOLE_CURSOR_INFO {
-            dwSize: 100,
-            bVisible: num,
-        };
-        unsafe {
-            if SetConsoleCursorInfo(self.stdout_handle, &cursor_info) == 0 {
-                panic!("Could not set cursor info.");
-            };
         }
     }
 

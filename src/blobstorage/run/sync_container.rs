@@ -7,6 +7,7 @@ use blobstorage::run;
 use blobstorage::types::{BlobFile, LocalFile};
 use blobstorage::utils;
 use blobstorage::utils::types::StorageAccount;
+use terminal::console;
 
 use std::collections::HashMap;
 use std::io::{self, Write};
@@ -41,6 +42,8 @@ pub fn sync_container(account: &StorageAccount) {
             _ => run::run(),
         }
     }
+
+    console::set_cursor_visibility(false);
 
     let local_files: Vec<LocalFile> = WalkDir::new(&path)
         .into_iter()
@@ -83,47 +86,24 @@ pub fn sync_container(account: &StorageAccount) {
 }
 
 fn sync_blobs(account: &StorageAccount, container_name: &str, pending_uploads: Vec<LocalFile>) {
+    console::set_cursor_visibility(false);
+
     for file in pending_uploads {
         api::upload_file(account, container_name, &file);
     }
 }
 
 fn compare_files(local_files: Vec<LocalFile>, blob_files: Vec<BlobFile>) -> Vec<LocalFile> {
-    let mut duplicates: Vec<(String, String)> = Vec::new();
+    let mut dupes: Vec<(String, String)> = Vec::new();
 
-    let local = {
-        let mut map = HashMap::new();
+    let (local, remote) = compile_hashmaps(local_files, blob_files, &mut dupes);
 
-        for f in local_files {
-            let hash = f.content_md5.clone();
-
-            if let Some(existing) = map.insert(hash.clone(), f) {
-                duplicates.push((existing.name, map[&hash].name.clone()));
-            }
-        }
-
-        map
-    };
-
-    let remote = {
-        let mut map = HashMap::new();
-
-        for f in blob_files {
-            let hash = f.content_md5.clone();
-
-            if let Some(existing) = map.insert(hash.clone(), f) {
-                duplicates.push((existing.name, map[&hash].name.clone()));
-            }
-        }
-
-        map
-    };
-
-    if duplicates.len() > 0 {
+    if dupes.len() > 0 {
         println!("{}Duplicate files found:{}\n", COLORS.Yellow, COLORS.Gray);
 
-        for (name1, name2) in duplicates {
-            println!("{}{} and {}{}", COLORS.Yellow, name1, name2, COLORS.Gray);
+        for (name1, name2) in dupes {
+            println!("{}{}{}", COLORS.White, name1, COLORS.Gray);
+            println!("{}{}{}\n", COLORS.White, name2, COLORS.Gray);
         }
 
         panic!("Duplicates. Deal with it.")
@@ -161,27 +141,56 @@ fn compare_files(local_files: Vec<LocalFile>, blob_files: Vec<BlobFile>) -> Vec<
             pending_uploads.len(),
             COLORS.Gray
         );
+
+        for file in &pending_uploads {
+            println!("{}Name:      {}{}", COLORS.Yellow, COLORS.White, file.name);
+
+            println!(
+                "{}Size:      {}{}kb",
+                COLORS.Yellow,
+                COLORS.White,
+                file.content_length / 1024
+            );
+
+            println!(
+                "{}Modified:  {}{}",
+                COLORS.Yellow, COLORS.White, file.last_modified
+            );
+
+            println!("{}", COLORS.Gray);
+        }
     } else {
-        println!("{}Local files are synced.{}", COLORS.Green, COLORS.Gray);
-    }
-
-    for file in &pending_uploads {
-        println!("{}Name:      {}{}", COLORS.Yellow, COLORS.White, file.name);
-
-        println!(
-            "{}Size:      {}{}kb",
-            COLORS.Yellow,
-            COLORS.White,
-            file.content_length / 1024
-        );
-
-        println!(
-            "{}Modified:  {}{}",
-            COLORS.Yellow, COLORS.White, file.last_modified
-        );
-
-        println!("{}", COLORS.Gray);
+        println!("{}Local files are synced.\n{}", COLORS.Green, COLORS.Gray);
     }
 
     pending_uploads
+}
+
+fn compile_hashmaps(
+    local_files: Vec<LocalFile>,
+    blob_files: Vec<BlobFile>,
+    dupes: &mut Vec<(String, String)>,
+) -> (HashMap<String, LocalFile>, HashMap<String, BlobFile>) {
+    let mut local = HashMap::new();
+    let mut remote = HashMap::new();
+
+    for f in local_files {
+        let hash = f.content_md5.clone();
+        let name = f.name.clone();
+
+        if let Some(existing) = local.insert(hash.clone(), f) {
+            dupes.push((existing.name, name));
+        }
+    }
+
+    for f in blob_files {
+        let hash = f.content_md5.clone();
+        let name = f.name.clone();
+
+        if let Some(existing) = remote.insert(hash.clone(), f) {
+            dupes.push((existing.name, name));
+        }
+    }
+
+    (local, remote)
 }

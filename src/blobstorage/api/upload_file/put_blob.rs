@@ -7,7 +7,7 @@ use std::fs;
 use std::time::SystemTime;
 
 pub fn put_blob(url: &str, file: &LocalFile) {
-    let file_content = fs::read(file.path.clone()).expect("Failed to parse file content.");
+    let file_content = fs::read(&file.path).expect("Failed to parse file content.");
 
     let mut headers = HeaderMap::new();
     headers.insert(
@@ -22,6 +22,10 @@ pub fn put_blob(url: &str, file: &LocalFile) {
     headers.insert(
         HeaderName::from_static("x-ms-blob-type"),
         HeaderValue::from_static("blockblob"),
+    );
+    headers.insert(
+        "x-ms-blob-content-md5",
+        HeaderValue::from_str(&file.content_md5).expect("Failed to prase content-md5"),
     );
 
     let client = reqwest::blocking::Client::new();

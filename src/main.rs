@@ -8,6 +8,7 @@ mod blobstorage;
 mod statics;
 mod api;
 mod terminal;
+mod utils;
 
 fn main() {
     if let Some(result) =
@@ -15,7 +16,7 @@ fn main() {
     {
         match result {
             "OpenRouter" => openrouter::run(),
-            "Blobstorage" => blobstorage::run(),
+            "Blobstorage" => blobstorage::run::run(),
             "Settings" => settings::run(),
             _ => exit(0),
         }

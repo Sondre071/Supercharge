@@ -1,11 +1,9 @@
-use crate::api::types::Blob;
+use crate::utils::date;
+use super::api::types::Blob;
 
 use base64::{Engine as _, engine::general_purpose};
-use serde::Deserialize;
 use std::fs;
 use std::path::PathBuf;
-use std::time::SystemTime;
-use time::OffsetDateTime;
 use walkdir::{self, DirEntry};
 
 #[allow(dead_code)]
@@ -42,9 +40,9 @@ impl From<DirEntry> for LocalFile {
 
         let content_length = metadata.len() as usize;
 
-        let last_modified = format_date(metadata.modified().unwrap());
+        let last_modified = date::format_date(metadata.modified().unwrap());
 
-        let creation_time = format_date(metadata.created().unwrap());
+        let creation_time = date::format_date(metadata.created().unwrap());
 
         let bytes = fs::read(path).expect("Failed to parse file content.");
 
@@ -62,12 +60,6 @@ impl From<DirEntry> for LocalFile {
     }
 }
 
-fn format_date(t: SystemTime) -> String {
-    let fmt =
-        time::format_description::parse("[year]-[month]-[day] [hour]:[minute]:[second]").unwrap();
-    OffsetDateTime::from(t).format(&fmt).unwrap()
-}
-
 impl From<Blob> for BlobFile {
     fn from(entry: Blob) -> Self {
         BlobFile {
@@ -78,45 +70,4 @@ impl From<Blob> for BlobFile {
             creation_time: entry.properties.creation_time,
         }
     }
-}
-
-#[allow(dead_code)]
-#[derive(Debug, Deserialize)]
-#[serde(rename = "EnumerationResults")]
-pub struct ContainerEnumerationResults {
-    #[serde(rename = "@ServiceEndpoint")]
-    pub service_endpoint: String,
-    #[serde(rename = "MaxResults", default)]
-    pub max_results: i32,
-    #[serde(rename = "Containers", default)]
-    pub containers: ContainersList,
-    #[serde(rename = "NextMarker", default)]
-    pub next_marker: String,
-}
-
-#[allow(dead_code)]
-#[derive(Debug, Deserialize, Default)]
-pub struct ContainersList {
-    #[serde(rename = "Container", default)]
-    pub container: Vec<Container>,
-}
-
-#[allow(dead_code)]
-#[derive(Debug, Deserialize)]
-pub struct Container {
-    #[serde(rename = "Name")]
-    pub name: String,
-    #[serde(rename = "Properties")]
-    pub properties: ContainerProps,
-}
-
-#[allow(dead_code)]
-#[derive(Debug, Deserialize)]
-pub struct ContainerProps {
-    #[serde(rename = "Last-Modified")]
-    pub last_modified: String,
-    #[serde(rename = "Etag")]
-    pub etag: String,
-    #[serde(rename = "PublicAccess", default)]
-    pub public_access: String,
 }

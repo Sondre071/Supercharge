@@ -1,7 +1,9 @@
 use crate::menu;
+use crate::terminal;
 
 use menu::cursor;
 use menu::input;
+use terminal::console;
 
 use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::System::Console::{GetStdHandle, STD_INPUT_HANDLE};
@@ -18,7 +20,7 @@ pub fn run<'a>(
 
     menu::write_headers(&cursor.header, Some(&cursor.subheaders));
 
-    let mut start_y = cursor.get_cursor_pos().dwCursorPosition.Y;
+    let mut start_y = console::get_cursor_position().Y;
 
     loop {
         cursor.set_cursor_pos(0, start_y);
@@ -54,6 +56,6 @@ pub fn run<'a>(
             }
         }
 
-        start_y = cursor.get_cursor_pos().dwCursorPosition.Y - cursor.visible_items as i16;
+        start_y = console::get_cursor_position().Y - cursor.visible_items as i16;
     }
 }

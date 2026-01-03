@@ -4,12 +4,14 @@ use crate::terminal;
 
 use blobstorage::api;
 use blobstorage::run;
-use blobstorage::utils;
 use blobstorage::types::{BlobFile, LocalFile};
+use blobstorage::utils;
 use blobstorage::utils::types::StorageAccount;
 
-use terminal::COLORS;
 use std::collections::HashMap;
+use std::io::{self, Write};
+use terminal::COLORS;
+use terminal::console;
 use walkdir::WalkDir;
 
 pub fn sync_container(account: &StorageAccount) {
@@ -45,8 +47,22 @@ pub fn sync_container(account: &StorageAccount) {
         .into_iter()
         .filter_map(Result::ok)
         .filter(|e| e.file_type().is_file())
-        .map(|e| LocalFile::from(e))
+        .map(|e| {
+            let name = e.file_name().to_str().unwrap();
+            let kb = e.metadata().unwrap().len() / 1024;
+
+            print!(
+                "\r\x1b[2K{}Hashing: {}{}{} ({} kb)",
+                COLORS.Yellow, COLORS.White, name, COLORS.Gray, kb
+            );
+            io::stdout().flush().unwrap();
+
+            LocalFile::from(e)
+        })
         .collect();
+
+    print!("\r\x1b[2K");
+    io::stdout().flush().unwrap();
 
     let pending_uploads: Vec<LocalFile> = compare_files(local_files, blob_files.unwrap());
 
@@ -69,13 +85,7 @@ pub fn sync_container(account: &StorageAccount) {
 
 fn sync_blobs(account: &StorageAccount, container_name: &str, pending_uploads: Vec<LocalFile>) {
     for file in pending_uploads {
-        api::upload_blob(account, container_name, &file);
-
-
-        println!(
-            "{}Uploaded {}{}{}!{}",
-            COLORS.Yellow, COLORS.White, file.name, COLORS.Yellow, COLORS.Gray
-        );
+        api::upload_file(account, container_name, &file);
     }
 }
 
@@ -121,42 +131,57 @@ fn compare_files(local_files: Vec<LocalFile>, blob_files: Vec<BlobFile>) -> Vec<
     }
 
     println!(
-        "{}Local files: {}{}",
+        "{}Local files: {}{}{}",
         COLORS.Yellow,
+        COLORS.White,
         local.len(),
         COLORS.Gray
     );
+
     println!(
-        "{}Remote files: {}{}\n",
+        "{}Remote files: {}{}{}\n",
         COLORS.Yellow,
+        COLORS.White,
         remote.len(),
         COLORS.Gray
     );
-
-    println!("{}Unsynced files:{}\n", COLORS.Yellow, COLORS.Gray);
 
     let mut pending_uploads: Vec<LocalFile> = Vec::new();
 
     for (hash, file) in &local {
         if !remote.contains_key(hash) {
-            println!("{}Name:      {}{}", COLORS.Yellow, COLORS.White, file.name);
-
-            println!(
-                "{}Size:      {}{}kb",
-                COLORS.Yellow,
-                COLORS.White,
-                file.content_length / 1024
-            );
-
-            println!(
-                "{}Modified:  {}{}",
-                COLORS.Yellow, COLORS.White, file.last_modified
-            );
-
-            println!("{}", COLORS.Gray);
-
             pending_uploads.push(file.clone());
         }
+    }
+
+    if pending_uploads.len() > 0 {
+        println!(
+            "{}Pending files: {}{}{}\n",
+            COLORS.Yellow,
+            COLORS.White,
+            pending_uploads.len(),
+            COLORS.Gray
+        );
+    } else {
+        println!("{}Local files are synced.{}", COLORS.Green, COLORS.Gray);
+    }
+
+    for file in &pending_uploads {
+        println!("{}Name:      {}{}", COLORS.Yellow, COLORS.White, file.name);
+
+        println!(
+            "{}Size:      {}{}kb",
+            COLORS.Yellow,
+            COLORS.White,
+            file.content_length / 1024
+        );
+
+        println!(
+            "{}Modified:  {}{}",
+            COLORS.Yellow, COLORS.White, file.last_modified
+        );
+
+        println!("{}", COLORS.Gray);
     }
 
     pending_uploads

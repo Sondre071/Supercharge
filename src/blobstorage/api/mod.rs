@@ -9,5 +9,5 @@ pub use fetch_blobs::fetch_blobs;
 mod fetch_containers;
 pub use fetch_containers::fetch_containers;
 
-mod upload_blob;
-pub use upload_blob::upload_blob;
+mod upload_file;
+pub use upload_file::upload_file;

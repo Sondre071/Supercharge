@@ -1,8 +1,10 @@
-use std::mem::MaybeUninit;
+use crate::terminal;
+
+use terminal::console;
 use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::System::Console::{
-    CONSOLE_CURSOR_INFO, CONSOLE_SCREEN_BUFFER_INFO, COORD, GetConsoleScreenBufferInfo,
-    GetStdHandle, STD_OUTPUT_HANDLE, SetConsoleCursorInfo, SetConsoleCursorPosition,
+    CONSOLE_CURSOR_INFO, COORD, GetStdHandle, STD_OUTPUT_HANDLE,
+    SetConsoleCursorInfo, SetConsoleCursorPosition,
 };
 
 pub struct Cursor<'a> {
@@ -27,8 +29,8 @@ impl<'a> Cursor<'a> {
         let visible_items = items.len().min(20);
         let total_height = 1 + subheaders.len() + visible_items;
 
-        let csbi = get_console_info(stdout);
-        let console_width = (csbi.srWindow.Right - csbi.srWindow.Left + 1) as usize;
+        
+        let console_width = console::get_console_width();
 
         Self {
             header,
@@ -55,10 +57,6 @@ impl<'a> Cursor<'a> {
                 panic!("Could not set cursor info.");
             };
         }
-    }
-
-    pub fn get_cursor_pos(&self) -> CONSOLE_SCREEN_BUFFER_INFO {
-        get_console_info(self.stdout_handle)
     }
 
     pub fn set_cursor_pos(&self, x: i16, y: i16) {
@@ -116,17 +114,5 @@ impl<'a> Cursor<'a> {
         if self.offset > 0 && pos_from_top <= 1 {
             self.offset -= 1
         }
-    }
-}
-
-fn get_console_info(handle: HANDLE) -> CONSOLE_SCREEN_BUFFER_INFO {
-    let mut info = MaybeUninit::<CONSOLE_SCREEN_BUFFER_INFO>::uninit();
-
-    unsafe {
-        if GetConsoleScreenBufferInfo(handle, info.as_mut_ptr()) == 0 {
-            panic!("Failed to get console screen buffer info.")
-        }
-
-        info.assume_init()
     }
 }

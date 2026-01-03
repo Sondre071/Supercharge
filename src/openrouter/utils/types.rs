@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 #[allow(dead_code)]
 #[derive(Debug)]
@@ -8,7 +8,7 @@ pub struct PromptFile {
 }
 
 #[allow(dead_code)]
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct OpenRouterData {
     pub api_key: String,
     pub model: String,
@@ -17,7 +17,7 @@ pub struct OpenRouterData {
 }
 
 #[allow(dead_code)]
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Parameters {
     temperature: f64,
     top_p: f64,

@@ -113,7 +113,7 @@ pub fn create_container(account: &StorageAccount, name: &str) {
     }
 
     println!(
-        "{}Container: {}{}{} created!{}",
+        "{}Container: {}{}{} created!{}\n",
         COLORS.Yellow, COLORS.White, name, COLORS.Yellow, COLORS.Gray
     );
 }
@@ -121,11 +121,11 @@ pub fn create_container(account: &StorageAccount, name: &str) {
 pub fn upload_file(
     account: &StorageAccount,
     container_name: &str,
-    file: &BlobFile,
+    file: &LocalFile,
     file_content: Vec<u8>,
 ) {
     let url = format!(
-        "{}{}/{}?{}",
+        "{}{}/{}?{}&timeout=600",
         account.blob_endpoint, container_name, file.name, account.shared_access_signature
     );
 

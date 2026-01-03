@@ -4,13 +4,14 @@ use crate::data;
 use crate::menu;
 use crate::terminal;
 
-use blobstorage::types::BlobFile;
+use blobstorage::types::{BlobFile, LocalFile};
 use data::blobstorage::get_blob_data;
 use data::types::StorageAccount;
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 use terminal::colors::COLORS;
+use walkdir::WalkDir;
 
 pub mod types;
 
@@ -65,7 +66,7 @@ fn sync_container(account: &StorageAccount) {
         COLORS.Yellow, COLORS.White, &name, COLORS.Gray
     );
 
-    let blob_files = fetch_blobs(account, name.as_str());
+    let mut blob_files = fetch_blobs(account, name.as_str());
 
     if blob_files.is_none() {
         let choice = menu::r#loop::run(
@@ -76,19 +77,22 @@ fn sync_container(account: &StorageAccount) {
         .unwrap();
 
         match choice {
-            "Yes" => create_container(account, &name),
+            "Yes" => {
+                create_container(account, &name);
+                blob_files = fetch_blobs(account, name.as_str());
+            }
             _ => super::blobstorage::run(),
         }
     }
 
-    let local_files: Vec<BlobFile> = std::fs::read_dir(&path)
-        .unwrap()
+    let local_files: Vec<LocalFile> = WalkDir::new(&path)
+        .into_iter()
         .filter_map(Result::ok)
-        .filter(|e| e.file_type().map(|t| t.is_file()).unwrap_or(false))
-        .map(|e| BlobFile::from(e))
+        .filter(|e| e.file_type().is_file())
+        .map(|e| LocalFile::from(e))
         .collect();
 
-    let pending_uploads: Vec<BlobFile> = compare_files(local_files, blob_files.unwrap());
+    let pending_uploads: Vec<LocalFile> = compare_files(local_files, blob_files.unwrap());
 
     if pending_uploads.len() > 0 {
         let subheader = format!("Pending changes: {}", pending_uploads.len());
@@ -111,13 +115,10 @@ fn sync_blobs(
     account: &StorageAccount,
     container_name: &str,
     path: &PathBuf,
-    pending_uploads: Vec<BlobFile>,
+    pending_uploads: Vec<LocalFile>,
 ) {
     for file in pending_uploads {
-        let mut file_path = path.to_owned();
-        file_path.push(&file.name);
-
-        let file_content = fs::read(file_path).expect("Failed to parse file content.");
+        let file_content = fs::read(&file.path).expect("Failed to parse file content.");
 
         upload_file(account, container_name, &file, file_content);
 
@@ -128,7 +129,9 @@ fn sync_blobs(
     }
 }
 
-fn compare_files(local_files: Vec<BlobFile>, blob_files: Vec<BlobFile>) -> Vec<BlobFile> {
+fn compare_files(local_files: Vec<LocalFile>, blob_files: Vec<BlobFile>) -> Vec<LocalFile> {
+    let mut duplicates: Vec<(String, String)> = Vec::new();
+
     let local = {
         let mut map = HashMap::new();
 
@@ -136,10 +139,7 @@ fn compare_files(local_files: Vec<BlobFile>, blob_files: Vec<BlobFile>) -> Vec<B
             let hash = f.content_md5.clone();
 
             if let Some(existing) = map.insert(hash.clone(), f) {
-                panic!(
-                    "Duplicate hash in {} and {}.",
-                    existing.name, map[&hash].name
-                )
+                duplicates.push((existing.name, map[&hash].name.clone()));
             }
         }
 
@@ -153,15 +153,22 @@ fn compare_files(local_files: Vec<BlobFile>, blob_files: Vec<BlobFile>) -> Vec<B
             let hash = f.content_md5.clone();
 
             if let Some(existing) = map.insert(hash.clone(), f) {
-                panic!(
-                    "Duplicate hash in {} and {}.",
-                    existing.name, map[&hash].name
-                )
+                duplicates.push((existing.name, map[&hash].name.clone()));
             }
         }
 
         map
     };
+
+    if duplicates.len() > 0 {
+        println!("{}Duplicate files found:{}\n", COLORS.Yellow, COLORS.Gray);
+
+        for (name1, name2) in duplicates {
+            println!("{}{} and {}{}", COLORS.Yellow, name1, name2, COLORS.Gray);
+        }
+
+        panic!("Duplicates. Deal with it.")
+    }
 
     println!(
         "{}Local files: {}{}",
@@ -178,7 +185,7 @@ fn compare_files(local_files: Vec<BlobFile>, blob_files: Vec<BlobFile>) -> Vec<B
 
     println!("{}Unsynced files:{}\n", COLORS.Yellow, COLORS.Gray);
 
-    let mut pending_uploads: Vec<BlobFile> = Vec::new();
+    let mut pending_uploads: Vec<LocalFile> = Vec::new();
 
     for (hash, file) in &local {
         if !remote.contains_key(hash) {

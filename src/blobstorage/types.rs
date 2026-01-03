@@ -2,10 +2,21 @@ use crate::api::types::Blob;
 
 use base64::{Engine as _, engine::general_purpose};
 use serde::Deserialize;
-use std::fs::{self, DirEntry};
+use std::fs;
 use std::path::PathBuf;
-use std::time::{SystemTime};
-use time::{OffsetDateTime};
+use std::time::SystemTime;
+use time::OffsetDateTime;
+use walkdir::{self, DirEntry};
+
+#[derive(Debug, Clone)]
+pub struct LocalFile {
+    pub name: String,
+    pub content_length: usize,
+    pub last_modified: String,
+    pub creation_time: String,
+    pub content_md5: String,
+    pub path: PathBuf,
+}
 
 #[derive(Debug, Clone)]
 pub struct BlobFile {
@@ -16,9 +27,9 @@ pub struct BlobFile {
     pub content_md5: String,
 }
 
-impl From<DirEntry> for BlobFile {
+impl From<DirEntry> for LocalFile {
     fn from(entry: DirEntry) -> Self {
-        let path: PathBuf = entry.path();
+        let path = entry.path();
         let metadata = entry.metadata().expect("Failed to parse metadata.");
 
         let name = entry.file_name().to_string_lossy().into_owned();
@@ -38,12 +49,13 @@ impl From<DirEntry> for BlobFile {
         let digest = md5::compute(&bytes);
         let content_md5 = general_purpose::STANDARD.encode(digest.0);
 
-        BlobFile {
+        LocalFile {
             name,
             content_length,
             last_modified,
             content_md5,
             creation_time,
+            path: path.to_owned(),
         }
     }
 }

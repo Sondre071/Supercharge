@@ -22,5 +22,5 @@ md5 = "0.8.0"
 base64 = "0.22.1"
 time = { version = "0.3.44", features = ["formatting"] }
 httpdate = "1.0.3"
-walkdir = "=2.3.2"
+walkdir = "2.5.0"
 urlencoding = "2.1.3"

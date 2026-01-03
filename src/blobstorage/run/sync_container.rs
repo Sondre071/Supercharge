@@ -11,7 +11,6 @@ use blobstorage::utils::types::StorageAccount;
 use std::collections::HashMap;
 use std::io::{self, Write};
 use terminal::COLORS;
-use terminal::console;
 use walkdir::WalkDir;
 
 pub fn sync_container(account: &StorageAccount) {

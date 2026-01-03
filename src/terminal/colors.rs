@@ -24,6 +24,7 @@ pub struct Backgrounds {
     pub White: &'static str,
 }
 
+#[allow(non_snake_case, dead_code)]
 pub const COLORS: Colors = Colors {
     Gray: "\x1b[0;37m",
     DarkGray: "\x1b[1;30m",
@@ -37,6 +38,7 @@ pub const COLORS: Colors = Colors {
     Yellow: "\x1b[1;33m",
 };
 
+#[allow(non_snake_case, dead_code)]
 pub const BACKGROUNDS: Backgrounds = Backgrounds {
     Black: "\x1b[40m",
     Red: "\x1b[41m",

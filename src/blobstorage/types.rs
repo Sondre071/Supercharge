@@ -8,6 +8,7 @@ use std::time::SystemTime;
 use time::OffsetDateTime;
 use walkdir::{self, DirEntry};
 
+#[allow(dead_code)]
 #[derive(Debug, Clone)]
 pub struct LocalFile {
     pub name: String,
@@ -18,6 +19,7 @@ pub struct LocalFile {
     pub path: PathBuf,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Clone)]
 pub struct BlobFile {
     pub name: String,

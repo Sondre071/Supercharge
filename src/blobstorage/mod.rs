@@ -9,7 +9,6 @@ use data::blobstorage::get_blob_data;
 use data::types::StorageAccount;
 use std::collections::HashMap;
 use std::fs;
-use std::path::PathBuf;
 use terminal::colors::COLORS;
 use walkdir::WalkDir;
 
@@ -105,7 +104,7 @@ fn sync_container(account: &StorageAccount) {
         .unwrap();
 
         match choice {
-            "Yes" => sync_blobs(account, &name, &path, pending_uploads),
+            "Yes" => sync_blobs(account, &name, pending_uploads),
             _ => {}
         }
     }
@@ -114,7 +113,6 @@ fn sync_container(account: &StorageAccount) {
 fn sync_blobs(
     account: &StorageAccount,
     container_name: &str,
-    path: &PathBuf,
     pending_uploads: Vec<LocalFile>,
 ) {
     for file in pending_uploads {

@@ -1,7 +1,8 @@
-pub mod run;
-pub mod new_chat;
-pub mod settings;
+mod new_chat;
+use new_chat::new_chat;
 
-pub use new_chat::new_chat;
-pub use settings::settings;
+mod settings;
+use settings::settings;
+
+mod run;
 pub use run::run;

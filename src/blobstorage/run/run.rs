@@ -1,9 +1,8 @@
 use crate::blobstorage;
 use crate::menu;
 
-use blobstorage::utils::data;
 use blobstorage::run;
-
+use blobstorage::utils::data;
 
 pub fn run() {
     let account = {
@@ -32,16 +31,17 @@ pub fn run() {
         }
     };
 
-    let choice = menu::run(
+    if let Some(result) = menu::run(
         "Blob Storage",
         None,
         vec!["Browse containers", "Sync container", "Back"],
-    )
-    .unwrap();
-
-    match choice {
-        "Browse containers" => run::browse_containers(&account),
-        "Sync container" => run::sync_container(&account),
-        _ => crate::main(),
+    ) {
+        match result {
+            "Browse containers" => run::browse_containers(&account),
+            "Sync container" => run::sync_container(&account),
+            _ => crate::main(),
+        }
+    } else {
+        crate::main();
     }
 }

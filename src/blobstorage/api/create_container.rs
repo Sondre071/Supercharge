@@ -1,5 +1,8 @@
-use crate::blobstorage::utils::data::types::StorageAccount;
-use crate::terminal::colors::COLORS;
+use crate::blobstorage;
+use crate::terminal;
+
+use blobstorage::utils::types::StorageAccount;
+use terminal::colors::COLORS;
 
 pub fn create_container(account: &StorageAccount, name: &str) {
     let url = format!(

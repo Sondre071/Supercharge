@@ -1,5 +1,7 @@
+use crate::blobstorage;
 use crate::utils::date;
-use super::api::types::Blob;
+
+use blobstorage::api::types::Blob;
 
 use base64::{Engine as _, engine::general_purpose};
 use std::fs;

@@ -1,5 +1,6 @@
-use super::types::PromptFile;
 use crate::statics;
+
+use super::types::PromptFile;
 
 pub fn get_prompts() -> Vec<PromptFile> {
     let entries =

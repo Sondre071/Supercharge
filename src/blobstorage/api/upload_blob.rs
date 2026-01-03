@@ -1,10 +1,11 @@
-use crate::blobstorage::utils::data::types::StorageAccount;
-use crate::blobstorage::types::LocalFile;
+use crate::blobstorage;
+
+use blobstorage::types::LocalFile;
+use blobstorage::utils::types::StorageAccount;
 
 use reqwest::header::{CONTENT_TYPE, HeaderMap, HeaderName, HeaderValue};
 use std::time;
 use time::SystemTime;
-
 
 pub fn upload_blob(
     account: &StorageAccount,

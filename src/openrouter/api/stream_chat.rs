@@ -1,7 +1,7 @@
 use crate::openrouter;
 
-use openrouter::utils;
 use openrouter::api::types::{InputMessage, MessageRequestBody, MessageResponseStreamEvent};
+use openrouter::utils;
 
 use std::io;
 use std::io::{BufRead, Write};

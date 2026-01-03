@@ -1,9 +1,10 @@
+use crate::menu;
+
+use menu::cursor;
+use menu::input;
+
 use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::System::Console::{GetStdHandle, STD_INPUT_HANDLE};
-
-use super::cursor;
-use super::input;
-use crate::menu;
 
 pub fn run<'a>(
     header: &'a str,

@@ -1,10 +1,9 @@
-use crate::openrouter;
 use crate::menu;
+use crate::openrouter;
 
-use openrouter::utils;
 use openrouter::api;
-use openrouter::api::types::{InputMessage};
-
+use openrouter::api::types::InputMessage;
+use openrouter::utils;
 use openrouter::types::Prompt;
 
 pub fn new_chat() {
@@ -46,7 +45,7 @@ fn set_sys_prompts(prompt: &Option<Prompt>, messages: &mut Vec<InputMessage>) {
         if !p.base.is_empty() {
             let m = InputMessage {
                 role: "system".to_string(),
-                content: p.base.clone()
+                content: p.base.clone(),
             };
 
             let index = messages.len().saturating_sub(8);
@@ -57,14 +56,14 @@ fn set_sys_prompts(prompt: &Option<Prompt>, messages: &mut Vec<InputMessage>) {
         if !p.r#static.is_empty() {
             let m = InputMessage {
                 role: "system".to_string(),
-                content: p.r#static.clone()
+                content: p.r#static.clone(),
             };
 
             let index = messages.len().saturating_sub(2);
 
             messages.insert(index, m)
         }
-    } 
+    }
 }
 
 fn select_prompt() -> Option<Prompt> {
@@ -79,7 +78,10 @@ fn select_prompt() -> Option<Prompt> {
         let choice = menu::run("Select prompt", None, prompt_names).unwrap();
 
         if choice != "None" {
-            let file = prompts.iter().find(|f| f.name == choice).expect("Failed to find prompt.");
+            let file = prompts
+                .iter()
+                .find(|f| f.name == choice)
+                .expect("Failed to find prompt.");
             let prompt = std::fs::read_to_string(&file.path).expect("Failed to parse prompt.");
 
             let mut above = Vec::new();
@@ -89,7 +91,6 @@ fn select_prompt() -> Option<Prompt> {
 
             for line in prompt.lines() {
                 if !in_below && line.trim_start().starts_with("-----") {
-
                     in_below = true;
                     continue;
                 }

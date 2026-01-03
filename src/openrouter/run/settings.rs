@@ -1,14 +1,12 @@
-use crate::openrouter;
 use crate::menu;
+use crate::openrouter;
 
-use openrouter::utils;
 use openrouter::api;
 use openrouter::run;
+use openrouter::utils;
 
 pub fn settings() {
-    if let Some(result) =
-        menu::run("OpenRouter settings", None, vec!["Select model", "Back"])
-    {
+    if let Some(result) = menu::run("OpenRouter settings", None, vec!["Select model", "Back"]) {
         match result {
             "Select model" => select_model(),
             _ => run::run::run(),

@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     use crate::blobstorage::utils;
-    use crate::blobstorage::utils::data::types::StorageAccount;
+    use crate::blobstorage::utils::types::StorageAccount;
 
     #[test]
     fn test_populate_account_from_connection_string() {
@@ -22,7 +22,7 @@ mod tests {
             shared_access_signature: String::new(),
         };
 
-        let map = utils::data::parse_connection_string(&account.connection_string);
+        let map = utils::get_blob_settings::parse_connection_string(&account.connection_string);
 
         if let Some(v) = map.get("BlobEndpoint") {
             account.blob_endpoint = v.clone();

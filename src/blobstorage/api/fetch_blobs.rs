@@ -1,6 +1,8 @@
-use crate::blobstorage::utils::data::types::StorageAccount;
-use crate::blobstorage::types::BlobFile;
-use crate::blobstorage::api::types::BlobEnumerationResults;
+use crate::blobstorage;
+
+use blobstorage::api::types::BlobEnumerationResults;
+use blobstorage::types::BlobFile;
+use blobstorage::utils::types::StorageAccount;
 
 pub fn fetch_blobs(account: &StorageAccount, container: &str) -> Option<Vec<BlobFile>> {
     let url = format!(

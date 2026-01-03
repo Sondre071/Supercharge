@@ -1,5 +1,7 @@
-use crate::blobstorage::utils::data::types::StorageAccount;
-use super::types::*;
+use crate::blobstorage;
+
+use blobstorage::api::types::*;
+use blobstorage::utils::types::StorageAccount;
 
 pub fn fetch_containers(account: &StorageAccount) -> Option<Vec<String>> {
     let url = format!(

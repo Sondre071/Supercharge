@@ -1,22 +1,20 @@
 use crate::blobstorage;
-use crate::terminal;
 use crate::menu;
+use crate::terminal;
 
-use blobstorage::utils::data;
 use blobstorage::api;
 use blobstorage::run;
+use blobstorage::utils;
+use blobstorage::types::{BlobFile, LocalFile};
+use blobstorage::utils::types::StorageAccount;
 
-use blobstorage::utils::data::types::StorageAccount;
-use blobstorage::types::{LocalFile, BlobFile};
 use terminal::colors::COLORS;
-
 use std::collections::HashMap;
-use walkdir::WalkDir;
 use std::fs;
-
+use walkdir::WalkDir;
 
 pub fn sync_container(account: &StorageAccount) {
-    let Some((name, path)) = data::select_directory() else {
+    let Some((name, path)) = utils::select_directory() else {
         return;
     };
 
@@ -70,11 +68,7 @@ pub fn sync_container(account: &StorageAccount) {
     }
 }
 
-fn sync_blobs(
-    account: &StorageAccount,
-    container_name: &str,
-    pending_uploads: Vec<LocalFile>,
-) {
+fn sync_blobs(account: &StorageAccount, container_name: &str, pending_uploads: Vec<LocalFile>) {
     for file in pending_uploads {
         let file_content = fs::read(&file.path).expect("Failed to parse file content.");
 

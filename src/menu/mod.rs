@@ -1,8 +1,8 @@
 use std::io::Write;
 
-mod r#loop;
 mod cursor;
 mod input;
+mod r#loop;
 
 pub use r#loop::run;
 

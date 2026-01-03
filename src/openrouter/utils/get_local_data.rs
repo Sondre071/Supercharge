@@ -16,4 +16,3 @@ pub fn get_local_data() -> OpenRouterData {
 
     data
 }
-

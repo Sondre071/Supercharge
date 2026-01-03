@@ -43,5 +43,3 @@ pub fn read_key_blocking(stdin: HANDLE) -> KeyEvent {
         }
     }
 }
-
-

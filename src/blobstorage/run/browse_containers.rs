@@ -13,7 +13,7 @@ pub fn browse_containers(account: &StorageAccount) {
     let mut options: Vec<&str> = containers.iter().map(|s| s.as_str()).collect();
     options.push("Back");
 
-    let container = menu::r#loop::run("Containers", None, options).unwrap();
+    let container = menu::run("Containers", None, options).unwrap();
 
     let blobs = api::fetch_blobs(&account, container).unwrap();
 

@@ -76,7 +76,7 @@ fn select_prompt() -> Option<Prompt> {
         let mut prompt_names = vec!["None"];
         prompt_names.extend(prompts.iter().map(|p| p.name.as_str()));
 
-        let choice = menu::r#loop::run("Select prompt", None, prompt_names).unwrap();
+        let choice = menu::run("Select prompt", None, prompt_names).unwrap();
 
         if choice != "None" {
             let file = prompts.iter().find(|f| f.name == choice).expect("Failed to find prompt.");

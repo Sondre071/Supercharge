@@ -28,7 +28,7 @@ pub fn sync_container(account: &StorageAccount) {
     let mut blob_files = api::fetch_blobs(account, name.as_str());
 
     if blob_files.is_none() {
-        let choice = menu::r#loop::run(
+        let choice = menu::run(
             "Container not found",
             Some(vec!["Create one?", ""]),
             vec!["Yes", "No"],
@@ -56,7 +56,7 @@ pub fn sync_container(account: &StorageAccount) {
     if pending_uploads.len() > 0 {
         let subheader = format!("Pending changes: {}", pending_uploads.len());
 
-        let choice = menu::r#loop::run(
+        let choice = menu::run(
             "Synchronize?",
             Some(vec![subheader.as_str(), ""]),
             vec!["Yes", "No"],

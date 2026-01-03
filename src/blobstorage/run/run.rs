@@ -22,7 +22,7 @@ pub fn run() {
                 .map(|a| a.name.as_str())
                 .collect();
 
-            let name = menu::r#loop::run("Select account", None, options).unwrap();
+            let name = menu::run("Select account", None, options).unwrap();
 
             data.storage_accounts
                 .iter()
@@ -32,7 +32,7 @@ pub fn run() {
         }
     };
 
-    let choice = menu::r#loop::run(
+    let choice = menu::run(
         "Blob Storage",
         None,
         vec!["Browse containers", "Sync container", "Back"],

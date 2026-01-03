@@ -1,9 +1,10 @@
 use std::io::Write;
 
-pub mod r#loop;
-
+mod r#loop;
 mod cursor;
 mod input;
+
+pub use r#loop::run;
 
 pub fn write_headers(header: &str, subheaders: Option<&Vec<&str>>) {
     let header_text = {

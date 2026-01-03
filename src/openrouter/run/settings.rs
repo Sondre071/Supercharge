@@ -7,7 +7,7 @@ use openrouter::run;
 
 pub fn settings() {
     if let Some(result) =
-        menu::r#loop::run("OpenRouter settings", None, vec!["Select model", "Back"])
+        menu::run("OpenRouter settings", None, vec!["Select model", "Back"])
     {
         match result {
             "Select model" => select_model(),
@@ -21,7 +21,7 @@ fn select_model() {
 
     let models = api::fetch_models(&data.api_key);
 
-    let selected = menu::r#loop::run(
+    let selected = menu::run(
         "Select model",
         Some(vec![]),
         models.iter().map(|m| m.as_str()).collect(),

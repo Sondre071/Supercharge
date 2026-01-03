@@ -11,6 +11,7 @@ use terminal::console;
 
 use std::collections::HashMap;
 use std::io::{self, Write};
+use std::path::PathBuf;
 use terminal::COLORS;
 use walkdir::WalkDir;
 
@@ -45,25 +46,8 @@ pub fn sync_container(account: &StorageAccount) {
 
     console::set_cursor_visibility(false);
 
-    let local_files: Vec<LocalFile> = WalkDir::new(&path)
-        .into_iter()
-        .filter_map(Result::ok)
-        .filter(|e| e.file_type().is_file())
-        .map(|e| {
-            let name = e.file_name().to_str().unwrap();
-            let kb = e.metadata().unwrap().len() / 1024;
+    let local_files: Vec<LocalFile> = fetch_local_files(&path);
 
-            print!(
-                "\r\x1b[2K{}Hashing: {}{}{} ({} kb)",
-                COLORS.Yellow, COLORS.White, name, COLORS.Gray, kb
-            );
-            io::stdout().flush().unwrap();
-
-            LocalFile::from(e)
-        })
-        .collect();
-
-    print!("\r\x1b[2K");
     io::stdout().flush().unwrap();
 
     let pending_uploads: Vec<LocalFile> = compare_files(local_files, blob_files.unwrap());
@@ -83,6 +67,30 @@ pub fn sync_container(account: &StorageAccount) {
             _ => {}
         }
     }
+}
+
+fn fetch_local_files(path: &PathBuf) -> Vec<LocalFile> {
+    let files = WalkDir::new(&path)
+        .into_iter()
+        .filter_map(Result::ok)
+        .filter(|e| e.file_type().is_file())
+        .map(|e| {
+            let name = e.file_name().to_str().unwrap();
+            let kb = e.metadata().unwrap().len() / 1024;
+
+            print!(
+                "\r\x1b[2K{}Hashing: {}{}{} ({} kb)",
+                COLORS.Yellow, COLORS.White, name, COLORS.Gray, kb
+            );
+            io::stdout().flush().unwrap();
+
+            LocalFile::from(e)
+        })
+        .collect();
+
+    print!("\r\x1b[2K");
+
+    files
 }
 
 fn sync_blobs(account: &StorageAccount, container_name: &str, pending_uploads: Vec<LocalFile>) {

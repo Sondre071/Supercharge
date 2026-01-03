@@ -32,16 +32,12 @@ pub fn put_chunked_blob(url: &str, file: &LocalFile, file_size: usize) {
         }
 
         print!(
-            "\r{}Uploading {}{}{} ({} kb){}. Chunk {}{}/{}{}",
-            COLORS.Yellow,
-            COLORS.White,
-            file.name,
-            COLORS.Gray,
-            file.content_length / 1024,
+            "\r\x1b[2K--- {}Chunk {}{}/{}{} {}---",
             COLORS.Yellow,
             COLORS.White,
             block_index + 1,
             total_chunks,
+            COLORS.Yellow,
             COLORS.Gray
         );
 
@@ -58,7 +54,7 @@ pub fn put_chunked_blob(url: &str, file: &LocalFile, file_size: usize) {
 
     commit_blocks(&client, url, &block_ids, &file.content_md5);
 
-    println!();
+    print!("\r\x1b[2K");
 }
 
 fn upload_block(client: &Client, base_url: &str, data: &[u8], block_index: u32) {

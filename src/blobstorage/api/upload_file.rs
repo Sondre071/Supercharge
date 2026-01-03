@@ -22,7 +22,7 @@ pub fn upload_file(account: &StorageAccount, container_name: &str, file: &LocalF
     );
 
     print!(
-        "\r\x1b[2K{}Uploading {}{}{} ({} kb)",
+        "\r\x1b[2K{}Uploading {}{}{} ({} kb)\n",
         COLORS.Yellow,
         COLORS.White,
         file.name,

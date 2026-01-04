@@ -148,7 +148,7 @@ fn sync_blobs(account: &StorageAccount, container_name: &str, pending_uploads: V
     }
 
     println!(
-        "{yellow}Container: {white}{}{yellow} updated!{reset}",
+        "{yellow}\nContainer {white}{}{yellow} updated!{reset}\n",
         container_name,
         white = COLORS.White,
         yellow = COLORS.Yellow,
@@ -247,7 +247,7 @@ fn compare_files(local_files: Vec<LocalFile>, blob_files: Vec<BlobFile>) -> Vec<
         }
     } else {
         println!(
-            "{green}Local files are synced.\n{reset}",
+            "\n{green}Local files are synced.\n{reset}",
             green = COLORS.Green,
             reset = COLORS.Reset
         );

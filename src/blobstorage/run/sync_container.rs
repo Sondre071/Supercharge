@@ -247,7 +247,7 @@ fn compare_files(local_files: Vec<LocalFile>, blob_files: Vec<BlobFile>) -> Vec<
         }
     } else {
         println!(
-            "\n{green}Local files are synced.\n{reset}",
+            "{green}Container synced.\n{reset}",
             green = COLORS.Green,
             reset = COLORS.Reset
         );

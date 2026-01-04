@@ -146,6 +146,14 @@ fn sync_blobs(account: &StorageAccount, container_name: &str, pending_uploads: V
     for file in pending_uploads {
         api::upload_file(account, container_name, &file);
     }
+
+    println!(
+        "{yellow}Container: {white}{}{yellow} updated!{reset}",
+        container_name,
+        white = COLORS.White,
+        yellow = COLORS.Yellow,
+        reset = COLORS.Reset
+    );
 }
 
 fn compare_files(local_files: Vec<LocalFile>, blob_files: Vec<BlobFile>) -> Vec<LocalFile> {

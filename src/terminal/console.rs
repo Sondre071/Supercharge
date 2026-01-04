@@ -3,6 +3,8 @@ use windows_sys::Win32::System::Console::{
     CONSOLE_CURSOR_INFO, CONSOLE_SCREEN_BUFFER_INFO, COORD, GetConsoleScreenBufferInfo,
     GetStdHandle, STD_OUTPUT_HANDLE, SetConsoleCursorInfo,
 };
+
+#[allow(dead_code)]
 pub fn get_console_width() -> usize {
     let stdout = unsafe { GetStdHandle(STD_OUTPUT_HANDLE) };
 

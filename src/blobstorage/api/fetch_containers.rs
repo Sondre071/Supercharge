@@ -1,7 +1,9 @@
 use crate::blobstorage;
+use crate::terminal;
 
 use blobstorage::api::types::*;
 use blobstorage::utils::types::StorageAccount;
+use terminal::COLORS;
 
 pub fn fetch_containers(account: &StorageAccount) -> Option<Vec<String>> {
     let url = format!(
@@ -18,7 +20,11 @@ pub fn fetch_containers(account: &StorageAccount) -> Option<Vec<String>> {
 
     if !response.status().is_success() {
         if response.status() == reqwest::StatusCode::NOT_FOUND {
-            println!("Storage account not found.");
+            println!(
+                "{red}Storage account not found.{reset}",
+                red = COLORS.Red,
+                reset = COLORS.Reset
+            );
             return None;
         }
 

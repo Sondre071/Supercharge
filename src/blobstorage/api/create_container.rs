@@ -29,7 +29,10 @@ pub fn create_container(account: &StorageAccount, name: &str) {
     }
 
     println!(
-        "{}Container: {}{}{} created!{}\n",
-        COLORS.Yellow, COLORS.White, name, COLORS.Yellow, COLORS.Gray
+        "{yellow}Container: {white}{}{yellow} created!{reset}\n",
+        name,
+        yellow = COLORS.Yellow,
+        white = COLORS.White,
+        reset = COLORS.Reset
     );
 }

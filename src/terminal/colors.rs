@@ -10,6 +10,8 @@ pub struct Colors {
     pub Purple: &'static str,
     pub Red: &'static str,
     pub Yellow: &'static str,
+
+    pub Reset: &'static str,
 }
 
 #[allow(non_snake_case, dead_code)]
@@ -36,6 +38,8 @@ pub const COLORS: Colors = Colors {
     Purple: "\x1b[1;35m",
     Red: "\x1b[1;31m",
     Yellow: "\x1b[1;33m",
+
+    Reset: "\x1b[0m",
 };
 
 #[allow(non_snake_case, dead_code)]

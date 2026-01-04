@@ -1,4 +1,7 @@
+use crate::terminal;
+
 use std::io::Write;
+use terminal::COLORS;
 
 mod cursor;
 mod input;
@@ -24,14 +27,24 @@ pub fn write_headers(header: &str, subheaders: Option<&Vec<&str>>) {
 
         let pad_left: String = std::iter::repeat("=").take(pad_left_len).collect();
         let pad_right: String = std::iter::repeat("=").take(pad_right_len).collect();
-        format!("\x1b[0;93m{} {} {}\x1b[0m", pad_left, header_str, pad_right)
+        format!("{} {} {}", pad_left, header_str, pad_right)
     };
 
-    println!("{header_text}");
+    println!(
+        "{yellow}{}{reset}",
+        header_text,
+        yellow = COLORS.Yellow,
+        reset = COLORS.Reset
+    );
 
     if subheaders.is_some() {
         for subheader in subheaders.unwrap().iter() {
-            println!("\x1b[0;93m{}\x1b[0m", subheader)
+            println!(
+                "{yellow}{}{reset}",
+                subheader,
+                yellow = COLORS.Yellow,
+                reset = COLORS.Reset
+            )
         }
     }
 }

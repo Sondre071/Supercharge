@@ -64,6 +64,11 @@ impl From<DirEntry> for LocalFile {
 
 impl From<Blob> for BlobFile {
     fn from(entry: Blob) -> Self {
+        if entry.properties.content_md5.is_empty() {
+            let text = format!("{} is missing md5 hash.", &entry.name);
+            panic!("{}", text);
+        }
+
         BlobFile {
             name: entry.name,
             content_length: entry.properties.content_length as usize,

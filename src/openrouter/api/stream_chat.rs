@@ -1,7 +1,9 @@
 use crate::openrouter;
+use crate::terminal;
 
 use openrouter::api::types::{InputMessage, MessageRequestBody, MessageResponseStreamEvent};
 use openrouter::utils;
+use terminal::COLORS;
 
 use std::io;
 use std::io::{BufRead, Write};
@@ -61,7 +63,12 @@ pub fn stream_chat(messages: &Vec<InputMessage>) -> Result<String, String> {
 
             if let Ok(event) = serde_json::from_str::<MessageResponseStreamEvent>(json_str) {
                 if event.event_type == "response.output_text.delta" && !event.delta.is_empty() {
-                    print!("\x1b[0;96m{}\x1b[0m", event.delta);
+                    print!(
+                        "{cyan}{}{reset}",
+                        event.delta,
+                        cyan = COLORS.Cyan,
+                        reset = COLORS.Reset
+                    );
                     io::stdout().flush().unwrap();
 
                     total_response.push_str(event.delta.as_str());

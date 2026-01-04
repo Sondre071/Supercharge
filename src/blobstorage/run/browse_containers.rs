@@ -17,12 +17,30 @@ pub fn browse_containers(account: &StorageAccount) {
     let blobs = api::fetch_blobs(&account, container).unwrap();
 
     for blob in blobs {
-        println!("{}Name: {}", COLORS.White, blob.name);
+        println!(
+            "{yellow}Name:      {white}{}{reset}",
+            blob.name,
+            yellow = COLORS.Yellow,
+            white = COLORS.White,
+            reset = COLORS.Reset
+        );
 
-        println!("{}Size: {}kb", COLORS.Yellow, blob.content_length / 1024);
+        println!(
+            "{yellow}Size:      {gray}{} kb{reset}",
+            blob.content_length / 1024,
+            yellow = COLORS.Yellow,
+            gray = COLORS.Gray,
+            reset = COLORS.Reset
+        );
 
-        println!("{}Last modified: {}", COLORS.Green, blob.last_modified);
+        println!(
+            "{yellow}Modified:  {green}{}{reset}",
+            blob.last_modified,
+            yellow = COLORS.Yellow,
+            green = COLORS.Green,
+            reset = COLORS.Reset
+        );
 
-        println!("{}", COLORS.Gray)
+        println!()
     }
 }

@@ -22,12 +22,13 @@ pub fn upload_file(account: &StorageAccount, container_name: &str, file: &LocalF
     );
 
     print!(
-        "\r\x1b[2K{}Uploading {}{}{} ({} kb)\n",
-        COLORS.Yellow,
-        COLORS.White,
+        "{yellow}Uploading {white}{}{gray} ({} kb){reset}\n",
         file.name,
-        COLORS.Gray,
         file.content_length / 1024,
+        yellow = COLORS.Yellow,
+        white = COLORS.White,
+        gray = COLORS.Gray,
+        reset = COLORS.Reset,
     );
 
     io::stdout().flush().unwrap();

@@ -1,6 +1,6 @@
 use crate::terminal;
 
-use terminal::console;
+use terminal::COLORS;
 use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::System::Console::{
     COORD, GetStdHandle, STD_OUTPUT_HANDLE, SetConsoleCursorPosition,
@@ -15,7 +15,6 @@ pub struct Cursor<'a> {
     offset: usize,
     pub visible_items: usize,
     pub total_height: usize,
-    console_width: usize,
 
     pub stdout_handle: HANDLE,
 }
@@ -28,8 +27,6 @@ impl<'a> Cursor<'a> {
         let visible_items = items.len().min(20);
         let total_height = 1 + subheaders.len() + visible_items;
 
-        let console_width = console::get_console_width();
-
         Self {
             header,
             subheaders,
@@ -38,7 +35,6 @@ impl<'a> Cursor<'a> {
             offset: 0,
             visible_items,
             total_height,
-            console_width,
             stdout_handle: stdout,
         }
     }
@@ -57,19 +53,19 @@ impl<'a> Cursor<'a> {
     }
 
     pub fn render_menu(&self) {
-        let content_width = self.console_width.saturating_sub(2);
         let height = self.items.len().min(20);
         let offset = self.offset;
 
         for i in offset..(height + offset) {
             if i == self.current {
                 println!(
-                    "\x1b[0;93m> {: <width$}\x1b[0m",
+                    "{yellow}> {}{reset}",
                     self.items[i],
-                    width = content_width
+                    yellow = COLORS.Yellow,
+                    reset = COLORS.Reset
                 );
             } else {
-                println!("  {: <width$}", self.items[i], width = content_width);
+                println!("  {}", self.items[i]);
             }
         }
     }

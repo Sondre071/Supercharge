@@ -24,7 +24,10 @@ pub fn select_model() {
     utils::set_model(&model);
 
     println!(
-        "{}Model set to: {}{}{}",
-        COLORS.Yellow, COLORS.White, &model, COLORS.Gray
+        "{yellow}Model set to: {white}{}{reset}",
+        &model,
+        yellow = COLORS.Yellow,
+        white = COLORS.White,
+        reset = COLORS.Reset
     )
 }

@@ -13,6 +13,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::io::{self, Write};
 use std::path::PathBuf;
+use terminal::ACTIONS;
 use terminal::COLORS;
 use walkdir::WalkDir;
 
@@ -57,8 +58,11 @@ pub fn sync_container(account: &StorageAccount) {
 
     for (name, path) in containers {
         println!(
-            "{}Selected container: {}{}{}",
-            COLORS.Yellow, COLORS.White, &name, COLORS.Gray
+            "{yellow}Selected container: {white}{}{reset}",
+            &name,
+            yellow = COLORS.Yellow,
+            white = COLORS.White,
+            reset = COLORS.Reset
         );
 
         let mut blob_files = api::fetch_blobs(account, name.as_str());
@@ -116,8 +120,14 @@ fn fetch_local_files(path: &PathBuf) -> Vec<LocalFile> {
             let kb = e.metadata().unwrap().len() / 1024;
 
             print!(
-                "\r\x1b[2K{}Hashing: {}{}{} ({} kb)",
-                COLORS.Yellow, COLORS.White, name, COLORS.Gray, kb
+                "\r{clear_line}{yellow}Hashing: {white}{}{gray} ({} kb){reset}",
+                name,
+                kb,
+                clear_line = ACTIONS.ClearLine,
+                yellow = COLORS.Yellow,
+                white = COLORS.White,
+                gray = COLORS.Gray,
+                reset = COLORS.Reset
             );
             io::stdout().flush().unwrap();
 
@@ -125,7 +135,7 @@ fn fetch_local_files(path: &PathBuf) -> Vec<LocalFile> {
         })
         .collect();
 
-    print!("\r\x1b[2K");
+    print!("\r{clear_line}", clear_line = ACTIONS.ClearLine);
 
     files
 }
@@ -144,30 +154,45 @@ fn compare_files(local_files: Vec<LocalFile>, blob_files: Vec<BlobFile>) -> Vec<
     let (local, remote) = compile_hashmaps(local_files, blob_files, &mut dupes);
 
     if dupes.len() > 0 {
-        println!("{}Duplicate files found:{}\n", COLORS.Yellow, COLORS.Gray);
+        println!(
+            "{yellow}Duplicate files found:{reset}\n",
+            yellow = COLORS.Yellow,
+            reset = COLORS.Reset
+        );
 
         for (name1, name2) in dupes {
-            println!("{}{}{}", COLORS.White, name1, COLORS.Gray);
-            println!("{}{}{}\n", COLORS.White, name2, COLORS.Gray);
+            println!(
+                "{white}{}{reset}",
+                name1,
+                white = COLORS.White,
+                reset = COLORS.Reset
+            );
+
+            println!(
+                "{white}{}{reset}",
+                name2,
+                white = COLORS.White,
+                reset = COLORS.Reset
+            );
         }
 
         panic!("Duplicates. Deal with it.")
     }
 
     println!(
-        "{}Local files: {}{}{}",
-        COLORS.Yellow,
-        COLORS.White,
+        "{yellow}Local files:  {white}{}{reset}",
         local.len(),
-        COLORS.Gray
+        yellow = COLORS.Yellow,
+        white = COLORS.White,
+        reset = COLORS.Reset
     );
 
     println!(
-        "{}Remote files: {}{}{}\n",
-        COLORS.Yellow,
-        COLORS.White,
+        "{yellow}Remote files: {white}{}{reset}",
         remote.len(),
-        COLORS.Gray
+        yellow = COLORS.Yellow,
+        white = COLORS.White,
+        reset = COLORS.Reset
     );
 
     let mut pending_uploads: Vec<LocalFile> = Vec::new();
@@ -180,32 +205,44 @@ fn compare_files(local_files: Vec<LocalFile>, blob_files: Vec<BlobFile>) -> Vec<
 
     if pending_uploads.len() > 0 {
         println!(
-            "{}Pending files: {}{}{}\n",
-            COLORS.Yellow,
-            COLORS.White,
+            "{yellow}Pending files: {white}{}{reset}\n",
             pending_uploads.len(),
-            COLORS.Gray
+            yellow = COLORS.Yellow,
+            white = COLORS.White,
+            reset = COLORS.Reset
         );
 
         for file in &pending_uploads {
-            println!("{}Name:      {}{}", COLORS.Yellow, COLORS.White, file.name);
-
             println!(
-                "{}Size:      {}{}kb",
-                COLORS.Yellow,
-                COLORS.White,
-                file.content_length / 1024
+                "{yellow}Name:      {white}{}{reset}",
+                file.name,
+                yellow = COLORS.Yellow,
+                white = COLORS.White,
+                reset = COLORS.Reset
             );
 
             println!(
-                "{}Modified:  {}{}",
-                COLORS.Yellow, COLORS.White, file.last_modified
+                "{yellow}Size:      {gray}{} kb{reset}",
+                file.content_length / 1024,
+                yellow = COLORS.Yellow,
+                gray = COLORS.Gray,
+                reset = COLORS.Reset
             );
 
-            println!("{}", COLORS.Gray);
+            println!(
+                "{yellow}Modified:  {green}{}{reset}\n",
+                file.last_modified,
+                yellow = COLORS.Yellow,
+                green = COLORS.Green,
+                reset = COLORS.Reset
+            );
         }
     } else {
-        println!("{}Local files are synced.\n{}", COLORS.Green, COLORS.Gray);
+        println!(
+            "{green}Local files are synced.\n{reset}",
+            green = COLORS.Green,
+            reset = COLORS.Reset
+        );
     }
 
     pending_uploads

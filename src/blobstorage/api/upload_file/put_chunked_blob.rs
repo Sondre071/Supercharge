@@ -2,6 +2,7 @@ use crate::blobstorage;
 use crate::terminal;
 
 use blobstorage::types::LocalFile;
+use terminal::ACTIONS;
 use terminal::COLORS;
 
 use base64::{Engine as _, engine::general_purpose};
@@ -32,13 +33,13 @@ pub fn put_chunked_blob(url: &str, file: &LocalFile, file_size: usize) {
         }
 
         print!(
-            "\r\x1b[2K--- {}Chunk {}{}/{}{} {}---",
-            COLORS.Yellow,
-            COLORS.White,
+            "\r{clear_line}--- {yellow}Chunk {white}{}/{} {reset}---",
             block_index + 1,
             total_chunks,
-            COLORS.Yellow,
-            COLORS.Gray
+            clear_line = ACTIONS.ClearLine,
+            yellow = COLORS.Yellow,
+            white = COLORS.White,
+            reset = COLORS.Reset
         );
 
         io::stdout().flush().unwrap();
@@ -54,7 +55,8 @@ pub fn put_chunked_blob(url: &str, file: &LocalFile, file_size: usize) {
 
     commit_blocks(&client, url, &block_ids, &file.content_md5);
 
-    print!("\r\x1b[2K");
+    print!("\r{}", ACTIONS.ClearLine);
+    io::stdout().flush().unwrap();
 }
 
 fn upload_block(client: &Client, base_url: &str, data: &[u8], block_index: u32) {

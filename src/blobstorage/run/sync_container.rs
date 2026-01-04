@@ -56,9 +56,11 @@ pub fn sync_container(account: &StorageAccount) {
         }
     }
 
+    let containers_len = containers.len();
+
     for (name, path) in containers {
         println!(
-            "{yellow}Selected container: {white}{}{reset}",
+            "\n{yellow}Selected container: {white}{}{reset}",
             &name,
             yellow = COLORS.Yellow,
             white = COLORS.White,
@@ -108,6 +110,14 @@ pub fn sync_container(account: &StorageAccount) {
             }
         }
     }
+
+    println!(
+        "\n{white}{} {yellow}container(s) synced.{reset}\n",
+        containers_len,
+        white = COLORS.White,
+        yellow = COLORS.Yellow,
+        reset = COLORS.Reset
+    );
 }
 
 fn fetch_local_files(path: &PathBuf) -> Vec<LocalFile> {
@@ -247,7 +257,7 @@ fn compare_files(local_files: Vec<LocalFile>, blob_files: Vec<BlobFile>) -> Vec<
         }
     } else {
         println!(
-            "{green}Container synced.\n{reset}",
+            "{green}Container synced.{reset}",
             green = COLORS.Green,
             reset = COLORS.Reset
         );

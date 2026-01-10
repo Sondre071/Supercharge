@@ -1,10 +1,6 @@
 use crate::terminal;
 
 use terminal::COLORS;
-use windows_sys::Win32::Foundation::HANDLE;
-use windows_sys::Win32::System::Console::{
-    COORD, GetStdHandle, STD_OUTPUT_HANDLE, SetConsoleCursorPosition,
-};
 
 pub struct Cursor<'a> {
     pub header: &'a str,
@@ -15,14 +11,10 @@ pub struct Cursor<'a> {
     offset: usize,
     pub visible_items: usize,
     pub total_height: usize,
-
-    pub stdout_handle: HANDLE,
 }
 
 impl<'a> Cursor<'a> {
     pub fn new(header: &'a str, subheaders: Option<Vec<&'a str>>, items: Vec<&'a str>) -> Self {
-        let stdout = unsafe { GetStdHandle(STD_OUTPUT_HANDLE) };
-
         let subheaders = subheaders.unwrap_or(vec![]);
         let visible_items = items.len().min(20);
         let total_height = 1 + subheaders.len() + visible_items;
@@ -35,18 +27,7 @@ impl<'a> Cursor<'a> {
             offset: 0,
             visible_items,
             total_height,
-            stdout_handle: stdout,
         }
-    }
-
-    pub fn set_cursor_pos(&self, x: i16, y: i16) {
-        let pos: COORD = COORD { X: x, Y: y };
-        
-        unsafe {
-            if SetConsoleCursorPosition(self.stdout_handle, pos) == 0 {
-                panic!("Could not set cursor position.");
-            }
-        };
     }
 
     pub fn render_menu(&self) {

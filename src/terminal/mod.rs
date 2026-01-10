@@ -5,4 +5,4 @@ mod cursor;
 pub use cursor::ACTIONS;
 
 mod console;
-pub use console::{get_cursor_position, set_cursor_visibility};
+pub use console::{get_cursor_position, set_cursor_visibility, set_cursor_pos};

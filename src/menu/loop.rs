@@ -22,7 +22,7 @@ pub fn run<'a>(
     let mut start_y = terminal::get_cursor_position().Y;
 
     loop {
-        cursor.set_cursor_pos(0, start_y);
+        terminal::set_cursor_pos(0, start_y as usize);
 
         cursor.render_menu();
 

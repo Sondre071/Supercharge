@@ -1,5 +1,5 @@
 use crate::blobstorage;
-use crate::utils::date;
+use crate::shared::utils::date;
 
 use base64::{Engine as _, engine::general_purpose};
 use blobstorage::api::types::Blob;

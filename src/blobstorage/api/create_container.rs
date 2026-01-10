@@ -1,5 +1,5 @@
 use crate::blobstorage;
-use crate::utils::terminal;
+use crate::shared::terminal;
 
 use blobstorage::utils::types::StorageAccount;
 use terminal::COLORS;

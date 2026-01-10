@@ -1,5 +1,5 @@
 use crate::blobstorage;
-use crate::utils::{menu, terminal};
+use crate::shared::{menu, terminal};
 
 use blobstorage::api;
 use blobstorage::types::FileDiff;

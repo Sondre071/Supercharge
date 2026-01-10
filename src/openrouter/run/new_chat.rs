@@ -1,5 +1,5 @@
 use crate::openrouter;
-use crate::utils::menu;
+use crate::shared::menu;
 
 use openrouter::api;
 use openrouter::api::types::InputMessage;

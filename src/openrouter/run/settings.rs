@@ -1,5 +1,5 @@
 use crate::openrouter;
-use crate::utils::menu;
+use crate::shared::menu;
 
 pub fn settings() {
     if let Some(result) = menu::run("OpenRouter settings", None, vec!["Select model", "Back"]) {

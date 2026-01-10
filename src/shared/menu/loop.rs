@@ -1,4 +1,4 @@
-use crate::utils::{menu, terminal};
+use crate::shared::{menu, terminal};
 
 use menu::cursor;
 

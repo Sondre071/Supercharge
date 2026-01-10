@@ -1,5 +1,5 @@
 use crate::blobstorage;
-use crate::utils::terminal;
+use crate::shared::terminal;
 
 use blobstorage::api::types::*;
 use blobstorage::utils::types::StorageAccount;

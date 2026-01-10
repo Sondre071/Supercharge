@@ -1,4 +1,4 @@
-use crate::utils::menu;
+use crate::shared::menu;
 
 pub fn main() {
     let result = menu::run("OpenRouter", None, vec!["New chat", "Settings", "Back"]).unwrap();

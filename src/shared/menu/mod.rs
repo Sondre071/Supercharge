@@ -1,4 +1,4 @@
-use crate::utils::terminal::COLORS;
+use crate::shared::terminal::COLORS;
 
 use std::io::Write;
 use std::iter;

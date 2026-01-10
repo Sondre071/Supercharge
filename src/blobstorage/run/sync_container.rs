@@ -3,7 +3,6 @@ use crate::menu;
 use crate::terminal;
 
 use blobstorage::api;
-use blobstorage::run;
 use blobstorage::types::{BlobFile, LocalFile};
 use blobstorage::utils;
 use blobstorage::utils::types::StorageAccount;
@@ -17,50 +16,45 @@ use terminal::ACTIONS;
 use terminal::COLORS;
 use walkdir::WalkDir;
 
-pub fn sync_container(account: &StorageAccount) {
+pub fn sync_container(account: &StorageAccount, all: bool) {
     let mut containers: HashMap<String, PathBuf> = HashMap::new();
 
-    let choice = menu::run("Single or all?", None, vec!["All", "Single"]).unwrap();
+    if all {
+        let parent_dir = utils::select_directory().unwrap();
+        let parent_path = parent_dir.1;
 
-    match choice {
-        "All" => {
-            let parent_dir = utils::select_directory().unwrap();
-            let parent_path = parent_dir.1;
+        let confirm = menu::run(
+            "Correct folder?",
+            Some(vec![&parent_dir.0, ""]),
+            vec!["Yes", "No"],
+        )
+        .unwrap();
 
-            let confirm = menu::run(
-                "Correct folder?",
-                Some(vec![&parent_dir.0, ""]),
-                vec!["Yes", "No"],
-            )
-            .unwrap();
+        if confirm == "No" {
+            return;
+        }
 
-            if confirm == "No" {
-                return;
+        for entry in fs::read_dir(&parent_path).unwrap() {
+            let entry = entry.unwrap();
+            let path = entry.path();
+
+            if !path.is_dir() {
+                continue;
             }
 
-            for entry in fs::read_dir(&parent_path).unwrap() {
-                let entry = entry.unwrap();
-                let path = entry.path();
+            let unparsed_name = entry.file_name().to_string_lossy().to_string();
 
-                if !path.is_dir() {
-                    continue;
-                }
-
-                let unparsed_name = entry.file_name().to_string_lossy().to_string();
-
-                if unparsed_name.starts_with('.') {
-                    continue;
-                }
-
-                let name = utils::parse_container_name(&unparsed_name);
-
-                containers.insert(name, path);
+            if unparsed_name.starts_with('.') {
+                continue;
             }
+
+            let name = utils::parse_container_name(&unparsed_name);
+
+            containers.insert(name, path);
         }
-        _ => {
-            let dir = utils::select_directory().unwrap();
-            containers.insert(dir.0, dir.1);
-        }
+    } else {
+        let dir = utils::select_directory().unwrap();
+        containers.insert(dir.0, dir.1);
     }
 
     let containers_len = containers.len();
@@ -89,7 +83,7 @@ pub fn sync_container(account: &StorageAccount) {
                     api::create_container(account, &name);
                     blob_files = api::fetch_blobs(account, name.as_str());
                 }
-                _ => run::run(),
+                _ => blobstorage::main(),
             }
         }
 

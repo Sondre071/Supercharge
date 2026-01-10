@@ -7,5 +7,5 @@ use settings::settings;
 mod select_model;
 use select_model::select_model;
 
-mod entry;
-pub use entry::run;
+mod main;
+pub use main::main;

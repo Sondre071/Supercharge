@@ -1,4 +1,4 @@
-use std::process::exit;
+use std::process;
 
 mod blobstorage;
 mod menu;
@@ -17,9 +17,9 @@ fn main() {
         .unwrap();
 
         match result {
-            "OpenRouter" => openrouter::run::run(),
-            "Blobstorage" => blobstorage::run::run(),
-            _ => exit(0),
+            "OpenRouter" => openrouter::main(),
+            "Blobstorage" => blobstorage::main(),
+            _ => process::exit(0),
         }
     }
 }

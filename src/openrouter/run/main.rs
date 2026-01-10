@@ -1,6 +1,6 @@
 use crate::menu;
 
-pub fn run() {
+pub fn main() {
     let result = menu::run("OpenRouter", None, vec!["New chat", "Settings", "Back"]).unwrap();
 
     match result {

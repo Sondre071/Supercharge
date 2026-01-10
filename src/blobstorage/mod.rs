@@ -2,4 +2,5 @@ mod api;
 mod types;
 mod utils;
 
-pub mod run;
+mod run;
+pub use run::main;

@@ -18,9 +18,7 @@ pub fn get_console_width() -> usize {
         info.assume_init()
     };
 
-    let console_width = (csbi.srWindow.Right - csbi.srWindow.Left + 1) as usize;
-
-    console_width
+    (csbi.srWindow.Right - csbi.srWindow.Left + 1) as usize
 }
 
 pub fn get_cursor_position() -> COORD {

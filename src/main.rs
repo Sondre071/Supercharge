@@ -8,11 +8,14 @@ mod terminal;
 mod utils;
 
 fn main() {
-    if let Some(result) = menu::run(
-        "Supercharge",
-        None,
-        vec!["OpenRouter", "Blobstorage", "Exit"],
-    ) {
+    loop {
+        let result = menu::run(
+            "Supercharge",
+            None,
+            vec!["OpenRouter", "Blobstorage", "Exit"],
+        )
+        .unwrap();
+
         match result {
             "OpenRouter" => openrouter::run::run(),
             "Blobstorage" => blobstorage::run::run(),

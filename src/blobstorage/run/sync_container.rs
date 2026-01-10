@@ -94,7 +94,7 @@ pub fn sync_container(account: &StorageAccount) {
 
         let pending_uploads: Vec<LocalFile> = compare_files(local_files, blob_files.unwrap());
 
-        if pending_uploads.len() > 0 {
+        if !pending_uploads.is_empty() {
             let subheader = format!("Pending changes: {}", pending_uploads.len());
 
             let choice = menu::run(
@@ -104,24 +104,23 @@ pub fn sync_container(account: &StorageAccount) {
             )
             .unwrap();
 
-            match choice {
-                "Yes" => sync_blobs(account, &name, pending_uploads),
-                _ => {}
+            if choice == "Yes" {
+                sync_blobs(account, &name, pending_uploads);
             }
         }
-    }
 
-    println!(
-        "\n{white}{} {yellow}container(s) synced.{reset}\n",
-        containers_len,
-        white = COLORS.White,
-        yellow = COLORS.Yellow,
-        reset = COLORS.Reset
-    );
+        println!(
+            "\n{white}{} {yellow}container(s) synced.{reset}\n",
+            containers_len,
+            white = COLORS.White,
+            yellow = COLORS.Yellow,
+            reset = COLORS.Reset
+        );
+    }
 }
 
 fn fetch_local_files(path: &PathBuf) -> Vec<LocalFile> {
-    let files = WalkDir::new(&path)
+    let files = WalkDir::new(path)
         .into_iter()
         .filter_map(Result::ok)
         .filter(|e| e.file_type().is_file())
@@ -171,7 +170,7 @@ fn compare_files(local_files: Vec<LocalFile>, blob_files: Vec<BlobFile>) -> Vec<
 
     let (local, remote) = compile_hashmaps(local_files, blob_files, &mut dupes);
 
-    if dupes.len() > 0 {
+    if !dupes.is_empty() {
         println!(
             "{yellow}Duplicate files found:{reset}\n",
             yellow = COLORS.Yellow,
@@ -221,7 +220,7 @@ fn compare_files(local_files: Vec<LocalFile>, blob_files: Vec<BlobFile>) -> Vec<
         }
     }
 
-    if pending_uploads.len() > 0 {
+    if !pending_uploads.is_empty() {
         println!(
             "{yellow}Pending files: {white}{}{reset}\n",
             pending_uploads.len(),

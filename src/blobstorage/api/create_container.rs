@@ -16,7 +16,7 @@ pub fn create_container(account: &StorageAccount, name: &str) {
         .put(url)
         .body("")
         .send()
-        .expect(format!("Failed to create container: {}", name).as_str());
+        .unwrap_or_else(|_| panic!("Failed to create container: {}", name));
 
     let status = response.status();
 

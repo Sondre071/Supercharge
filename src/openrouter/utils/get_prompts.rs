@@ -12,14 +12,14 @@ pub fn get_prompts() -> Vec<PromptFile> {
             let file_type = entry.file_type().unwrap();
             file_type.is_file()
         })
-        .filter_map(|file| {
+        .map(|file| {
             let file_name = file.file_name().to_str().unwrap().to_string();
             let file_path = file.path();
 
-            Some(PromptFile {
+            PromptFile {
                 name: file_name,
                 path: file_path,
-            })
+            }
         })
         .collect();
 

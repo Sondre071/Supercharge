@@ -14,7 +14,7 @@ pub fn browse_containers(account: &StorageAccount) {
 
     let container = menu::run("Containers", None, options).unwrap();
 
-    let blobs = api::fetch_blobs(&account, container).unwrap();
+    let blobs = api::fetch_blobs(account, container).unwrap();
 
     for blob in blobs {
         println!(

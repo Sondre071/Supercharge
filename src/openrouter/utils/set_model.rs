@@ -3,7 +3,6 @@ use crate::statics;
 
 use openrouter::utils;
 
-use serde_json;
 use std::fs;
 
 pub fn set_model(model: &str) {

@@ -32,12 +32,7 @@ pub fn fetch_blobs(account: &StorageAccount, container: &str) -> Option<Vec<Blob
     let result: BlobEnumerationResults =
         serde_xml_rs::from_str(&body_text).expect("Failed to parse XML response");
 
-    let blobs = result
-        .blobs
-        .blob
-        .into_iter()
-        .map(|b| BlobFile::from(b))
-        .collect();
+    let blobs = result.blobs.blob.into_iter().map(BlobFile::from).collect();
 
     Some(blobs)
 }

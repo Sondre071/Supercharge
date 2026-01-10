@@ -3,8 +3,8 @@ use crate::openrouter;
 
 use openrouter::api;
 use openrouter::api::types::InputMessage;
-use openrouter::utils;
 use openrouter::types::Prompt;
+use openrouter::utils;
 
 pub fn new_chat() {
     let data = utils::get_local_data();
@@ -69,7 +69,7 @@ fn set_sys_prompts(prompt: &Option<Prompt>, messages: &mut Vec<InputMessage>) {
 fn select_prompt() -> Option<Prompt> {
     let prompts = utils::get_prompts();
 
-    if prompts.len() < 1 {
+    if prompts.is_empty() {
         return None;
     } else {
         let mut prompt_names = vec!["None"];

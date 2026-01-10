@@ -7,7 +7,7 @@ use blobstorage::utils::types::StorageAccount;
 pub fn select_storage_account() -> StorageAccount {
     let data = utils::get_blob_settings();
 
-    if data.storage_accounts.len() == 0 {
+    if data.storage_accounts.is_empty() {
         panic!("No storage accounts found.")
     }
 

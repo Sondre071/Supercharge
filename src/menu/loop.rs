@@ -18,7 +18,7 @@ pub fn run<'a>(
     let mut cursor = cursor::Cursor::new(header, subheaders, items);
     console::set_cursor_visibility(false);
 
-    menu::write_headers(&cursor.header, Some(&cursor.subheaders));
+    menu::write_headers(cursor.header, Some(&cursor.subheaders));
 
     let mut start_y = console::get_cursor_position().Y;
 

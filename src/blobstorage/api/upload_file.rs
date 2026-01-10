@@ -21,8 +21,8 @@ pub fn upload_file(account: &StorageAccount, container_name: &str, file: &LocalF
         account.blob_endpoint, container_name, file.name, account.shared_access_signature
     );
 
-    print!(
-        "{yellow}Uploading {white}{}{gray} ({} kb){reset}\n",
+    println!(
+        "{yellow}Uploading {white}{}{gray} ({} kb){reset}",
         file.name,
         file.content_length / 1024,
         yellow = COLORS.Yellow,

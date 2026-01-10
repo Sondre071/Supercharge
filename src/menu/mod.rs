@@ -1,6 +1,7 @@
 use crate::terminal;
 
 use std::io::Write;
+use std::iter;
 use terminal::COLORS;
 
 mod cursor;
@@ -25,8 +26,8 @@ pub fn write_headers(header: &str, subheaders: Option<&Vec<&str>>) {
         let pad_left_len = (width.saturating_sub(header_str.chars().count()) - 2) / 2;
         let pad_right_len = width - pad_left_len - header_str.chars().count();
 
-        let pad_left: String = std::iter::repeat("=").take(pad_left_len).collect();
-        let pad_right: String = std::iter::repeat("=").take(pad_right_len).collect();
+        let pad_left: String = iter::repeat_n("=", pad_left_len).collect();
+        let pad_right: String = iter::repeat_n("=", pad_right_len).collect();
         format!("{} {} {}", pad_left, header_str, pad_right)
     };
 
@@ -37,8 +38,8 @@ pub fn write_headers(header: &str, subheaders: Option<&Vec<&str>>) {
         reset = COLORS.Reset
     );
 
-    if subheaders.is_some() {
-        for subheader in subheaders.unwrap().iter() {
+    if let Some(items) = subheaders {
+        for subheader in items.iter() {
             println!(
                 "{yellow}{}{reset}",
                 subheader,

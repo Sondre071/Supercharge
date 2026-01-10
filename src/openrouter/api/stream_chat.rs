@@ -61,18 +61,19 @@ pub fn stream_chat(messages: &Vec<InputMessage>) -> Result<String, String> {
                 break;
             }
 
-            if let Ok(event) = serde_json::from_str::<MessageResponseStreamEvent>(json_str) {
-                if event.event_type == "response.output_text.delta" && !event.delta.is_empty() {
-                    print!(
-                        "{cyan}{}{reset}",
-                        event.delta,
-                        cyan = COLORS.Cyan,
-                        reset = COLORS.Reset
-                    );
-                    io::stdout().flush().unwrap();
+            if let Ok(event) = serde_json::from_str::<MessageResponseStreamEvent>(json_str)
+                && event.event_type == "response.output_text.delta"
+                && !event.delta.is_empty()
+            {
+                print!(
+                    "{cyan}{}{reset}",
+                    event.delta,
+                    cyan = COLORS.Cyan,
+                    reset = COLORS.Reset
+                );
+                io::stdout().flush().unwrap();
 
-                    total_response.push_str(event.delta.as_str());
-                }
+                total_response.push_str(event.delta.as_str());
             }
         }
     }

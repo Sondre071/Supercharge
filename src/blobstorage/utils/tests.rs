@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod tests {
+mod blob_tests {
     use crate::blobstorage::utils;
     use crate::blobstorage::utils::types::StorageAccount;
 

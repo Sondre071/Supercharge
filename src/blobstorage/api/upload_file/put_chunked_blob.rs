@@ -15,7 +15,8 @@ use std::time::SystemTime;
 pub fn put_chunked_blob(url: &str, file: &LocalFile, file_size: usize) {
     let block_size: usize = 4 * 1024 * 1024;
 
-    let total_chunks = (file_size + block_size - 1) / block_size;
+    //let total_chunks = (file_size + block_size - 1) / block_size;
+    let total_chunks = file_size.div_ceil(block_size);
 
     let client = reqwest::blocking::Client::new();
 

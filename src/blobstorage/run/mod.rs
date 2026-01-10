@@ -4,5 +4,5 @@ use sync_container::sync_container;
 mod browse_containers;
 use browse_containers::browse_containers;
 
-mod run;
-pub use run::run;
+mod entry;
+pub use entry::run;

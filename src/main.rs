@@ -2,7 +2,6 @@ use std::process;
 
 mod blobstorage;
 mod openrouter;
-mod statics;
 mod utils;
 
 fn main() {

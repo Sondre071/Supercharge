@@ -1,5 +1,5 @@
 use crate::blobstorage;
-use crate::statics;
+use crate::utils::statics;
 
 use blobstorage::utils::types::BlobStorageData;
 use std::collections::HashMap;

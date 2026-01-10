@@ -1,5 +1,5 @@
 use crate::openrouter;
-use crate::statics;
+use crate::utils::statics;
 
 use openrouter::utils::types::OpenRouterData;
 use std::fs::File;

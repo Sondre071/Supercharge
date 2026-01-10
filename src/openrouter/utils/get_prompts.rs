@@ -1,4 +1,4 @@
-use crate::statics;
+use crate::utils::statics;
 
 use super::types::PromptFile;
 

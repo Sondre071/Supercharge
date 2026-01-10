@@ -5,9 +5,7 @@ use std::iter;
 use terminal::COLORS;
 
 mod cursor;
-mod input;
 mod r#loop;
-
 pub use r#loop::run;
 
 pub fn write_headers(header: &str, subheaders: Option<&Vec<&str>>) {

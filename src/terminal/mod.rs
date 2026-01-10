@@ -5,4 +5,7 @@ mod cursor;
 pub use cursor::ACTIONS;
 
 mod console;
-pub use console::{get_cursor_position, set_cursor_visibility, set_cursor_pos};
+pub use console::{get_cursor_pos, set_cursor_pos, set_cursor_visibility};
+
+mod input;
+pub use input::read_key_blocking;

@@ -1,4 +1,5 @@
 use windows_sys::Win32::Foundation::HANDLE;
+use windows_sys::Win32::System::Console::{GetStdHandle, STD_INPUT_HANDLE};
 use windows_sys::Win32::System::Console::{INPUT_RECORD, KEY_EVENT, ReadConsoleInputW};
 
 #[derive(Debug)]
@@ -36,7 +37,9 @@ pub fn read_key(stdin: HANDLE) -> Option<KeyEvent> {
     None
 }
 
-pub fn read_key_blocking(stdin: HANDLE) -> KeyEvent {
+pub fn read_key_blocking() -> KeyEvent {
+    let stdin: HANDLE = unsafe { GetStdHandle(STD_INPUT_HANDLE) };
+
     loop {
         if let Some(ev) = read_key(stdin) {
             return ev;

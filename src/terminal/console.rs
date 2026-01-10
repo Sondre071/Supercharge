@@ -5,7 +5,7 @@ use windows_sys::Win32::System::Console::{
 };
 
 #[allow(dead_code)]
-pub fn get_console_width() -> usize {
+pub fn get_screen_width() -> usize {
     let stdout = unsafe { GetStdHandle(STD_OUTPUT_HANDLE) };
 
     let mut info = MaybeUninit::<CONSOLE_SCREEN_BUFFER_INFO>::uninit();
@@ -21,7 +21,7 @@ pub fn get_console_width() -> usize {
     (csbi.srWindow.Right - csbi.srWindow.Left + 1) as usize
 }
 
-pub fn get_cursor_position() -> COORD {
+pub fn get_cursor_pos() -> COORD {
     let stdout = unsafe { GetStdHandle(STD_OUTPUT_HANDLE) };
 
     let mut info = MaybeUninit::<CONSOLE_SCREEN_BUFFER_INFO>::uninit();
@@ -35,6 +35,21 @@ pub fn get_cursor_position() -> COORD {
     };
 
     csbi.dwCursorPosition
+}
+
+pub fn set_cursor_pos(x: usize, y: usize) {
+    let pos: COORD = COORD {
+        X: x as i16,
+        Y: y as i16,
+    };
+
+    let stdout = unsafe { GetStdHandle(STD_OUTPUT_HANDLE) };
+
+    unsafe {
+        if SetConsoleCursorPosition(stdout, pos) == 0 {
+            panic!("Could not set cursor position.");
+        }
+    };
 }
 
 pub fn set_cursor_visibility(visible: bool) {
@@ -51,19 +66,4 @@ pub fn set_cursor_visibility(visible: bool) {
             panic!("Could not set cursor info.");
         };
     }
-}
-
-pub fn set_cursor_pos(x: usize, y: usize) {
-    let pos: COORD = COORD {
-        X: x as i16,
-        Y: y as i16,
-    };
-
-    let stdout = unsafe { GetStdHandle(STD_OUTPUT_HANDLE) };
-
-    unsafe {
-        if SetConsoleCursorPosition(stdout, pos) == 0 {
-            panic!("Could not set cursor position.");
-        }
-    };
 }

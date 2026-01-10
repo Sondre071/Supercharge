@@ -42,12 +42,19 @@ pub fn sync_container(account: &StorageAccount) {
                 let entry = entry.unwrap();
                 let path = entry.path();
 
-                if path.is_dir() {
-                    let unparsed_name = entry.file_name().to_string_lossy().to_string();
-                    let name = utils::parse_container_name(&unparsed_name);
-
-                    containers.insert(name, path);
+                if !path.is_dir() {
+                    continue;
                 }
+
+                let unparsed_name = entry.file_name().to_string_lossy().to_string();
+
+                if unparsed_name.starts_with('.') {
+                    continue;
+                }
+
+                let name = utils::parse_container_name(&unparsed_name);
+
+                containers.insert(name, path);
             }
         }
         _ => {
@@ -108,15 +115,15 @@ pub fn sync_container(account: &StorageAccount) {
                 sync_blobs(account, &name, pending_uploads);
             }
         }
-
-        println!(
-            "\n{white}{} {yellow}container(s) synced.{reset}\n",
-            containers_len,
-            white = COLORS.White,
-            yellow = COLORS.Yellow,
-            reset = COLORS.Reset
-        );
     }
+
+    println!(
+        "\n{white}{} {yellow}container(s) synced.{reset}\n",
+        containers_len,
+        white = COLORS.White,
+        yellow = COLORS.Yellow,
+        reset = COLORS.Reset
+    );
 }
 
 fn fetch_local_files(path: &PathBuf) -> Vec<LocalFile> {

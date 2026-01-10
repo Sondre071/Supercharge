@@ -1,7 +1,8 @@
-use crate::terminal;
+use crate::utils;
 
 use std::io::Write;
 use std::iter;
+use utils::terminal;
 use terminal::COLORS;
 
 mod cursor;

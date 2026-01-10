@@ -4,7 +4,6 @@ mod blobstorage;
 mod menu;
 mod openrouter;
 mod statics;
-mod terminal;
 mod utils;
 
 fn main() {

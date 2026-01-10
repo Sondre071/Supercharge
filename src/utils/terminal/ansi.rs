@@ -26,6 +26,12 @@ pub struct Backgrounds {
     pub White: &'static str,
 }
 
+
+#[allow(non_snake_case, dead_code)]
+pub struct Actions {
+    pub ClearLine: &'static str,
+}
+
 #[allow(non_snake_case, dead_code)]
 pub const COLORS: Colors = Colors {
     Gray: "\x1b[0;37m",
@@ -52,4 +58,8 @@ pub const BACKGROUNDS: Backgrounds = Backgrounds {
     Purple: "\x1b[45m",
     Cyan: "\x1b[46m",
     White: "\x1b[47m",
+};
+
+pub const ACTIONS: Actions = Actions {
+    ClearLine: "\x1b[2K",
 };

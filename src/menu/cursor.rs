@@ -1,5 +1,6 @@
-use crate::terminal;
+use crate::utils;
 
+use utils::terminal;
 use terminal::COLORS;
 
 pub struct Cursor<'a> {

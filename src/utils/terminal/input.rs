@@ -7,6 +7,16 @@ pub struct KeyEvent {
     pub ch: Option<char>,
 }
 
+pub fn read_key_blocking() -> KeyEvent {
+    let stdin: HANDLE = unsafe { GetStdHandle(STD_INPUT_HANDLE) };
+
+    loop {
+        if let Some(ev) = read_key(stdin) {
+            return ev;
+        }
+    }
+}
+
 pub fn read_key(stdin: HANDLE) -> Option<KeyEvent> {
     let mut records: [INPUT_RECORD; 16] = unsafe { std::mem::zeroed() };
     let mut read = 0;
@@ -35,14 +45,4 @@ pub fn read_key(stdin: HANDLE) -> Option<KeyEvent> {
     }
 
     None
-}
-
-pub fn read_key_blocking() -> KeyEvent {
-    let stdin: HANDLE = unsafe { GetStdHandle(STD_INPUT_HANDLE) };
-
-    loop {
-        if let Some(ev) = read_key(stdin) {
-            return ev;
-        }
-    }
 }

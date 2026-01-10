@@ -1,5 +1,5 @@
 use crate::openrouter;
-use crate::terminal;
+use crate::utils::terminal;
 
 use openrouter::api::types::{InputMessage, MessageRequestBody, MessageResponseStreamEvent};
 use openrouter::utils;

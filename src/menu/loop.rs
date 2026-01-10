@@ -1,6 +1,7 @@
 use crate::menu;
-use crate::terminal;
+use crate::utils;
 
+use utils::terminal;
 use menu::cursor;
 
 pub fn run<'a>(

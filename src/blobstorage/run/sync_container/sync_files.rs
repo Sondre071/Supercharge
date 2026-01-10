@@ -1,8 +1,7 @@
-use crate::blobstorage;
+use crate::blobstorage::{self, api};
 use crate::shared::terminal;
 
-use blobstorage::api;
-use blobstorage::types::{FileDiff};
+use blobstorage::types::FileDiff;
 use blobstorage::utils::types::StorageAccount;
 use std::io::{self, Write};
 use terminal::COLORS;
@@ -37,7 +36,31 @@ pub fn sync_files(account: &StorageAccount, container_name: &str, diff: FileDiff
         }
     }
 
-    // for (_, (local, remote)) in &diff.changed_files { }
+    for (local, remote) in diff.changed_files.values() {
+        println!(
+            "{yellow}Renaming {white}{}{yellow} to {white}{}{gray} ({} kb){reset}",
+            &local.name,
+            &remote.name,
+            &local.content_length / 1024,
+            yellow = COLORS.Yellow,
+            white = COLORS.White,
+            gray = COLORS.Gray,
+            reset = COLORS.Reset,
+        );
+        
+        let source_url = format!(
+            "{}{}/{}?{}",
+            account.blob_endpoint, container_name, remote.name, account.shared_access_signature
+        );
+        
+        let destination_url = format!(
+            "{}{}/{}?{}",
+            account.blob_endpoint, container_name, local.name, account.shared_access_signature
+        );
+
+        api::copy_blob(&source_url, destination_url);
+        api::delete_blob(&source_url);
+    }
 
     // for (_, file) in &diff.deleted_files { }
 

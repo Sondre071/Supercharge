@@ -26,7 +26,6 @@ pub struct Backgrounds {
     pub White: &'static str,
 }
 
-
 #[allow(non_snake_case, dead_code)]
 pub struct Actions {
     pub ClearLine: &'static str,

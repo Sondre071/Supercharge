@@ -1,5 +1,5 @@
 use crate::blobstorage;
-use crate::menu;
+use crate::utils::menu;
 
 use blobstorage::run;
 use blobstorage::utils;

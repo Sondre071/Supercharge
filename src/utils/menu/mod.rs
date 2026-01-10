@@ -1,9 +1,7 @@
-use crate::utils;
+use crate::utils::terminal::COLORS;
 
 use std::io::Write;
 use std::iter;
-use utils::terminal;
-use terminal::COLORS;
 
 mod cursor;
 mod r#loop;

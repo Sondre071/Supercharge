@@ -2,12 +2,12 @@ use crate::blobstorage;
 use crate::utils::terminal;
 
 use blobstorage::types::LocalFile;
+use std::collections::HashMap;
+use std::io::{self, Write};
+use std::path::PathBuf;
 use terminal::ACTIONS;
 use terminal::COLORS;
-use std::path::PathBuf;
-use std::collections::HashMap;
 use walkdir::WalkDir;
-use std::io::{self, Write};
 
 pub fn fetch_local_files(path: &PathBuf) -> HashMap<String, LocalFile> {
     let files: HashMap<String, LocalFile> = WalkDir::new(path)

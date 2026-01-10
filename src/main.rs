@@ -1,14 +1,13 @@
 use std::process;
 
 mod blobstorage;
-mod menu;
 mod openrouter;
 mod statics;
 mod utils;
 
 fn main() {
     loop {
-        let result = menu::run(
+        let result = utils::menu::run(
             "Supercharge",
             None,
             vec!["OpenRouter", "Blobstorage", "Exit"],

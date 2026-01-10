@@ -1,12 +1,10 @@
 use crate::blobstorage;
-use crate::menu;
-use crate::utils::terminal;
+use crate::utils::{menu, terminal};
 
 use blobstorage::api;
-use blobstorage::types::{FileDiff};
+use blobstorage::types::FileDiff;
 use blobstorage::utils;
 use blobstorage::utils::types::StorageAccount;
-
 use create_diff::create_diff;
 use print_diff::print_diff;
 use select_local_container::select_local_container;
@@ -74,6 +72,6 @@ pub fn sync_container(account: &StorageAccount, all: bool) {
         yellow = COLORS.Yellow,
         reset = COLORS.Reset
     );
-    
+
     terminal::set_cursor_visibility(true);
 }

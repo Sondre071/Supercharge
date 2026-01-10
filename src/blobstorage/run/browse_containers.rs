@@ -1,6 +1,5 @@
 use crate::blobstorage;
-use crate::menu;
-use crate::utils::terminal;
+use crate::utils::{menu, terminal};
 
 use blobstorage::api;
 use blobstorage::utils::types::StorageAccount;

@@ -1,7 +1,7 @@
 use crate::utils;
 
-use utils::terminal;
 use terminal::COLORS;
+use utils::terminal;
 
 pub struct Cursor<'a> {
     pub header: &'a str,

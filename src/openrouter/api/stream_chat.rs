@@ -3,10 +3,9 @@ use crate::utils::terminal;
 
 use openrouter::api::types::{InputMessage, MessageRequestBody, MessageResponseStreamEvent};
 use openrouter::utils;
-use terminal::COLORS;
-
 use std::io;
 use std::io::{BufRead, Write};
+use terminal::COLORS;
 
 pub fn stream_chat(messages: &Vec<InputMessage>) -> Result<String, String> {
     let data = utils::get_local_data();

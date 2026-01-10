@@ -1,11 +1,9 @@
 use crate::blobstorage;
 use crate::utils::terminal;
 
-use terminal::COLORS;
-
-use std::process;
-
 use blobstorage::types::FileDiff;
+use std::process;
+use terminal::COLORS;
 
 pub fn print_diff(diff: &FileDiff) {
     println!(

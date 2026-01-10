@@ -2,7 +2,6 @@ use crate::blobstorage;
 use crate::statics;
 
 use blobstorage::utils::types::BlobStorageData;
-
 use std::collections::HashMap;
 use std::fs;
 use std::io;

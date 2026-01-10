@@ -1,6 +1,6 @@
 use crate::blobstorage;
 
-use blobstorage::types::{LocalFile, BlobFile, FileDiff};
+use blobstorage::types::{BlobFile, FileDiff, LocalFile};
 
 use std::collections::{HashMap, HashSet};
 
@@ -9,7 +9,7 @@ pub fn create_diff(
     mut remote_files: HashMap<String, BlobFile>,
 ) -> FileDiff {
     let mut diff = FileDiff::default();
-    
+
     diff.local_files_count = local_files.len();
     diff.remote_files_count = remote_files.len();
 

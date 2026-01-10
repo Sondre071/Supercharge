@@ -2,7 +2,6 @@ use crate::openrouter;
 use crate::statics;
 
 use openrouter::utils;
-
 use std::fs;
 
 pub fn set_model(model: &str) {

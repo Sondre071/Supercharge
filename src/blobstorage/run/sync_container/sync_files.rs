@@ -12,10 +12,7 @@ pub fn sync_files(account: &StorageAccount, container_name: &str, diff: FileDiff
     terminal::set_cursor_visibility(false);
 
     for file in diff.new_files.values() {
-        let url = format!(
-            "{}{}/{}?{}",
-            account.blob_endpoint, container_name, file.name, account.shared_access_signature
-        );
+        let url = create_blob_url(account, container_name, &file.name);
 
         println!(
             "{yellow}Uploading {white}{}{gray} ({} kb){reset}",
@@ -38,31 +35,36 @@ pub fn sync_files(account: &StorageAccount, container_name: &str, diff: FileDiff
 
     for (local, remote) in diff.changed_files.values() {
         println!(
-            "{yellow}Renaming {white}{}{yellow} to {white}{}{gray} ({} kb){reset}",
+            "{yellow}Renaming {white}{}{yellow} to {white}{}{reset}",
             &local.name,
             &remote.name,
-            &local.content_length / 1024,
+            yellow = COLORS.Yellow,
+            white = COLORS.White,
+            reset = COLORS.Reset,
+        );
+
+        let source_url = create_blob_url(account, container_name, &remote.name);
+        let destination_url = create_blob_url(account, container_name, &local.name);
+
+        api::copy_blob(&source_url, destination_url);
+        api::delete_blob(&source_url);
+    }
+
+    for file in diff.deleted_files.values() {
+        println!(
+            "{yellow}Deleting {white}{}{gray} ({} kb){reset}",
+            file.name,
+            file.content_length / 1024,
             yellow = COLORS.Yellow,
             white = COLORS.White,
             gray = COLORS.Gray,
             reset = COLORS.Reset,
         );
         
-        let source_url = format!(
-            "{}{}/{}?{}",
-            account.blob_endpoint, container_name, remote.name, account.shared_access_signature
-        );
+        let url = create_blob_url(account, container_name, &file.name);
         
-        let destination_url = format!(
-            "{}{}/{}?{}",
-            account.blob_endpoint, container_name, local.name, account.shared_access_signature
-        );
-
-        api::copy_blob(&source_url, destination_url);
-        api::delete_blob(&source_url);
+        api::delete_blob(&url);
     }
-
-    // for (_, file) in &diff.deleted_files { }
 
     println!(
         "{yellow}\nContainer {white}{}{yellow} updated!{reset}\n",
@@ -71,4 +73,11 @@ pub fn sync_files(account: &StorageAccount, container_name: &str, diff: FileDiff
         yellow = COLORS.Yellow,
         reset = COLORS.Reset
     );
+}
+
+fn create_blob_url(account: &StorageAccount, container_name: &str, file_name: &str) -> String {
+    format!(
+        "{}{}/{}?{}",
+        account.blob_endpoint, container_name, file_name, account.shared_access_signature
+    )
 }

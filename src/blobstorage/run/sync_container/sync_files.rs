@@ -4,15 +4,14 @@ use crate::terminal;
 use blobstorage::types::FileDiff;
 use blobstorage::utils::types::StorageAccount;
 use blobstorage::api;
-use terminal::console;
-use terminal::COLORS;
+use terminal::{COLORS};
 
 pub fn sync_files(
     account: &StorageAccount,
     container_name: &str,
     diff: FileDiff
 ) {
-    console::set_cursor_visibility(false);
+    terminal::set_cursor_visibility(false);
 
     for file in diff.new_files.values() {
         api::upload_file(account, container_name, file);

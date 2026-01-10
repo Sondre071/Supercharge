@@ -6,7 +6,6 @@ use blobstorage::api;
 use blobstorage::types::{FileDiff};
 use blobstorage::utils;
 use blobstorage::utils::types::StorageAccount;
-use terminal::console;
 
 use create_diff::create_diff;
 use print_diff::print_diff;
@@ -51,7 +50,7 @@ pub fn sync_container(account: &StorageAccount, all: bool) {
             }
         }
 
-        console::set_cursor_visibility(false);
+        terminal::set_cursor_visibility(false);
 
         let local_files = utils::fetch_local_files(&path);
 
@@ -76,5 +75,5 @@ pub fn sync_container(account: &StorageAccount, all: bool) {
         reset = COLORS.Reset
     );
     
-    console::set_cursor_visibility(true);
+    terminal::set_cursor_visibility(true);
 }

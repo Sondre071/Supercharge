@@ -3,7 +3,6 @@ use crate::terminal;
 
 use menu::cursor;
 use menu::input;
-use terminal::console;
 
 use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::System::Console::{GetStdHandle, STD_INPUT_HANDLE};
@@ -16,11 +15,11 @@ pub fn run<'a>(
     let stdin: HANDLE = unsafe { GetStdHandle(STD_INPUT_HANDLE) };
 
     let mut cursor = cursor::Cursor::new(header, subheaders, items);
-    console::set_cursor_visibility(false);
+    terminal::set_cursor_visibility(false);
 
     menu::write_headers(cursor.header, Some(&cursor.subheaders));
 
-    let mut start_y = console::get_cursor_position().Y;
+    let mut start_y = terminal::get_cursor_position().Y;
 
     loop {
         cursor.set_cursor_pos(0, start_y);
@@ -33,7 +32,7 @@ pub fn run<'a>(
             match ch {
                 'q' | 'h' => {
                     menu::clear_menu(cursor.total_height);
-                    console::set_cursor_visibility(true);
+                    terminal::set_cursor_visibility(true);
                     return None;
                 }
 
@@ -46,7 +45,7 @@ pub fn run<'a>(
 
                 'l' => {
                     menu::clear_menu(cursor.total_height);
-                    console::set_cursor_visibility(true);
+                    terminal::set_cursor_visibility(true);
                     return Some(cursor.items[cursor.current]);
                 }
 
@@ -56,6 +55,6 @@ pub fn run<'a>(
             }
         }
 
-        start_y = console::get_cursor_position().Y - cursor.visible_items as i16;
+        start_y = terminal::get_cursor_position().Y - cursor.visible_items as i16;
     }
 }

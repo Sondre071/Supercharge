@@ -41,7 +41,7 @@ impl<'a> Cursor<'a> {
 
     pub fn set_cursor_pos(&self, x: i16, y: i16) {
         let pos: COORD = COORD { X: x, Y: y };
-
+        
         unsafe {
             if SetConsoleCursorPosition(self.stdout_handle, pos) == 0 {
                 panic!("Could not set cursor position.");

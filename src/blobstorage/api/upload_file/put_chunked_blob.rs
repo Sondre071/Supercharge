@@ -2,8 +2,7 @@ use crate::blobstorage;
 use crate::terminal;
 
 use blobstorage::types::LocalFile;
-use terminal::ACTIONS;
-use terminal::COLORS;
+use terminal::{ACTIONS, COLORS};
 
 use base64::{Engine as _, engine::general_purpose};
 use reqwest::blocking::Client;

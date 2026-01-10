@@ -4,6 +4,7 @@ use crate::utils::date;
 use blobstorage::api::types::Blob;
 
 use base64::{Engine as _, engine::general_purpose};
+use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 use walkdir::{self, DirEntry};
@@ -27,6 +28,38 @@ pub struct BlobFile {
     pub last_modified: String,
     pub creation_time: String,
     pub content_md5: String,
+}
+
+pub struct FileDiff {
+    pub new_files: HashMap<String, LocalFile>,
+    pub changed_files: HashMap<String, (LocalFile, BlobFile)>,
+    pub deleted_files: HashMap<String, BlobFile>,
+
+    pub duplicate_files: HashMap<String, (LocalFile, BlobFile)>,
+
+    pub local_files_count: usize,
+    pub remote_files_count: usize,
+}
+
+impl FileDiff {
+    pub fn default() -> Self {
+        Self {
+            new_files: HashMap::new(),
+            changed_files: HashMap::new(),
+            deleted_files: HashMap::new(),
+
+            duplicate_files: HashMap::new(),
+
+            local_files_count: 0,
+            remote_files_count: 0,
+        }
+    }
+
+    pub fn sync_available(&self) -> bool {
+        !self.new_files.is_empty()
+            || !self.changed_files.is_empty()
+            || !self.deleted_files.is_empty()
+    }
 }
 
 impl From<DirEntry> for LocalFile {

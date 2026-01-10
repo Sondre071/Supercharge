@@ -11,6 +11,9 @@ pub use select_storage_account::select_storage_account;
 mod get_blob_settings;
 pub use get_blob_settings::get_blob_settings;
 
+mod fetch_local_files;
+pub use fetch_local_files::fetch_local_files;
+
 pub fn parse_container_name(name: &str) -> String {
     name.to_lowercase().replace(" ", "-").replace("_", "-")
 }

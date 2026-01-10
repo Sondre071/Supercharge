@@ -15,5 +15,5 @@ mod fetch_local_files;
 pub use fetch_local_files::fetch_local_files;
 
 pub fn parse_container_name(name: &str) -> String {
-    name.to_lowercase().replace(" ", "-").replace("_", "-")
+    name.to_lowercase().replace(" ", "-").replace("_", "-").replace("--", "-")
 }

@@ -1,4 +1,4 @@
-use crate::shared::terminal::COLORS;
+use crate::shared::terminal::{ACTIONS, COLORS};
 
 pub struct Cursor<'a> {
     pub header: &'a str,
@@ -35,13 +35,18 @@ impl<'a> Cursor<'a> {
         for i in offset..(height + offset) {
             if i == self.current {
                 println!(
-                    "{yellow}> {}{reset}",
+                    "{clear_line}{yellow}> {}{reset}",
                     self.items[i],
+                    clear_line = ACTIONS.ClearLine,
                     yellow = COLORS.Yellow,
                     reset = COLORS.Reset
                 );
             } else {
-                println!("  {}", self.items[i]);
+                println!(
+                    "{clear_line}  {}",
+                    self.items[i],
+                    clear_line = ACTIONS.ClearLine
+                );
             }
         }
     }

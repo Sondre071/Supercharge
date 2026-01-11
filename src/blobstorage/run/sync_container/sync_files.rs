@@ -36,8 +36,8 @@ pub fn sync_files(account: &StorageAccount, container_name: &str, diff: FileDiff
     for (local, remote) in diff.changed_files.values() {
         println!(
             "{yellow}Renaming {white}{}{yellow} to {white}{}{reset}",
-            &local.name,
             &remote.name,
+            &local.name,
             yellow = COLORS.Yellow,
             white = COLORS.White,
             reset = COLORS.Reset,

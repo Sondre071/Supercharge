@@ -25,7 +25,7 @@ pub fn set_container_cache(
     path.push(csv_name);
 
     if !path.is_file() {
-        fs::create_dir_all(path.parent().unwrap()).expect("Failed to create storage account.");
+        fs::create_dir_all(path.parent().unwrap()).expect("Failed to create storage account cache.");
     }
 
     let file = OpenOptions::new()

@@ -83,8 +83,6 @@ impl LocalFile {
 
         let creation_time = date::format_date(metadata.created().unwrap());
 
-        let bytes = fs::read(path).expect("Failed to parse file content.");
-
         let content_md5 = {
             if let Some(c) = cache
                 && let Some(data) = c.get(container_name)
@@ -92,6 +90,7 @@ impl LocalFile {
             {
                 data.content_md5.clone()
             } else {
+                let bytes = fs::read(path).expect("Failed to parse file content.");
                 let digest = md5::compute(&bytes);
                 general_purpose::STANDARD.encode(digest.0)
             }

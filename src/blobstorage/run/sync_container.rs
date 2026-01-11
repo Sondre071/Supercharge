@@ -50,7 +50,10 @@ pub fn sync_container(account: &StorageAccount, all: bool) {
 
         terminal::set_cursor_visibility(false);
 
-        let local_files = utils::fetch_local_files(&path);
+        let cache = utils::get_or_init_container_cache(&account.name, &name);
+        let local_files = utils::fetch_local_files(&path, &cache);
+
+        utils::set_container_cache(&account.name, &name, &local_files);
 
         let diff: FileDiff = create_diff(local_files, blob_files.unwrap());
 

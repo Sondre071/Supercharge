@@ -24,3 +24,4 @@ time = { version = "0.3.44", features = ["formatting"] }
 httpdate = "1.0.3"
 walkdir = "2.5.0"
 urlencoding = "2.1.3"
+csv = "1.4.0"

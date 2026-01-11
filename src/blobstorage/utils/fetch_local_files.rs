@@ -2,6 +2,7 @@ use crate::blobstorage;
 use crate::shared::terminal;
 
 use blobstorage::types::LocalFile;
+use blobstorage::utils::types::CsvRow;
 use std::collections::HashMap;
 use std::io::{self, Write};
 use std::path::PathBuf;
@@ -9,7 +10,10 @@ use terminal::ACTIONS;
 use terminal::COLORS;
 use walkdir::WalkDir;
 
-pub fn fetch_local_files(path: &PathBuf) -> HashMap<String, LocalFile> {
+pub fn fetch_local_files(
+    path: &PathBuf,
+    cache: &Option<HashMap<String, CsvRow>>,
+) -> HashMap<String, LocalFile> {
     let files: HashMap<String, LocalFile> = WalkDir::new(path)
         .into_iter()
         .filter_map(Result::ok)
@@ -30,7 +34,7 @@ pub fn fetch_local_files(path: &PathBuf) -> HashMap<String, LocalFile> {
             );
             io::stdout().flush().unwrap();
 
-            let file = LocalFile::from(e);
+            let file = LocalFile::from_entry_cached(&e, name, cache);
 
             (file.content_md5.to_owned(), file)
         })

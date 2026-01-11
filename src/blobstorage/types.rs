@@ -3,6 +3,7 @@ use crate::shared::utils::date;
 
 use base64::{Engine as _, engine::general_purpose};
 use blobstorage::api::types::Blob;
+use blobstorage::utils::types::CsvRow;
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
@@ -61,8 +62,12 @@ impl FileDiff {
     }
 }
 
-impl From<DirEntry> for LocalFile {
-    fn from(entry: DirEntry) -> Self {
+impl LocalFile {
+    pub fn from_entry_cached(
+        entry: &DirEntry,
+        container_name: &str,
+        cache: &Option<HashMap<String, CsvRow>>,
+    ) -> Self {
         let path = entry.path();
         let metadata = entry.metadata().expect("Failed to parse metadata.");
 
@@ -80,8 +85,17 @@ impl From<DirEntry> for LocalFile {
 
         let bytes = fs::read(path).expect("Failed to parse file content.");
 
-        let digest = md5::compute(&bytes);
-        let content_md5 = general_purpose::STANDARD.encode(digest.0);
+        let content_md5 = {
+            if let Some(c) = cache
+                && let Some(data) = c.get(container_name)
+                && data.length == content_length
+            {
+                data.content_md5.clone()
+            } else {
+                let digest = md5::compute(&bytes);
+                general_purpose::STANDARD.encode(digest.0)
+            }
+        };
 
         LocalFile {
             name,

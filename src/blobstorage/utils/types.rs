@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 #[allow(dead_code)]
 #[derive(Deserialize, Debug)]
@@ -27,4 +27,11 @@ pub struct StorageAccount {
 
     #[serde(default)]
     pub shared_access_signature: String,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct CsvRow {
+    pub name: String,
+    pub content_md5: String,
+    pub length: usize,
 }

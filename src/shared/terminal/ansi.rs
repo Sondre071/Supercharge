@@ -60,5 +60,5 @@ pub const BACKGROUNDS: Backgrounds = Backgrounds {
 };
 
 pub const ACTIONS: Actions = Actions {
-    ClearLine: "\x1b[2K",
+    ClearLine: "\x1b[2K"
 };

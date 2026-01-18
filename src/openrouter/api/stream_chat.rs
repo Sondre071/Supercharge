@@ -3,8 +3,7 @@ use crate::shared::terminal;
 
 use openrouter::api::types::{InputMessage, MessageRequestBody, MessageResponseStreamEvent};
 use openrouter::utils;
-use std::io;
-use std::io::{BufRead, Write};
+use std::io::{self, BufRead, Write};
 use terminal::COLORS;
 
 pub fn stream_chat(messages: &Vec<InputMessage>) -> Result<String, String> {
@@ -48,6 +47,10 @@ pub fn stream_chat(messages: &Vec<InputMessage>) -> Result<String, String> {
     for line in reader.lines() {
         let line = line.map_err(|e| format!("Failed to read stream: {}", e))?;
         let line = line.trim();
+        
+        if terminal::key_is_pressed('q') {
+            break;
+        }
 
         if line.is_empty() || line == ": OPENROUTER PROCESSING" {
             continue;

@@ -1,10 +1,23 @@
 use windows_sys::Win32::Foundation::HANDLE;
-use windows_sys::Win32::System::Console::{GetStdHandle, STD_INPUT_HANDLE};
-use windows_sys::Win32::System::Console::{INPUT_RECORD, KEY_EVENT, ReadConsoleInputW};
+use windows_sys::Win32::System::Console::{
+    GetStdHandle, INPUT_RECORD, KEY_EVENT, ReadConsoleInputW, STD_INPUT_HANDLE,
+};
+use windows_sys::Win32::UI::Input::KeyboardAndMouse::GetAsyncKeyState;
 
 #[derive(Debug)]
 pub struct KeyEvent {
     pub ch: Option<char>,
+}
+
+pub fn key_is_pressed(letter: char) -> bool {
+    let c = letter.to_ascii_uppercase();
+
+    if !c.is_alphabetic() {
+        return false;
+    }
+
+    let vk = c as i32;
+    unsafe { ((GetAsyncKeyState(vk) as i32) & 0x8000) != 0 }
 }
 
 pub fn read_key_blocking() -> KeyEvent {

@@ -45,12 +45,12 @@ pub fn stream_chat(messages: &Vec<InputMessage>) -> Result<String, String> {
     let mut total_response = String::new();
 
     for line in reader.lines() {
-        let line = line.map_err(|e| format!("Failed to read stream: {}", e))?;
-        let line = line.trim();
-        
         if terminal::key_is_pressed('q') {
             break;
         }
+
+        let line = line.map_err(|e| format!("Failed to read stream: {}", e))?;
+        let line = line.trim();
 
         if line.is_empty() || line == ": OPENROUTER PROCESSING" {
             continue;

@@ -62,6 +62,8 @@ pub fn main() {
                 .wait();
         }
     }
+    
+    process::exit(0)
 }
 
 fn get_directories(path: &PathBuf) -> Vec<String> {

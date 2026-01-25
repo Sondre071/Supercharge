@@ -43,9 +43,10 @@ impl<'a> Cursor<'a> {
                 );
             } else {
                 println!(
-                    "{clear_line}  {}",
+                    "{clear_line}  {}{reset}",
                     self.items[i],
-                    clear_line = ACTIONS.ClearLine
+                    clear_line = ACTIONS.ClearLine,
+                    reset = COLORS.Reset
                 );
             }
         }

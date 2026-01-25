@@ -1,9 +1,18 @@
 $dataPath = Join-Path $env:UserProfile '.supercharge' 'data'
+$scriptsPath = Join-Path $env:UserProfile '.supercharge' 'scripts'
 $openrouterDataPath = Join-Path $dataPath 'openrouter.json'
 $blobstorageDataPath = Join-Path $dataPath 'blobstorage.json'
 
 if (-not (Test-Path $dataPath)) {
     New-Item -ItemType Directory -Path $dataPath
+} else {
+    Write-Host "data-path already exists, skipping this step.." -ForegroundColor DarkGreen
+}
+
+if (-not (Test-Path $scriptsPath)) {
+    New-Item -ItemType Directory -Path $scriptsPath
+} else {
+    Write-Host "scripts-path already exists, skipping this step.." -ForegroundColor DarkGreen
 }
 
 if (Test-Path $openRouterDataPath) {

@@ -2,8 +2,9 @@ use std::path::PathBuf;
 use std::sync::OnceLock;
 
 static DATA_PATH: OnceLock<PathBuf> = OnceLock::new();
-static PROMPTS_PATH: OnceLock<PathBuf> = OnceLock::new();
+static SCRIPTS_PATH: OnceLock<PathBuf> = OnceLock::new();
 
+static OPENROUTER_PROMPTS_PATH: OnceLock<PathBuf> = OnceLock::new();
 static OPENROUTER_SETTINGS_PATH: OnceLock<PathBuf> = OnceLock::new();
 static BLOBSTORAGE_SETTINGS_PATH: OnceLock<PathBuf> = OnceLock::new();
 static BLOBSTORAGE_CACHE_PATH: OnceLock<PathBuf> = OnceLock::new();
@@ -18,8 +19,18 @@ pub fn data_dir() -> &'static PathBuf {
     })
 }
 
+pub fn scripts_dir() -> &'static PathBuf {
+    SCRIPTS_PATH.get_or_init(|| {
+        let mut path = std::env::home_dir().expect("Failed to fetch user home directory.");
+        path.push(".supercharge");
+        path.push("scripts");
+
+        path
+    })
+}
+
 pub fn prompts_dir() -> &'static PathBuf {
-    PROMPTS_PATH.get_or_init(|| {
+    OPENROUTER_PROMPTS_PATH.get_or_init(|| {
         let mut path = data_dir().clone();
         path.push("prompts");
 

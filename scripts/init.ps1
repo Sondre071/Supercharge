@@ -18,6 +18,7 @@ if (-not (Test-Path $scriptsPath)) {
 if (Test-Path $openRouterDataPath) {
     Write-Host "openrouter.json already exists, skipping this step.." -ForegroundColor DarkGreen
 }
+
 else {
     $initialContent = @{
         api_key    = ""

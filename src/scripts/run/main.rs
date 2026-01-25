@@ -58,7 +58,7 @@ pub fn main() {
             let _ = process::Command::new("pwsh")
                 .args(["-Command", &command_args])
                 .spawn()
-                .expect("Failed to run script")
+                .expect("Failed to run script.")
                 .wait();
         }
     }

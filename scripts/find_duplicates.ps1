@@ -10,7 +10,8 @@ $browser = [System.Windows.Forms.FolderBrowserDialog]::new()
 $browser.ShowDialog() | Out-Null
 $path = $browser.SelectedPath;
 
-if ($path -eq '') {
+if ($path -eq '')
+{
     Write-Host "No folder selected." -ForegroundColor Yellow
 }
 
@@ -39,18 +40,22 @@ $hashes = Get-ChildItem -Path $path -File -Recurse `
 
 Write-Host $("{0}" -f $clear_line) -NoNewLine
 
-if ($hashes.Count -gt 0) {
+if ($hashes.Count -gt 0)
+{
     Write-Host "Duplicates found!`n" -ForegroundColor Yellow
 
-    foreach ($item in $hashes) {
+    foreach ($item in $hashes)
+    {
         Write-Host "Hash: $($item.Name)" -ForegroundColor Yellow;
-    
-        ForEach ($path in $item.Group.Path) {
+
+        ForEach ($path in $item.Group.Path)
+        {
             Write-Host "$path" -ForegroundColor White;
         }
 
         Write-Host
     }
-} else {
+} else
+{
     Write-Host "No duplicates!" -ForegroundColor Green
 }

@@ -3,23 +3,27 @@ $scriptsPath = Join-Path $env:UserProfile '.supercharge' 'scripts'
 $openrouterDataPath = Join-Path $dataPath 'openrouter.json'
 $blobstorageDataPath = Join-Path $dataPath 'blobstorage.json'
 
-if (-not (Test-Path $dataPath)) {
+if (-not (Test-Path $dataPath))
+{
     New-Item -ItemType Directory -Path $dataPath
-} else {
+} else
+{
     Write-Host "data-path already exists, skipping this step.." -ForegroundColor DarkGreen
 }
 
-if (-not (Test-Path $scriptsPath)) {
+if (-not (Test-Path $scriptsPath))
+{
     New-Item -ItemType Directory -Path $scriptsPath
-} else {
+} else
+{
     Write-Host "scripts-path already exists, skipping this step.." -ForegroundColor DarkGreen
 }
 
-if (Test-Path $openRouterDataPath) {
+if (Test-Path $openRouterDataPath)
+{
     Write-Host "openrouter.json already exists, skipping this step.." -ForegroundColor DarkGreen
-}
-
-else {
+} else
+{
     $initialContent = @{
         api_key    = ""
         model      = "anthropic/claude-sonnet-4.5"
@@ -49,10 +53,11 @@ else {
         -Value $json
 }
 
-if (Test-Path $blobstorageDataPath) {
+if (Test-Path $blobstorageDataPath)
+{
     Write-Host "blobstorage.json already exists, skipping this step.." -ForegroundColor DarkGreen
-}
-else {
+} else
+{
     $initialContent = @{
         storage_accounts = @(
             @{

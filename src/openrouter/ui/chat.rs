@@ -1,4 +1,3 @@
-use super::layout;
 use super::state::{OpenRouterAction, OpenRouterUi, Screen};
 use crate::openrouter::api::{self, types::InputMessage};
 use eframe::egui;
@@ -7,27 +6,25 @@ use std::thread;
 
 pub fn draw(ui_state: &mut OpenRouterUi, ctx: &egui::Context) -> OpenRouterAction {
     handle_stream(ui_state);
-    layout::with_layout(ui_state, ctx, draw_content)
-}
 
-fn draw_content(ui: &mut egui::Ui, ui_state: &mut OpenRouterUi) -> OpenRouterAction {
-    ui.vertical(|ui| {
+    egui::CentralPanel::default().show(ctx, |ui| {
+        ui.heading("Chat");
+        ui.add_space(12.0);
+
         show_messages(ui, &ui_state.chat_messages);
-        
-        ui.add_space(10.0);
+
         ui.separator();
-        ui.add_space(10.0);
-        
+
         show_input(ui, ui_state);
-        
+
         ui.add_space(10.0);
-        
+
         if ui.button("Back to Menu").clicked() && !ui_state.streaming {
             clear_chat(ui_state);
             ui_state.go_to(Screen::Menu);
         }
     });
-    
+
     OpenRouterAction::None
 }
 
@@ -50,28 +47,27 @@ fn handle_stream(ui_state: &mut OpenRouterUi) {
 }
 
 fn show_messages(ui: &mut egui::Ui, messages: &[InputMessage]) {
-    egui::ScrollArea::vertical()
-        .auto_shrink([false, false])
-        .show(ui, |ui| {
-            for msg in messages {
-                ui.group(|ui| {
-                    ui.strong(&msg.role);
-                    ui.label(&msg.content);
-                });
-                ui.add_space(6.0);
-            }
-        });
+    egui::ScrollArea::vertical().show(ui, |ui| {
+        for msg in messages {
+            ui.group(|ui| {
+                ui.strong(&msg.role);
+                ui.label(&msg.content);
+            });
+            ui.add_space(6.0);
+        }
+    });
 }
 
 fn show_input(ui: &mut egui::Ui, ui_state: &mut OpenRouterUi) {
     ui.horizontal(|ui| {
-        let text_edit = egui::TextEdit::singleline(&mut ui_state.chat_input)
-            .desired_width(f32::INFINITY);
-        ui.add(text_edit);
+        ui.text_edit_singleline(&mut ui_state.chat_input);
 
         let can_send = !ui_state.streaming && !ui_state.chat_input.trim().is_empty();
 
-        if ui.add_enabled(can_send, egui::Button::new("Send")).clicked() {
+        if ui
+            .add_enabled(can_send, egui::Button::new("Send"))
+            .clicked()
+        {
             send_message(ui_state);
         }
     });

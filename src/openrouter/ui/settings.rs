@@ -1,16 +1,14 @@
-use super::layout;
 use super::state::{OpenRouterAction, OpenRouterUi, Screen};
 use crate::openrouter::{api, utils};
 use eframe::egui;
 
 pub fn draw(ui_state: &mut OpenRouterUi, ctx: &egui::Context) -> OpenRouterAction {
-    layout::with_layout(ui_state, ctx, draw_content)
-}
-
-fn draw_content(ui: &mut egui::Ui, ui_state: &mut OpenRouterUi) -> OpenRouterAction {
     let mut action = OpenRouterAction::None;
-    
-    ui.vertical(|ui| {
+
+    egui::CentralPanel::default().show(ctx, |ui| {
+        ui.heading("Settings");
+        ui.add_space(20.0);
+
         show_model_section(ui, ui_state);
 
         ui.add_space(20.0);

@@ -11,8 +11,8 @@ use openrouter::{OpenRouterAction, OpenRouterUi};
 fn main() -> eframe::Result<()> {
     let native_options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
-            .with_inner_size([300.0, 500.0])
-            .with_min_inner_size([300.0, 400.0]),
+            .with_inner_size([900.0, 600.0])
+            .with_min_inner_size([600.0, 400.0]),
         ..Default::default()
     };
 
@@ -51,10 +51,6 @@ impl eframe::App for MyApp {
                     ui.add_space(20.0);
 
                     if ui.button("OpenRouter").clicked() {
-                        ctx.send_viewport_cmd(
-                            egui::ViewportCommand::InnerSize(egui::vec2(900.0, 600.0))
-                        ); 
-                        
                         self.screen = Screen::OpenRouter(OpenRouterUi::new());
                     }
 

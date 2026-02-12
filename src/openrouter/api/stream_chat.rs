@@ -1,17 +1,14 @@
-use crate::openrouter;
-use crate::shared::terminal;
+use crate::openrouter::api::types::{InputMessage, MessageRequestBody, MessageResponseStreamEvent};
+use crate::openrouter::utils;
+use std::io::{self, BufRead};
+use std::sync::mpsc::Sender;
 
-use openrouter::api::types::{InputMessage, MessageRequestBody, MessageResponseStreamEvent};
-use openrouter::utils;
-use std::io::{self, BufRead, Write};
-use terminal::COLORS;
-
-pub fn stream_chat(messages: &Vec<InputMessage>) -> Result<String, String> {
+pub fn stream_chat(messages: Vec<InputMessage>, tx: Sender<String>) -> Result<(), String> {
     let data = utils::get_local_data();
 
     let body = MessageRequestBody {
         model: data.model,
-        input: messages,
+        input: &messages, // OK: body borrows from local `messages`
         stream: true,
     };
 
@@ -42,13 +39,7 @@ pub fn stream_chat(messages: &Vec<InputMessage>) -> Result<String, String> {
 
     let reader = io::BufReader::new(response);
 
-    let mut total_response = String::new();
-
     for line in reader.lines() {
-        if terminal::key_is_pressed('q') {
-            break;
-        }
-
         let line = line.map_err(|e| format!("Failed to read stream: {}", e))?;
         let line = line.trim();
 
@@ -56,9 +47,8 @@ pub fn stream_chat(messages: &Vec<InputMessage>) -> Result<String, String> {
             continue;
         }
 
-        if line.starts_with("data: ") {
-            let json_str = line.strip_prefix("data: ").unwrap();
-
+        // FIX: must be "data: " (colon), not "data :"
+        if let Some(json_str) = line.strip_prefix("data: ") {
             if json_str == "[DONE]" {
                 break;
             }
@@ -67,18 +57,10 @@ pub fn stream_chat(messages: &Vec<InputMessage>) -> Result<String, String> {
                 && event.event_type == "response.output_text.delta"
                 && !event.delta.is_empty()
             {
-                print!(
-                    "{cyan}{}{reset}",
-                    event.delta,
-                    cyan = COLORS.Cyan,
-                    reset = COLORS.Reset
-                );
-                io::stdout().flush().unwrap();
-
-                total_response.push_str(event.delta.as_str());
+                let _ = tx.send(event.delta);
             }
         }
     }
 
-    Ok(total_response)
+    Ok(())
 }

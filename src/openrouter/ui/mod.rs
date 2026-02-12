@@ -1,7 +1,6 @@
-use crate::openrouter::{self, api::types::InputMessage};
+use crate::openrouter;
 
 use openrouter::utils;
-use std::sync::mpsc::{Receiver};
 
 mod main;
 mod new_chat;
@@ -14,13 +13,6 @@ use state::Screen;
 
 pub struct OpenRouterUi {
     screen: Screen,
-
-    chat_input: String,
-    chat_messages: Vec<InputMessage>,
-    
-    stream_rx: Option<Receiver<String>>,
-    streaming: bool,
-
     pub models: Vec<String>,
     pub selected_model: Option<String>,
     pub loading_models: bool,
@@ -32,12 +24,6 @@ impl OpenRouterUi {
 
         Self {
             screen: Screen::Main,
-
-            chat_input: String::new(),
-            chat_messages: Vec::new(),
-            stream_rx: None,
-            streaming: false,
-
             models: Vec::new(),
             selected_model: Some(data.model),
             loading_models: false,

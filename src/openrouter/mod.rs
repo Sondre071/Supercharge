@@ -2,5 +2,5 @@ mod api;
 mod types;
 mod utils;
 
-mod run;
-pub use run::main;
+mod ui;
+pub use ui::{OpenRouterUi, OpenRouterAction};

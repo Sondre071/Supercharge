@@ -11,6 +11,16 @@ pub enum Screen {
     Settings,
 }
 
+impl Screen {
+    pub fn name(&self) -> &'static str {
+        match self {
+            Screen::Menu => "Menu",
+            Screen::Chat => "Chat",
+            Screen::Settings => "Settings",
+        }
+    }
+}
+
 #[derive(Clone, Copy, PartialEq)]
 pub enum OpenRouterAction {
     None,
@@ -18,7 +28,7 @@ pub enum OpenRouterAction {
 }
 
 pub struct OpenRouterUi {
-    screen: Screen,
+    pub screen: Screen,
 
     pub chat_input: String,
     pub chat_messages: Vec<InputMessage>,

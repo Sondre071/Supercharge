@@ -1,5 +1,5 @@
-use std::process;
 use eframe::egui;
+use std::process;
 
 mod blobstorage;
 mod openrouter;
@@ -24,7 +24,7 @@ fn main() -> eframe::Result<()> {
 }
 
 struct MyApp {
-    current_module: Screen,
+    screen: Screen,
 }
 
 enum Screen {
@@ -34,100 +34,55 @@ enum Screen {
     Scripts,
 }
 
-enum GoTo {
-    None,
-    MainMenu,
-    OpenRouter,
-    BlobStorage,
-    Scripts,
-    Exit,
-}
-
-impl Default for MyApp {
-    fn default() -> Self {
-        Self {
-            current_module: Screen::MainMenu,
-        }
-    }
-}
-
 impl MyApp {
     fn new(_cc: &eframe::CreationContext<'_>) -> Self {
-        Self::default()
-    }
-
-    fn handle_go_to(&mut self, to: GoTo) {
-        match to {
-            GoTo::None => {}
-
-            GoTo::MainMenu => {
-                self.current_module = Screen::MainMenu;
-            }
-
-            GoTo::OpenRouter => {
-                self.current_module = Screen::OpenRouter(OpenRouterUi::new());
-            }
-
-            GoTo::BlobStorage => {
-                self.current_module = Screen::BlobStorage;
-            }
-
-            GoTo::Scripts => {
-                self.current_module = Screen::Scripts;
-            }
-
-            GoTo::Exit => {
-                process::exit(0);
-            }
+        Self {
+            screen: Screen::MainMenu,
         }
-    }
-
-    fn ui_main_menu(&mut self, ctx: &egui::Context) -> GoTo {
-        let mut action = GoTo::None;
-
-        egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading("Supercharge");
-            ui.add_space(20.0);
-
-            if ui.button("OpenRouter").clicked() {
-                action = GoTo::OpenRouter;
-            }
-
-            if ui.button("BlobStorage").clicked() {
-                action = GoTo::BlobStorage;
-            }
-
-            if ui.button("Scripts").clicked() {
-                action = GoTo::Scripts;
-            }
-
-            if ui.button("Exit").clicked() {
-                action = GoTo::Exit;
-            }
-        });
-
-        action
     }
 }
 
 impl eframe::App for MyApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        let action = match &mut self.current_module {
-            Screen::MainMenu => self.ui_main_menu(ctx),
+        match &mut self.screen {
+            Screen::MainMenu => {
+                egui::CentralPanel::default().show(ctx, |ui| {
+                    ui.heading("Supercharge");
+                    ui.add_space(20.0);
+
+                    if ui.button("OpenRouter").clicked() {
+                        self.screen = Screen::OpenRouter(OpenRouterUi::new());
+                    }
+
+                    if ui.button("BlobStorage").clicked() {
+                        self.screen = Screen::BlobStorage;
+                    }
+
+                    if ui.button("Scripts").clicked() {
+                        self.screen = Screen::Scripts;
+                    }
+
+                    if ui.button("Exit").clicked() {
+                        process::exit(0);
+                    }
+                });
+            }
 
             Screen::OpenRouter(ui) => {
-                let openrouter_action = ui.ui(ctx);
+                let action = ui.draw(ctx);
 
-                match openrouter_action {
-                    OpenRouterAction::None => GoTo::None,
-                    OpenRouterAction::GoBack => GoTo::MainMenu,
+                if let OpenRouterAction::GoBack = action {
+                    self.screen = Screen::MainMenu;
                 }
             }
 
-            Screen::BlobStorage => GoTo::None,
-            Screen::Scripts => GoTo::None,
-        };
+            Screen::BlobStorage => {
+                self.screen = Screen::MainMenu;
+            }
 
-        self.handle_go_to(action);
+            Screen::Scripts => {
+                self.screen = Screen::MainMenu;
+            }
+        };
     }
 }

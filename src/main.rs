@@ -2,8 +2,9 @@ use std::process;
 
 mod blobstorage;
 mod openrouter;
-mod shared;
 mod scripts;
+mod shared;
+mod snippets;
 
 fn main() {
     jump_up_one_row();
@@ -12,14 +13,15 @@ fn main() {
         let result = shared::menu::run(
             "Supercharge",
             None,
-            vec!["OpenRouter", "Blobstorage", "Scripts", "Exit"],
+            vec!["OpenRouter", "Blobstorage", "Scripts", "Snippets", "Exit"],
         )
         .unwrap();
 
         match result {
             "OpenRouter" => openrouter::main(),
-            "Scripts" => scripts::main(),
             "Blobstorage" => blobstorage::main(),
+            "Scripts" => scripts::main(),
+            "Snippets" => snippets::main(),
             _ => process::exit(0),
         }
     }

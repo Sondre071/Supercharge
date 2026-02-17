@@ -6,8 +6,11 @@ static SCRIPTS_PATH: OnceLock<PathBuf> = OnceLock::new();
 
 static OPENROUTER_PROMPTS_PATH: OnceLock<PathBuf> = OnceLock::new();
 static OPENROUTER_SETTINGS_PATH: OnceLock<PathBuf> = OnceLock::new();
+
 static BLOBSTORAGE_SETTINGS_PATH: OnceLock<PathBuf> = OnceLock::new();
 static BLOBSTORAGE_CACHE_PATH: OnceLock<PathBuf> = OnceLock::new();
+
+static SNIPPETS_PATH: OnceLock<PathBuf> = OnceLock::new();
 
 pub fn data_dir() -> &'static PathBuf {
     DATA_PATH.get_or_init(|| {
@@ -62,6 +65,17 @@ pub fn blobstorage_cache_path() -> PathBuf {
             let mut path = data_dir().clone();
             path.push("blobstorage");
             path.push("cache");
+
+            path
+        })
+        .clone()
+}
+
+pub fn snippets_path() -> PathBuf {
+    SNIPPETS_PATH
+        .get_or_init(|| {
+            let mut path = data_dir().clone();
+            path.push("snippets");
 
             path
         })

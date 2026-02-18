@@ -11,7 +11,15 @@ pub fn browse_containers() {
 
     let options: Vec<&str> = containers.iter().map(|s| s.as_str()).collect();
 
-    let (container, _) = menu::run(&mut Cursor::new("Containers", vec![""], options)).unwrap();
+    let container = {
+        let Some((container, _)) =
+            menu::run(&mut Cursor::new("Select container", vec![""], options))
+        else {
+            return;
+        };
+
+        container
+    };
 
     let blobs = api::fetch_blobs(&account, &container).unwrap();
 

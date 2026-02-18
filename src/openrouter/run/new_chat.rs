@@ -10,7 +10,13 @@ pub fn new_chat() {
 
     let mut message_history: Vec<InputMessage> = vec![];
 
-    let prompt = select_prompt();
+    let prompt = {
+        let Some(prompt) = select_prompt() else {
+            return;
+        };
+
+        prompt
+    };
 
     menu::write_headers("New chat", vec![&data.model, ""]);
 
@@ -65,16 +71,16 @@ fn set_sys_prompts(prompt: &Option<Prompt>, messages: &mut Vec<InputMessage>) {
     }
 }
 
-fn select_prompt() -> Option<Prompt> {
+fn select_prompt() -> Option<Option<Prompt>> {
     let prompts = utils::get_prompts();
 
     if prompts.is_empty() {
-        return None;
+        None
     } else {
         let mut prompt_names = vec!["None"];
         prompt_names.extend(prompts.iter().map(|p| p.name.as_str()));
 
-        let (choice, _) = menu::run(&mut Cursor::new("Select prompt", vec![""], prompt_names)).unwrap();
+        let (choice, _) = menu::run(&mut Cursor::new("Select prompt", vec![""], prompt_names))?;
 
         if choice != "None" {
             let file = prompts
@@ -104,11 +110,12 @@ fn select_prompt() -> Option<Prompt> {
             let above_text = above.join("\n");
             let below_text = below.join("\n");
 
-            return Some(Prompt {
+            Some(Some(Prompt {
                 base: above_text,
                 r#static: below_text,
-            });
+            }))
+        } else {
+            Some(None)
         }
     }
-    None
 }

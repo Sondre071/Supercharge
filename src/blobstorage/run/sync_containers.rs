@@ -1,9 +1,9 @@
 use crate::blobstorage::{api, types::FileDiff, utils};
-use std::process::exit;
 use crate::shared::{
     menu::{self, Cursor},
     terminal,
 };
+use std::process::exit;
 
 use create_diff::create_diff;
 use print_diff::print_diff;
@@ -19,8 +19,13 @@ mod sync_files;
 pub fn sync_containers() {
     let account = utils::select_storage_account();
 
-    let all = {
-        let (choice, _) = menu::run(&mut Cursor::new("Sync all?", vec![""], vec!["Yes", "No"])).unwrap();
+    let all: bool = {
+        let Some((choice, _)) =
+            menu::run(&mut Cursor::new("Sync all?", vec![""], vec!["Yes", "No"]))
+        else {
+            return;
+        };
+        
         choice.as_str() == "Yes"
     };
 
@@ -67,8 +72,12 @@ pub fn sync_containers() {
         print_diff(&diff);
 
         if diff.sync_available() {
-            let (choice, _) =
-                menu::run(&mut Cursor::new("Synchronize?", vec![""], vec!["Yes", "No"])).unwrap();
+            let (choice, _) = menu::run(&mut Cursor::new(
+                "Synchronize?",
+                vec![""],
+                vec!["Yes", "No"],
+            ))
+            .unwrap();
 
             if choice == "Yes" {
                 sync_files(&account, &name, diff);

@@ -1,12 +1,10 @@
-use std::process;
-
 mod blobstorage;
 mod openrouter;
 mod scripts;
 mod shared;
 mod snippets;
 
-use shared::menu::{Item, Cursor};
+use shared::menu::{Cursor, Item};
 
 fn main() {
     jump_up_one_row();
@@ -22,9 +20,11 @@ fn main() {
             Item::new("Exit"),
         ],
     );
-    
+
     loop {
-        let (module, option) = shared::menu::run(&mut menu).unwrap();
+        let Some((module, option)) = shared::menu::run(&mut menu) else {
+            return;
+        };
 
         match (module.as_str(), option.as_deref()) {
             ("OpenRouter", Some("New chat")) => openrouter::new_chat(),
@@ -37,7 +37,7 @@ fn main() {
             ("Snippets", Some("Browse")) => snippets::browse_snippets(),
             ("Snippets", Some("Add new")) => snippets::add_snippet(),
 
-            _ => process::exit(0),
+            _ => return,
         }
     }
 }

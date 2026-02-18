@@ -45,8 +45,6 @@ pub struct Cursor {
     pub total_height: usize,
 }
 
-impl Cursor {}
-
 impl Cursor {
     pub fn new(
         header: impl Into<String>,

@@ -2,7 +2,7 @@ use crate::shared::statics;
 
 use std::fs;
 
-pub fn get_snippets() -> Vec<String> {
+pub fn get_snippet_names() -> Vec<String> {
     let files = fs::read_dir(statics::snippets_path()).unwrap();
 
     files

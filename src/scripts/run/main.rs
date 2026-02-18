@@ -15,55 +15,57 @@ pub fn main() {
         process::exit(0)
     }
 
-    let result = {
+    let folder = {
         let mut menu = Cursor::new("Select script folder", vec![""], choices);
+        let Some((folder, _)) = menu::run(&mut menu) else {
+            return;
+        };
+        
+        folder
+    };
+
+    let scripts = {
+        let mut subdirectory_path = path.clone();
+        subdirectory_path.push(&folder);
+
+        get_files(&subdirectory_path)
+    };
+
+    let options = scripts.iter().map(|e| e.as_str()).collect();
+
+    let subheader = {
+        let current_dir = env::current_dir().expect("Failed to get current terminal location");
+
+        let skip = current_dir.iter().count().saturating_sub(3);
+
+        let displayed_path: PathBuf = current_dir.iter().skip(skip).collect();
+
+        format!("Current directory: {}", displayed_path.display())
+    };
+
+    let result = {
+        let mut menu = Cursor::new("Select script", vec![subheader.as_str(), ""], options);
         menu::run(&mut menu)
     };
 
-    if let Some((folder, _)) = result {
-        let scripts = {
-            let mut subdirectory_path = path.clone();
-            subdirectory_path.push(&folder);
-
-            get_files(&subdirectory_path)
+    if let Some((script, _)) = result {
+        let script_path = {
+            let mut script_path = path.clone();
+            script_path.push(folder);
+            script_path.push(script);
+            script_path.to_string_lossy().to_string()
         };
 
-        let options = scripts.iter().map(|e| e.as_str()).collect();
+        let command_args = format!(
+            "Start-Process pwsh -ArgumentList '-ExecutionPolicy Bypass -File \"{}\"'",
+            script_path
+        );
 
-        let subheader = {
-            let current_dir = env::current_dir().expect("Failed to get current terminal location");
-
-            let skip = current_dir.iter().count().saturating_sub(3);
-
-            let displayed_path: PathBuf = current_dir.iter().skip(skip).collect();
-
-            format!("Current directory: {}", displayed_path.display())
-        };
-
-        let result = {
-            let mut menu = Cursor::new("Select script", vec![subheader.as_str(), ""], options);
-            menu::run(&mut menu)
-        };
-
-        if let Some((script, _)) = result {
-            let script_path = {
-                let mut script_path = path.clone();
-                script_path.push(folder);
-                script_path.push(script);
-                script_path.to_string_lossy().to_string()
-            };
-
-            let command_args = format!(
-                "Start-Process pwsh -ArgumentList '-ExecutionPolicy Bypass -File \"{}\"'",
-                script_path
-            );
-
-            let _ = process::Command::new("pwsh")
-                .args(["-Command", &command_args])
-                .spawn()
-                .expect("Failed to run script.")
-                .wait();
-        }
+        let _ = process::Command::new("pwsh")
+            .args(["-Command", &command_args])
+            .spawn()
+            .expect("Failed to run script.")
+            .wait();
     }
 }
 

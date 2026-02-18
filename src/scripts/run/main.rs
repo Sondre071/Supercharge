@@ -1,11 +1,8 @@
-use crate::shared::menu;
+use crate::shared::menu::{self, Menu};
 use crate::shared::statics;
 use crate::shared::terminal::COLORS;
 
-use std::env;
-use std::fs;
-use std::path::PathBuf;
-use std::process;
+use std::{env, fs, path::PathBuf, process};
 
 pub fn main() {
     let path = statics::scripts_dir();
@@ -18,12 +15,15 @@ pub fn main() {
         process::exit(0)
     }
 
-    let choice = menu::run("Select script folder", None, choices, None);
+    let result = {
+        let menu = Menu::new("Select script folder", vec![""], choices);
+        menu::run(menu)
+    };
 
-    if let Some(folder) = choice {
+    if let Some((folder, _)) = result {
         let scripts = {
             let mut subdirectory_path = path.clone();
-            subdirectory_path.push(folder);
+            subdirectory_path.push(&folder);
 
             get_files(&subdirectory_path)
         };
@@ -40,30 +40,31 @@ pub fn main() {
             format!("Current directory: {}", displayed_path.display())
         };
 
-        let choice = menu::run("Select script", Some(vec![subheader.as_str(), ""]), options, None);
+        let (script, _) = {
+            let menu = Menu::new("Select script", vec![subheader.as_str(), ""], options);
+            menu::run(menu).unwrap()
+        };
 
-        if let Some(script) = choice {
-            let script_path = {
-                let mut script_path = path.clone();
-                script_path.push(folder);
-                script_path.push(script);
-                script_path.to_string_lossy().to_string()
-            };
+        let script_path = {
+            let mut script_path = path.clone();
+            script_path.push(folder);
+            script_path.push(script);
+            script_path.to_string_lossy().to_string()
+        };
 
-            let command_args = format!(
-                "Start-Process pwsh -ArgumentList '-ExecutionPolicy Bypass -File \"{}\"'",
-                script_path
-            );
+        let command_args = format!(
+            "Start-Process pwsh -ArgumentList '-ExecutionPolicy Bypass -File \"{}\"'",
+            script_path
+        );
 
-            let _ = process::Command::new("pwsh")
-                .args(["-Command", &command_args])
-                .spawn()
-                .expect("Failed to run script.")
-                .wait();
-        }
+        let _ = process::Command::new("pwsh")
+            .args(["-Command", &command_args])
+            .spawn()
+            .expect("Failed to run script.")
+            .wait();
+
+        process::exit(0)
     }
-    
-    process::exit(0)
 }
 
 fn get_directories(path: &PathBuf) -> Vec<String> {

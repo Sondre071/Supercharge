@@ -1,10 +1,10 @@
-use crate::blobstorage;
-use crate::shared::{menu, terminal};
+use crate::blobstorage::{api, types::FileDiff, utils};
+use std::process::exit;
+use crate::shared::{
+    menu::{self, Menu},
+    terminal,
+};
 
-use blobstorage::api;
-use blobstorage::types::FileDiff;
-use blobstorage::utils;
-use blobstorage::utils::types::StorageAccount;
 use create_diff::create_diff;
 use print_diff::print_diff;
 use select_local_container::select_local_container;
@@ -16,7 +16,14 @@ mod print_diff;
 mod select_local_container;
 mod sync_files;
 
-pub fn sync_container(account: &StorageAccount, all: bool) {
+pub fn sync_containers() {
+    let account = utils::select_storage_account();
+
+    let all = {
+        let (choice, _) = menu::run(Menu::new("Sync all?", vec![""], vec!["Yes", "No"])).unwrap();
+        choice.as_str() == "Yes"
+    };
+
     let containers = select_local_container(all);
     let containers_len = containers.len();
 
@@ -29,23 +36,22 @@ pub fn sync_container(account: &StorageAccount, all: bool) {
             reset = COLORS.Reset
         );
 
-        let mut blob_files = api::fetch_blobs(account, name.as_str());
+        let mut blob_files = api::fetch_blobs(&account, name.as_str());
 
         if blob_files.is_none() {
-            let choice = menu::run(
+            let (choice, _) = menu::run(Menu::new(
                 "Container not found",
-                Some(vec!["Create one?", ""]),
+                vec!["Create one?", ""],
                 vec!["Yes", "No"],
-                None,
-            )
+            ))
             .unwrap();
 
-            match choice {
+            match choice.as_str() {
                 "Yes" => {
-                    api::create_container(account, &name);
-                    blob_files = api::fetch_blobs(account, name.as_str());
+                    api::create_container(&account, &name);
+                    blob_files = api::fetch_blobs(&account, name.as_str());
                 }
-                _ => blobstorage::main(),
+                _ => exit(0),
             }
         }
 
@@ -61,10 +67,11 @@ pub fn sync_container(account: &StorageAccount, all: bool) {
         print_diff(&diff);
 
         if diff.sync_available() {
-            let choice = menu::run("Synchronize?", None, vec!["Yes", "No"], None).unwrap();
+            let (choice, _) =
+                menu::run(Menu::new("Synchronize?", vec![""], vec!["Yes", "No"])).unwrap();
 
             if choice == "Yes" {
-                sync_files(account, &name, diff);
+                sync_files(&account, &name, diff);
             }
         }
     }

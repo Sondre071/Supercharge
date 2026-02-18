@@ -1,10 +1,9 @@
-use crate::openrouter;
-use crate::shared::menu;
-
-use openrouter::api;
-use openrouter::api::types::InputMessage;
-use openrouter::types::Prompt;
-use openrouter::utils;
+use crate::openrouter::{
+    api::{self, types::InputMessage},
+    types::Prompt,
+    utils,
+};
+use crate::shared::menu::{self, Menu};
 
 pub fn new_chat() {
     let data = utils::get_local_data();
@@ -13,7 +12,7 @@ pub fn new_chat() {
 
     let prompt = select_prompt();
 
-    menu::write_headers("New chat", Some(&vec![&data.model, ""]));
+    menu::write_headers("New chat", vec![&data.model, ""]);
 
     loop {
         let message = menu::read_line("You: ");
@@ -75,7 +74,7 @@ fn select_prompt() -> Option<Prompt> {
         let mut prompt_names = vec!["None"];
         prompt_names.extend(prompts.iter().map(|p| p.name.as_str()));
 
-        let choice = menu::run("Select prompt", None, prompt_names, None).unwrap();
+        let (choice, _) = menu::run(Menu::new("Select prompt", vec![""], prompt_names)).unwrap();
 
         if choice != "None" {
             let file = prompts

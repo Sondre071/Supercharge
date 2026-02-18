@@ -1,10 +1,10 @@
 use std::process;
 
-//mod blobstorage;
-//mod openrouter;
-//mod scripts;
+mod blobstorage;
+mod openrouter;
+mod scripts;
 mod shared;
-//mod snippets;
+mod snippets;
 
 use shared::menu::{Item, Menu};
 
@@ -17,22 +17,28 @@ fn main() {
             vec![""],
             vec![
                 Item::new_with_subitems("OpenRouter", vec!["New chat", "Settings"]),
-                Item::new_with_subitems("Blobstorage", vec!["Sync", "Browse", "Settings"]),
+                Item::new_with_subitems("Blobstorage", vec!["Sync", "Browse"]),
                 Item::new("Scripts"),
-                Item::new_with_subitems("Snippets", vec!["Run", "Create new"]),
+                Item::new_with_subitems("Snippets", vec!["Browse", "Add new"]),
                 Item::new("Exit"),
             ],
         );
-        //let result = shared::menu::run(menu.clone()).unwrap();
-        let result = shared::menu::run(menu.clone()).unwrap();
 
-        //match result {
-        //    "OpenRouter" => openrouter::main(),
-        //    "Blobstorage" => blobstorage::main(),
-        //    "Scripts" => scripts::main(),
-        //    "Snippets" => snippets::main(),
-        //    _ => process::exit(0),
-        //}
+        let (module, option) = shared::menu::run(menu).unwrap();
+
+        match (module.as_str(), option.as_deref()) {
+            ("OpenRouter", Some("New chat")) => openrouter::new_chat(),
+            ("OpenRouter", Some("Settings")) => openrouter::settings(),
+
+            ("Blobstorage", Some("Sync")) => blobstorage::sync_containers(),
+            ("Blobstorage", Some("Browse")) => blobstorage::browse_containers(),
+            ("Scripts", None) => scripts::main(),
+
+            ("Snippets", Some("Browse")) => snippets::browse_snippets(),
+            ("Snippets", Some("Add new")) => snippets::add_snippet(),
+
+            _ => process::exit(0),
+        }
     }
 }
 

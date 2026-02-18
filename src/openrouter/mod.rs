@@ -3,4 +3,4 @@ mod types;
 mod utils;
 
 mod run;
-pub use run::main;
+pub use run::{settings, new_chat};

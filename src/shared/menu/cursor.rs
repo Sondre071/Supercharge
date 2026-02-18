@@ -1,8 +1,6 @@
 use crate::shared::menu::{Item, Menu};
 use crate::shared::terminal::{ACTIONS, COLORS};
 
-use std::process;
-
 pub enum Focus {
     BaseMenu,
     SubMenu,
@@ -106,10 +104,10 @@ impl Cursor {
         };
 
         format!(
-            "{}{white}| {color}{prefix}{}{reset}",
+            "{}{gray}│ {color}{prefix}{}{reset}",
             base_menu_line,
             text,
-            white = COLORS.White,
+            gray = COLORS.DarkGray,
             reset = COLORS.Reset
         )
     }

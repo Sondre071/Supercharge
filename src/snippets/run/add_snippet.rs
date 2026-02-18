@@ -25,7 +25,7 @@ pub fn add_snippet() {
         .wait();
 
     if fs::exists(&temp_file_path).unwrap() {
-        menu::write_headers("New snippet", Some(&vec!["Enter name", ""]));
+        menu::write_headers("New snippet", vec!["Enter name", ""]);
 
         let new_name = menu::read_line("File name: ").trim().to_owned();
 

@@ -1,5 +1,6 @@
 #[allow(non_snake_case, dead_code)]
 pub struct Colors {
+    pub Black: &'static str,
     pub Gray: &'static str,
     pub DarkGray: &'static str,
     pub White: &'static str,
@@ -35,6 +36,7 @@ pub struct Actions {
 
 #[allow(non_snake_case, dead_code)]
 pub const COLORS: Colors = Colors {
+    Black: "\x1b[0;30m",
     Gray: "\x1b[0;37m",
     DarkGray: "\x1b[1;30m",
     White: "\x1b[1;37m",

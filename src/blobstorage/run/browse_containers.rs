@@ -1,18 +1,19 @@
-use crate::blobstorage;
-use crate::shared::{menu, terminal};
+use crate::blobstorage::{api, utils::select_storage_account};
+use crate::shared::{
+    menu::{self, Menu},
+    terminal::COLORS,
+};
 
-use blobstorage::api;
-use blobstorage::utils::types::StorageAccount;
-use terminal::COLORS;
+pub fn browse_containers() {
+    let account = select_storage_account();
 
-pub fn browse_containers(account: &StorageAccount) {
-    let containers = api::fetch_containers(account).unwrap();
+    let containers = api::fetch_containers(&account).unwrap();
 
     let options: Vec<&str> = containers.iter().map(|s| s.as_str()).collect();
 
-    let container = menu::run("Containers", None, options, None).unwrap();
+    let (container, _) = menu::run(Menu::new("Containers", vec![""], options)).unwrap();
 
-    let blobs = api::fetch_blobs(account, container).unwrap();
+    let blobs = api::fetch_blobs(&account, &container).unwrap();
 
     for blob in blobs.values() {
         println!(

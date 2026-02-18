@@ -1,16 +1,15 @@
 use crate::openrouter;
-use crate::shared::menu;
+use crate::shared::menu::{self, Menu};
 
 pub fn settings() {
-    if let Some(result) = menu::run(
+    let (choice, _) = menu::run(Menu::new(
         "OpenRouter settings",
-        None,
+        vec![""],
         vec!["Select model", "Back"],
-        None,
-    ) {
-        match result {
-            "Select model" => openrouter::run::select_model(),
-            _ => openrouter::main(),
-        }
+    ))
+    .unwrap();
+
+    if choice.as_str() == "Select model" {
+        openrouter::run::select_model();
     }
 }

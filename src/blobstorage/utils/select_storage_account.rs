@@ -1,8 +1,5 @@
-use crate::blobstorage;
-use crate::shared::menu;
-
-use blobstorage::utils;
-use blobstorage::utils::types::StorageAccount;
+use crate::blobstorage::utils::{self, types::StorageAccount};
+use crate::shared::menu::{self, Menu};
 
 pub fn select_storage_account() -> StorageAccount {
     let data = utils::get_blob_settings();
@@ -20,7 +17,7 @@ pub fn select_storage_account() -> StorageAccount {
             .map(|a| a.name.as_str())
             .collect();
 
-        let name = menu::run("Select account", None, options, None).unwrap();
+        let (name, _) = menu::run(Menu::new("Select account", vec![""], options)).unwrap();
 
         data.storage_accounts
             .iter()

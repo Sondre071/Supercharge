@@ -27,7 +27,6 @@ impl Item {
     }
 }
 
-#[derive(Clone)]
 pub struct Menu {
     pub header: String,
     pub subheaders: Vec<String>,

@@ -1,8 +1,4 @@
-mod sync_container;
-use sync_container::sync_container;
-
+mod sync_containers;
 mod browse_containers;
-use browse_containers::browse_containers;
 
-mod main;
-pub use main::main;
+pub use {browse_containers::browse_containers, sync_containers::sync_containers};

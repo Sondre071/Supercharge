@@ -5,7 +5,7 @@ use crate::shared::{
 
 use menu::cursor::{self, Focus};
 
-pub fn run<'a>(menu: Menu) -> Option<(String, Option<String>)> {
+pub fn run(menu: Menu) -> Option<(String, Option<String>)> {
     let mut cursor = cursor::Cursor::new(menu);
     terminal::set_cursor_visibility(false);
 

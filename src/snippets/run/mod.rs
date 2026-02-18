@@ -1,5 +1,5 @@
 mod add_snippet;
-mod main;
+mod browse_snippets;
 
-use add_snippet::add_snippet;
-pub use main::main;
+pub use add_snippet::add_snippet;
+pub use browse_snippets::browse_snippets;

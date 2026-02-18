@@ -1,10 +1,11 @@
 use crate::shared::{
     menu::{self, Cursor, Item, NONE},
     statics::snippets_path,
+    terminal::{COLORS},
 };
 use crate::snippets::utils::get_snippet_names;
 
-use std::process;
+use std::{fs, process};
 
 pub fn browse_snippets() {
     let names = get_snippet_names();
@@ -27,7 +28,7 @@ pub fn browse_snippets() {
     };
 
     let mut snippet_path = snippets_path();
-    snippet_path.push(snippet);
+    snippet_path.push(&snippet);
 
     match action.as_deref() {
         Some("Open") => {
@@ -36,21 +37,40 @@ pub fn browse_snippets() {
                 .spawn()
                 .expect("Failed to open neovim.")
                 .wait();
+
+            menu::clear_screen();
+            process::exit(0);
         }
         Some("Copy") => {
-            println!("Not implemented yet.");
+            let mut clip = arboard::Clipboard::new().unwrap();
+            let content = fs::read_to_string(&snippet_path).expect("Failed to open snippet.");
+            clip.set_text(content).unwrap();
+
+            process::exit(0);
         }
         Some("Delete") => {
             if let Some((choice, _)) = menu::run(&mut Cursor::new(
-                "Are you sure you with to delete?",
-                NONE,
+                "Delete snippet",
+                Some(vec![
+                    format!("Name: {}", &snippet),
+                    "Are you sure?".to_string(),
+                    "".to_string(),
+                ]),
                 vec!["Yes", "No"],
             )) && choice == "No"
             {
                 return;
             }
-            
-            unreachable!()
+
+            fs::remove_file(snippet_path).unwrap();
+
+            println!(
+                "{white}{} {yellow}deleted.\n{reset}",
+                snippet,
+                white = COLORS.White,
+                yellow = COLORS.Yellow,
+                reset = COLORS.Reset
+            );
         }
         _ => {}
     }

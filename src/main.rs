@@ -16,7 +16,7 @@ fn main() {
             Item::new_with_subitems("OpenRouter", vec!["New chat", "Settings"]),
             Item::new_with_subitems("Blobstorage", vec!["Sync", "Browse"]),
             Item::new("Scripts"),
-            Item::new_with_subitems("Snippets", vec!["Browse", "Add new"]),
+            Item::new_with_subitems("Snippets", vec!["Browse", "Open folder"]),
             Item::new("Exit"),
         ],
     );
@@ -35,7 +35,7 @@ fn main() {
             ("Scripts", None) => scripts::main(),
 
             ("Snippets", Some("Browse")) => snippets::browse_snippets(),
-            ("Snippets", Some("Add new")) => snippets::add_snippet(),
+            ("Snippets", Some("Open folder")) => snippets::open_folder(),
 
             _ => return,
         }

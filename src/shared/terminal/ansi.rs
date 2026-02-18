@@ -32,6 +32,8 @@ pub struct Backgrounds {
 #[allow(non_snake_case, dead_code)]
 pub struct Actions {
     pub ClearLine: &'static str,
+    pub ClearScreen: &'static str,
+    pub ResetLocation: &'static str,
 }
 
 #[allow(non_snake_case, dead_code)]
@@ -67,4 +69,6 @@ pub const BACKGROUNDS: Backgrounds = Backgrounds {
 
 pub const ACTIONS: Actions = Actions {
     ClearLine: "\x1b[2K",
+    ClearScreen: "\x1b[2J",
+    ResetLocation: "\x1b[H",
 };

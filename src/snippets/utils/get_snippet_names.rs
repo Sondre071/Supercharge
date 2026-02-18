@@ -16,8 +16,6 @@ pub fn get_snippet_names() -> Vec<String> {
             f.file_name()
                 .to_string_lossy()
                 .to_string()
-                .strip_suffix(".txt")
-                .unwrap()
                 .to_owned()
         })
         .collect()

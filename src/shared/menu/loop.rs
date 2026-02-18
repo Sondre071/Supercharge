@@ -1,17 +1,15 @@
-use crate::shared::{menu, terminal};
+use crate::shared::{
+    menu::{self, Menu},
+    terminal,
+};
 
 use menu::cursor::{self, Focus};
 
-pub fn run<'a>(
-    header: &'a str,
-    subheaders: Option<Vec<&'a str>>,
-    items: Vec<&'a str>,
-    submenu_items: Option<Vec<&'a str>>,
-) -> Option<&'a str> {
-    let mut cursor = cursor::Cursor::new(header, subheaders, items, submenu_items);
+pub fn run<'a>(menu: Menu) -> Option<(String, Option<String>)> {
+    let mut cursor = cursor::Cursor::new(menu);
     terminal::set_cursor_visibility(false);
 
-    menu::write_headers(cursor.header, Some(&cursor.subheaders));
+    menu::write_headers(cursor.header.clone(), cursor.subheaders.clone());
 
     let mut start_y = terminal::get_cursor_pos().Y;
 
@@ -31,7 +29,7 @@ pub fn run<'a>(
                         return None;
                     }
                     Focus::SubMenu => {
-                        cursor.submenu.current = 0;
+                        cursor.submenu_current = 0;
                         cursor.focus = Focus::BaseMenu
                     }
                 },
@@ -51,8 +49,10 @@ pub fn run<'a>(
                         }
                     }
                     Focus::SubMenu => {
-                        if cursor.submenu.current < cursor.submenu.items.len() - 1 {
-                            cursor.submenu.current += 1;
+                        let current_item = &cursor.items[cursor.current];
+
+                        if cursor.submenu_current < current_item.items.len() - 1 {
+                            cursor.submenu_current += 1;
                         }
                     }
                 },
@@ -69,30 +69,36 @@ pub fn run<'a>(
                         }
                     }
                     Focus::SubMenu => {
-                        if cursor.submenu.current > 0 {
-                            cursor.submenu.current -= 1;
+                        if cursor.submenu_current > 0 {
+                            cursor.submenu_current -= 1;
                         }
                     }
                 },
 
-                'l' => match (&cursor.focus, &cursor.submenu.items.is_empty()) {
-                    (Focus::BaseMenu, false) => {
-                        cursor.focus = Focus::SubMenu;
-                    }
-                    (Focus::BaseMenu, true) => {
-                        menu::clear_menu(cursor.total_height);
-                        terminal::set_cursor_visibility(true);
-                        return Some(cursor.items[cursor.current]);
-                    }
-                    _ => {
-                        menu::clear_menu(cursor.total_height);
-                        terminal::set_cursor_visibility(true);
+                'l' => {
+                    let current_item = &cursor.items[cursor.current];
 
-                        let return_item = &cursor.submenu.items[cursor.submenu.current];
+                    match (&cursor.focus, current_item.items.is_empty()) {
+                        (Focus::BaseMenu, false) => {
+                            cursor.focus = Focus::SubMenu;
+                        }
+                        (Focus::BaseMenu, true) => {
+                            menu::clear_menu(cursor.total_height);
+                            terminal::set_cursor_visibility(true);
 
-                        return Some(return_item);
+                            return Some((current_item.value.clone(), None));
+                        }
+                        _ => {
+                            menu::clear_menu(cursor.total_height);
+                            terminal::set_cursor_visibility(true);
+
+                            return Some((
+                                current_item.value.clone(),
+                                Some(current_item.items[cursor.submenu_current].clone()),
+                            ));
+                        }
                     }
-                },
+                }
 
                 _ => {
                     continue;

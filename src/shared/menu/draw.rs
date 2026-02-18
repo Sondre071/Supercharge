@@ -3,12 +3,16 @@ use crate::shared::terminal::COLORS;
 use std::io::Write;
 use std::iter;
 
-pub fn write_headers(header: &str, subheaders: Option<&Vec<&str>>) {
+pub fn write_headers<H, S>(header: H, subheaders: Vec<S>)
+where
+    H: AsRef<str>,
+    S: AsRef<str>,
+{
     let header_text = {
         let width: usize = 30;
 
         // Truncate
-        let mut header_str = header.to_string();
+        let mut header_str = header.as_ref().to_string();
 
         if header_str.chars().count() > width {
             let truncated: String = header_str.chars().take(width - 2).collect();
@@ -31,15 +35,13 @@ pub fn write_headers(header: &str, subheaders: Option<&Vec<&str>>) {
         reset = COLORS.Reset
     );
 
-    if let Some(items) = subheaders {
-        for subheader in items.iter() {
-            println!(
-                "{yellow}{}{reset}",
-                subheader,
-                yellow = COLORS.Yellow,
-                reset = COLORS.Reset
-            )
-        }
+    for subheader in subheaders.iter() {
+        println!(
+            "{yellow}{}{reset}",
+            subheader.as_ref(),
+            yellow = COLORS.Yellow,
+            reset = COLORS.Reset
+        )
     }
 }
 

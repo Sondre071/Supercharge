@@ -1,73 +1,59 @@
+use crate::shared::menu::{Item, Menu};
 use crate::shared::terminal::{ACTIONS, COLORS};
+
+use std::process;
 
 pub enum Focus {
     BaseMenu,
     SubMenu,
 }
 
-pub struct Cursor<'a> {
-    pub header: &'a str,
-    pub subheaders: Vec<&'a str>,
-
-    pub items: Vec<&'a str>,
-    pub current: usize,
-    pub visible_items: usize,
-    pub total_height: usize,
-    pub offset: usize,
+pub struct Cursor {
+    pub header: String,
+    pub subheaders: Vec<String>,
+    pub items: Vec<Item>,
 
     pub focus: Focus,
-    pub submenu: Submenu<'a>,
-}
 
-pub struct Submenu<'a> {
     pub current: usize,
-    pub items: Vec<&'a str>,
-    x_offset: usize,
+    pub submenu_current: usize,
+    pub submenu_x_offset: usize,
+
+    pub offset: usize,
+    pub visible_items: usize,
+    pub total_height: usize,
 }
 
-impl<'a> Cursor<'a> {
-    pub fn new(
-        header: &'a str,
-        subheaders: Option<Vec<&'a str>>,
-        items: Vec<&'a str>,
-        submenu_items: Option<Vec<&'a str>>,
-    ) -> Self {
-        let subheaders = subheaders.unwrap_or(vec![]);
-        let visible_items = items.len().min(20);
-        let total_height = 1 + subheaders.len() + visible_items;
-
-        let submenu = Submenu {
-            current: 0,
-            items: submenu_items.unwrap_or_default(),
-            x_offset: items.iter().map(|i| i.len()).max().unwrap() + 4,
-        };
+impl Cursor {
+    pub fn new(menu: Menu) -> Self {
+        let visible_items = menu.items.len().min(20);
+        let total_height = 1 + menu.subheaders.len() + visible_items;
 
         Self {
-            header,
-            subheaders,
-            items,
+            header: menu.header,
+            subheaders: menu.subheaders,
+            items: menu.items.clone(),
+
+            focus: Focus::BaseMenu,
+
             current: 0,
+            submenu_current: 0,
+            submenu_x_offset: menu.items.iter().map(|i| i.value.len()).max().unwrap() + 4,
+
             offset: 0,
             visible_items,
             total_height,
-            focus: Focus::BaseMenu,
-            submenu,
         }
     }
 
     pub fn render_menu(&self) {
         let mut lines: Vec<String> = Vec::new();
 
-        let pad_left = if !self.submenu.items.is_empty() {
-            self.submenu.x_offset
-        } else {
-            0
-        };
-
         let height = self.items.len().min(20);
-        let offset = self.offset;
 
-        for i in offset..(height + offset) {
+        for i in self.offset..(height + self.offset) {
+            let current_item = self.items[i].clone();
+
             let mut line = {
                 let prefix = if i == self.current { "> " } else { "  " };
 
@@ -78,9 +64,9 @@ impl<'a> Cursor<'a> {
                     (false, Focus::SubMenu) => COLORS.DarkGray,
                 };
 
-                let content = format!("{}{}", prefix, self.items[i]);
+                let content = format!("{}{}", prefix, current_item.value.clone());
 
-                let text = format!("{:<width$}", content, width = pad_left);
+                let text = format!("{:<width$}", content, width = self.submenu_x_offset);
 
                 format!(
                     "{clear_line}{color}{}{reset}",
@@ -91,8 +77,10 @@ impl<'a> Cursor<'a> {
                 )
             };
 
-            if matches!(self.focus, Focus::SubMenu) {
-                line = self.add_submenu_text(i, line);
+            if matches!(self.focus, Focus::SubMenu) && i < self.items[self.current].items.len() {
+                let submenu_items = self.items[self.current].clone();
+                
+                line = self.add_submenu_text(i, submenu_items, line);
             }
 
             lines.push(line);
@@ -103,25 +91,26 @@ impl<'a> Cursor<'a> {
         }
     }
 
-    fn add_submenu_text(&self, index: usize, base_menu_line: String) -> String {
-        if index < self.submenu.items.len() {
-            let text = self.submenu.items[index];
+    fn add_submenu_text(
+        &self,
+        i: usize,
+        current_item: Item,
+        base_menu_line: String,
+    ) -> String {
+        let text = current_item.items[i].clone();
 
-            let (prefix, color) = if index == self.submenu.current {
-                ("> ", COLORS.Yellow)
-            } else {
-                ("  ", COLORS.Gray)
-            };
-
-            format!(
-                "{}{white}| {color}{prefix}{}{reset}",
-                base_menu_line,
-                text,
-                white = COLORS.White,
-                reset = COLORS.Reset
-            )
+        let (prefix, color) = if i == self.submenu_current {
+            ("> ", COLORS.Yellow)
         } else {
-            base_menu_line
-        }
+            ("  ", COLORS.Gray)
+        };
+
+        format!(
+            "{}{white}| {color}{prefix}{}{reset}",
+            base_menu_line,
+            text,
+            white = COLORS.White,
+            reset = COLORS.Reset
+        )
     }
 }

@@ -1,11 +1,13 @@
-use crate::shared::menu::{Item, Menu};
+use crate::shared::menu::{Item};
 use crate::shared::terminal::{ACTIONS, COLORS};
 
+#[derive(Clone)]
 pub enum Focus {
     BaseMenu,
     SubMenu,
 }
 
+#[derive(Clone)]
 pub struct Cursor {
     pub header: String,
     pub subheaders: Vec<String>,
@@ -23,20 +25,25 @@ pub struct Cursor {
 }
 
 impl Cursor {
-    pub fn new(menu: Menu) -> Self {
-        let visible_items = menu.items.len().min(20);
-        let total_height = 1 + menu.subheaders.len() + visible_items;
+    pub fn new(
+        header: String,
+        subheaders: Vec<String>,
+        items: Vec<Item>,
+    ) -> Self {
+        let visible_items = items.len().min(20);
+        let total_height = 1 + subheaders.len() + visible_items;
+        let submenu_x_offset = items.iter().map(|i| i.value.len()).max().unwrap() + 4;
 
         Self {
-            header: menu.header,
-            subheaders: menu.subheaders,
-            items: menu.items.clone(),
+            header,
+            subheaders,
+            items,
 
             focus: Focus::BaseMenu,
 
             current: 0,
             submenu_current: 0,
-            submenu_x_offset: menu.items.iter().map(|i| i.value.len()).max().unwrap() + 4,
+            submenu_x_offset,
 
             offset: 0,
             visible_items,

@@ -1,7 +1,6 @@
 use crate::shared::terminal::COLORS;
 
-use std::io::Write;
-use std::iter;
+use std::{io::Write, iter};
 
 pub fn write_headers<H, S>(header: H, subheaders: Vec<S>)
 where

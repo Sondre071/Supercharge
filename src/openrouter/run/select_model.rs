@@ -10,7 +10,7 @@ pub fn select_model() {
         let data = utils::get_local_data();
         let models = api::fetch_models(&data.api_key);
 
-        menu::run(Menu::new(
+        menu::run(&mut Menu::new(
             "Select model",
             vec![""],
             models.iter().map(|m| m.as_str()).collect()

@@ -13,7 +13,7 @@ pub fn select_local_container(all: bool) -> HashMap<String, PathBuf> {
         let parent_dir = utils::select_directory().unwrap();
         let parent_path = parent_dir.1;
 
-        let (confirm, _) = menu::run(Menu::new(
+        let (confirm, _) = menu::run(&mut Menu::new(
             "Correct folder?",
             vec![&parent_dir.0, ""],
             vec!["Yes", "No"],

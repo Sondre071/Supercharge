@@ -74,7 +74,7 @@ fn select_prompt() -> Option<Prompt> {
         let mut prompt_names = vec!["None"];
         prompt_names.extend(prompts.iter().map(|p| p.name.as_str()));
 
-        let (choice, _) = menu::run(Menu::new("Select prompt", vec![""], prompt_names)).unwrap();
+        let (choice, _) = menu::run(&mut Menu::new("Select prompt", vec![""], prompt_names)).unwrap();
 
         if choice != "None" {
             let file = prompts

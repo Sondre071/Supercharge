@@ -17,7 +17,7 @@ pub fn select_storage_account() -> StorageAccount {
             .map(|a| a.name.as_str())
             .collect();
 
-        let (name, _) = menu::run(Menu::new("Select account", vec![""], options)).unwrap();
+        let (name, _) = menu::run(&mut Menu::new("Select account", vec![""], options)).unwrap();
 
         data.storage_accounts
             .iter()

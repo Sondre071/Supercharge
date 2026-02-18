@@ -16,8 +16,8 @@ pub fn main() {
     }
 
     let result = {
-        let menu = Menu::new("Select script folder", vec![""], choices);
-        menu::run(menu)
+        let mut menu = Menu::new("Select script folder", vec![""], choices);
+        menu::run(&mut menu)
     };
 
     if let Some((folder, _)) = result {
@@ -40,30 +40,30 @@ pub fn main() {
             format!("Current directory: {}", displayed_path.display())
         };
 
-        let (script, _) = {
-            let menu = Menu::new("Select script", vec![subheader.as_str(), ""], options);
-            menu::run(menu).unwrap()
+        let result = {
+            let mut menu = Menu::new("Select script", vec![subheader.as_str(), ""], options);
+            menu::run(&mut menu)
         };
 
-        let script_path = {
-            let mut script_path = path.clone();
-            script_path.push(folder);
-            script_path.push(script);
-            script_path.to_string_lossy().to_string()
-        };
+        if let Some((script, _)) = result {
+            let script_path = {
+                let mut script_path = path.clone();
+                script_path.push(folder);
+                script_path.push(script);
+                script_path.to_string_lossy().to_string()
+            };
 
-        let command_args = format!(
-            "Start-Process pwsh -ArgumentList '-ExecutionPolicy Bypass -File \"{}\"'",
-            script_path
-        );
+            let command_args = format!(
+                "Start-Process pwsh -ArgumentList '-ExecutionPolicy Bypass -File \"{}\"'",
+                script_path
+            );
 
-        let _ = process::Command::new("pwsh")
-            .args(["-Command", &command_args])
-            .spawn()
-            .expect("Failed to run script.")
-            .wait();
-
-        process::exit(0)
+            let _ = process::Command::new("pwsh")
+                .args(["-Command", &command_args])
+                .spawn()
+                .expect("Failed to run script.")
+                .wait();
+        }
     }
 }
 

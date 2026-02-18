@@ -11,20 +11,20 @@ use shared::menu::{Item, Menu};
 fn main() {
     jump_up_one_row();
 
+    let mut menu = Menu::new_with_subitems(
+        "Supercharge",
+        vec![""],
+        vec![
+            Item::new_with_subitems("OpenRouter", vec!["New chat", "Settings"]),
+            Item::new_with_subitems("Blobstorage", vec!["Sync", "Browse"]),
+            Item::new("Scripts"),
+            Item::new_with_subitems("Snippets", vec!["Browse", "Add new"]),
+            Item::new("Exit"),
+        ],
+    );
+    
     loop {
-        let menu = Menu::new_with_subitems(
-            "Supercharge",
-            vec![""],
-            vec![
-                Item::new_with_subitems("OpenRouter", vec!["New chat", "Settings"]),
-                Item::new_with_subitems("Blobstorage", vec!["Sync", "Browse"]),
-                Item::new("Scripts"),
-                Item::new_with_subitems("Snippets", vec!["Browse", "Add new"]),
-                Item::new("Exit"),
-            ],
-        );
-
-        let (module, option) = shared::menu::run(menu).unwrap();
+        let (module, option) = shared::menu::run(&mut menu).unwrap();
 
         match (module.as_str(), option.as_deref()) {
             ("OpenRouter", Some("New chat")) => openrouter::new_chat(),

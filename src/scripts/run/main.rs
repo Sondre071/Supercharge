@@ -52,20 +52,31 @@ pub fn main() {
         let script_path = {
             let mut script_path = path.clone();
             script_path.push(folder);
-            script_path.push(script);
+            script_path.push(&script);
             script_path.to_string_lossy().to_string()
         };
 
-        let command_args = format!(
-            "Start-Process pwsh -ArgumentList '-ExecutionPolicy Bypass -File \"{}\"'",
-            script_path
+        println!(
+            "{yellow}Running {white}{}{reset}\n",
+            script,
+            yellow = COLORS.Yellow,
+            white = COLORS.White,
+            reset = COLORS.Reset
         );
 
         let _ = process::Command::new("pwsh")
-            .args(["-Command", &command_args])
+            .args([
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "ByPass",
+                "-File",
+                &script_path,
+            ])
             .spawn()
             .expect("Failed to run script.")
             .wait();
+
+        process::exit(0);
     }
 }
 

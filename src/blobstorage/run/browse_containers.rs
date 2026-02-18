@@ -1,6 +1,6 @@
 use crate::blobstorage::{api, utils::select_storage_account};
 use crate::shared::{
-    menu::{self, Menu},
+    menu::{self, Cursor},
     terminal::COLORS,
 };
 
@@ -11,7 +11,7 @@ pub fn browse_containers() {
 
     let options: Vec<&str> = containers.iter().map(|s| s.as_str()).collect();
 
-    let (container, _) = menu::run(&mut Menu::new("Containers", vec![""], options)).unwrap();
+    let (container, _) = menu::run(&mut Cursor::new("Containers", vec![""], options)).unwrap();
 
     let blobs = api::fetch_blobs(&account, &container).unwrap();
 

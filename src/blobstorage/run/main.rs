@@ -1,5 +1,5 @@
 use crate::blobstorage;
-use crate::shared::menu::{self, Menu};
+use crate::shared::menu::{self, Cursor};
 
 use blobstorage::run;
 use blobstorage::utils;
@@ -7,7 +7,7 @@ use blobstorage::utils;
 pub fn main() {
     let account = utils::select_storage_account();
 
-    let (result, _) = menu::run(Menu::new(
+    let (result, _) = menu::run(Cursor::new(
         "Blob Storage",
         vec![""],
         vec![

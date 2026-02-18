@@ -6,12 +6,12 @@ mod scripts;
 mod shared;
 mod snippets;
 
-use shared::menu::{Item, Menu};
+use shared::menu::{Item, Cursor};
 
 fn main() {
     jump_up_one_row();
 
-    let mut menu = Menu::new_with_subitems(
+    let mut menu = Cursor::new_with_subitems(
         "Supercharge",
         vec![""],
         vec![

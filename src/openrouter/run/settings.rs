@@ -1,8 +1,8 @@
 use crate::openrouter;
-use crate::shared::menu::{self, Menu};
+use crate::shared::menu::{self, Cursor};
 
 pub fn settings() {
-    let (choice, _) = menu::run(&mut Menu::new(
+    let (choice, _) = menu::run(&mut Cursor::new(
         "OpenRouter settings",
         vec![""],
         vec!["Select model", "Back"],

@@ -1,5 +1,5 @@
 use crate::blobstorage;
-use crate::shared::menu::{self, Menu};
+use crate::shared::menu::{self, Cursor};
 
 use blobstorage::utils;
 use std::collections::HashMap;
@@ -13,7 +13,7 @@ pub fn select_local_container(all: bool) -> HashMap<String, PathBuf> {
         let parent_dir = utils::select_directory().unwrap();
         let parent_path = parent_dir.1;
 
-        let (confirm, _) = menu::run(&mut Menu::new(
+        let (confirm, _) = menu::run(&mut Cursor::new(
             "Correct folder?",
             vec![&parent_dir.0, ""],
             vec!["Yes", "No"],

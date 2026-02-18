@@ -1,5 +1,5 @@
 use crate::openrouter;
-use crate::shared::{menu::{self, Menu}, terminal};
+use crate::shared::{menu::{self, Cursor}, terminal};
 
 use openrouter::api;
 use openrouter::utils;
@@ -10,7 +10,7 @@ pub fn select_model() {
         let data = utils::get_local_data();
         let models = api::fetch_models(&data.api_key);
 
-        menu::run(&mut Menu::new(
+        menu::run(&mut Cursor::new(
             "Select model",
             vec![""],
             models.iter().map(|m| m.as_str()).collect()

@@ -15,7 +15,7 @@ pub fn select_local_container(all: bool) -> HashMap<String, PathBuf> {
 
         let (confirm, _) = menu::run(&mut Cursor::new(
             "Correct folder?",
-            vec![&parent_dir.0, ""],
+            Some(vec![&parent_dir.0, ""]),
             vec!["Yes", "No"],
         ))
         .unwrap();

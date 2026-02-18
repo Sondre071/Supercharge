@@ -3,7 +3,7 @@ use crate::openrouter::{
     types::Prompt,
     utils,
 };
-use crate::shared::menu::{self, Cursor};
+use crate::shared::menu::{self, Cursor, NONE};
 
 pub fn new_chat() {
     let data = utils::get_local_data();
@@ -80,7 +80,7 @@ fn select_prompt() -> Option<Option<Prompt>> {
         let mut prompt_names = vec!["None"];
         prompt_names.extend(prompts.iter().map(|p| p.name.as_str()));
 
-        let (choice, _) = menu::run(&mut Cursor::new("Select prompt", vec![""], prompt_names))?;
+        let (choice, _) = menu::run(&mut Cursor::new("Select prompt", NONE, prompt_names))?;
 
         if choice != "None" {
             let file = prompts

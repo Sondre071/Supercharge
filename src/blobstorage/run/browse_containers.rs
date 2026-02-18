@@ -1,6 +1,6 @@
 use crate::blobstorage::{api, utils::select_storage_account};
 use crate::shared::{
-    menu::{self, Cursor},
+    menu::{self, Cursor, NONE},
     terminal::COLORS,
 };
 
@@ -13,7 +13,7 @@ pub fn browse_containers() {
 
     let container = {
         let Some((container, _)) =
-            menu::run(&mut Cursor::new("Select container", vec![""], options))
+            menu::run(&mut Cursor::new("Select container", NONE, options))
         else {
             return;
         };

@@ -20,12 +20,14 @@ pub fn sync_containers() {
     let account = utils::select_storage_account();
 
     let all: bool = {
-        let Some((choice, _)) =
-            menu::run(&mut Cursor::new("Sync all?", vec![""], vec!["Yes", "No"]))
-        else {
+        let Some((choice, _)) = menu::run(&mut Cursor::new(
+            "Sync all?",
+            Some(vec![""]),
+            vec!["Yes", "No"],
+        )) else {
             return;
         };
-        
+
         choice.as_str() == "Yes"
     };
 
@@ -46,7 +48,7 @@ pub fn sync_containers() {
         if blob_files.is_none() {
             let (choice, _) = menu::run(&mut Cursor::new(
                 "Container not found",
-                vec!["Create one?", ""],
+                Some(vec!["Create one?", ""]),
                 vec!["Yes", "No"],
             ))
             .unwrap();
@@ -74,7 +76,7 @@ pub fn sync_containers() {
         if diff.sync_available() {
             let (choice, _) = menu::run(&mut Cursor::new(
                 "Synchronize?",
-                vec![""],
+                Some(vec![""]),
                 vec!["Yes", "No"],
             ))
             .unwrap();

@@ -22,6 +22,8 @@ impl Item {
     }
 }
 
+pub const NONE: Option<Vec<String>> = None;
+
 #[derive(Clone)]
 pub enum Focus {
     BaseMenu,
@@ -46,25 +48,30 @@ pub struct Cursor {
 }
 
 impl Cursor {
-    pub fn new(
-        header: impl Into<String>,
-        subheaders: Vec<impl Into<String>>,
-        items: Vec<impl Into<String>>,
-    ) -> Self {
+    pub fn new<S, SH, I>(header: S, subheaders: Option<Vec<SH>>, items: Vec<I>) -> Self
+    where
+        S: Into<String>,
+        SH: Into<String>,
+        I: Into<String>,
+    {
         Self::init(
             header.into(),
-            subheaders.into_iter().map(Into::into).collect(),
+            subheaders.into_iter().flatten().map(Into::into).collect(),
             items.into_iter().map(Item::new).collect(),
         )
     }
 
-    pub fn new_with_subitems(
-        header: impl Into<String>,
-        subheaders: Vec<impl Into<String>>,
+    pub fn new_with_subitems<S, SH>(
+        header: S,
+        subheaders: Option<Vec<SH>>,
         items: Vec<Item>,
-    ) -> Self {
+    ) -> Self
+    where
+        S: Into<String>,
+        SH: Into<String>,
+    {
         let header = header.into();
-        let subheaders = subheaders.into_iter().map(Into::into).collect();
+        let subheaders = subheaders.into_iter().flatten().map(Into::into).collect();
 
         Self::init(header, subheaders, items)
     }

@@ -4,14 +4,14 @@ mod scripts;
 mod shared;
 mod snippets;
 
-use shared::menu::{Cursor, Item};
+use shared::menu::{Cursor, Item, NONE};
 
 fn main() {
     jump_up_one_row();
 
     let mut menu = Cursor::new_with_subitems(
         "Supercharge",
-        vec![""],
+        NONE,
         vec![
             Item::new_with_subitems("OpenRouter", vec!["New chat", "Settings"]),
             Item::new_with_subitems("Blobstorage", vec!["Sync", "Browse"]),

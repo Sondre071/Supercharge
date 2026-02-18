@@ -1,5 +1,5 @@
 use crate::blobstorage::utils::{self, types::StorageAccount};
-use crate::shared::menu::{self, Cursor};
+use crate::shared::menu::{self, Cursor, NONE};
 
 pub fn select_storage_account() -> StorageAccount {
     let data = utils::get_blob_settings();
@@ -17,7 +17,7 @@ pub fn select_storage_account() -> StorageAccount {
             .map(|a| a.name.as_str())
             .collect();
 
-        let (name, _) = menu::run(&mut Cursor::new("Select account", vec![""], options)).unwrap();
+        let (name, _) = menu::run(&mut Cursor::new("Select account", NONE, options)).unwrap();
 
         data.storage_accounts
             .iter()

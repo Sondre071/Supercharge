@@ -1,5 +1,5 @@
 use crate::openrouter;
-use crate::shared::{menu::{self, Cursor}, terminal};
+use crate::shared::{menu::{self, Cursor, NONE}, terminal};
 
 use openrouter::api;
 use openrouter::utils;
@@ -12,7 +12,7 @@ pub fn select_model() {
 
         menu::run(&mut Cursor::new(
             "Select model",
-            vec![""],
+            NONE,
             models.iter().map(|m| m.as_str()).collect()
         )).unwrap()
     };

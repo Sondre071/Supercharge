@@ -1,4 +1,4 @@
-use crate::shared::menu::{self, Cursor};
+use crate::shared::menu::{self, Cursor, NONE};
 use crate::shared::statics;
 use crate::shared::terminal::COLORS;
 
@@ -16,11 +16,11 @@ pub fn main() {
     }
 
     let folder = {
-        let mut menu = Cursor::new("Select script folder", vec![""], choices);
+        let mut menu = Cursor::new("Select script folder", NONE, choices);
         let Some((folder, _)) = menu::run(&mut menu) else {
             return;
         };
-        
+
         folder
     };
 
@@ -44,7 +44,7 @@ pub fn main() {
     };
 
     let result = {
-        let mut menu = Cursor::new("Select script", vec![subheader.as_str(), ""], options);
+        let mut menu = Cursor::new("Select script", Some(vec![subheader.as_str(), ""]), options);
         menu::run(&mut menu)
     };
 

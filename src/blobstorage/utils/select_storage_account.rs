@@ -20,7 +20,7 @@ pub fn select_storage_account() -> StorageAccount {
             .map(|a| a.name.as_str())
             .collect();
 
-        let name = menu::run("Select account", None, options).unwrap();
+        let name = menu::run("Select account", None, options, None).unwrap();
 
         data.storage_accounts
             .iter()

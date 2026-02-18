@@ -1,5 +1,10 @@
 use crate::shared::terminal::{ACTIONS, COLORS};
 
+pub enum Focus {
+    BaseMenu,
+    SubMenu,
+}
+
 pub struct Cursor<'a> {
     pub header: &'a str,
     pub subheaders: Vec<&'a str>,
@@ -8,20 +13,34 @@ pub struct Cursor<'a> {
     pub current: usize,
     pub visible_items: usize,
     pub total_height: usize,
+    pub offset: usize,
 
-    offset: usize,
-    //submenu_active: bool,
-    //submenu_current: usize,
-    //submenu_x_offset: usize,
+    pub focus: Focus,
+    pub submenu: Submenu<'a>,
+}
+
+pub struct Submenu<'a> {
+    pub current: usize,
+    pub items: Vec<&'a str>,
+    x_offset: usize,
 }
 
 impl<'a> Cursor<'a> {
-    pub fn new(header: &'a str, subheaders: Option<Vec<&'a str>>, items: Vec<&'a str>) -> Self {
+    pub fn new(
+        header: &'a str,
+        subheaders: Option<Vec<&'a str>>,
+        items: Vec<&'a str>,
+        submenu_items: Option<Vec<&'a str>>,
+    ) -> Self {
         let subheaders = subheaders.unwrap_or(vec![]);
         let visible_items = items.len().min(20);
         let total_height = 1 + subheaders.len() + visible_items;
 
-        //let items_max_length = items.iter().map(|i| i.len()).max().unwrap();
+        let submenu = Submenu {
+            current: 0,
+            items: submenu_items.unwrap_or_default(),
+            x_offset: items.iter().map(|i| i.len()).max().unwrap() + 4,
+        };
 
         Self {
             header,
@@ -31,70 +50,78 @@ impl<'a> Cursor<'a> {
             offset: 0,
             visible_items,
             total_height,
-            //submenu_active: false,
-            //submenu_current: 0,
-            //submenu_x_offset: items_max_length + 3
+            focus: Focus::BaseMenu,
+            submenu,
         }
     }
 
     pub fn render_menu(&self) {
         let mut lines: Vec<String> = Vec::new();
 
+        let pad_left = if !self.submenu.items.is_empty() {
+            self.submenu.x_offset
+        } else {
+            0
+        };
+
         let height = self.items.len().min(20);
         let offset = self.offset;
 
         for i in offset..(height + offset) {
-            
-            let line = {
-                if i == self.current {
-                    format!(
-                        "{clear_line}{yellow}> {}{reset}",
-                        self.items[i],
-                        clear_line = ACTIONS.ClearLine,
-                        yellow = COLORS.Yellow,
-                        reset = COLORS.Reset
-                    )
-                } else {
-                    format!(
-                        "{clear_line}  {}{reset}",
-                        self.items[i],
-                        clear_line = ACTIONS.ClearLine,
-                        reset = COLORS.Reset
-                    )
-                }
+            let mut line = {
+                let prefix = if i == self.current { "> " } else { "  " };
+
+                let color = match (i == self.current, &self.focus) {
+                    (true, Focus::BaseMenu) => COLORS.Yellow,
+                    (true, Focus::SubMenu) => COLORS.DimYellow,
+                    (false, Focus::BaseMenu) => COLORS.Gray,
+                    (false, Focus::SubMenu) => COLORS.DarkGray,
+                };
+
+                let content = format!("{}{}", prefix, self.items[i]);
+
+                let text = format!("{:<width$}", content, width = pad_left);
+
+                format!(
+                    "{clear_line}{color}{}{reset}",
+                    text,
+                    clear_line = ACTIONS.ClearLine,
+                    color = color,
+                    reset = COLORS.Reset
+                )
             };
+
+            if matches!(self.focus, Focus::SubMenu) {
+                line = self.add_submenu_text(i, line);
+            }
 
             lines.push(line);
         }
-        
+
         for line in lines {
             println!("{}", line);
         }
     }
 
-    pub fn increment(&mut self) {
-        let offset = &self.offset;
+    fn add_submenu_text(&self, index: usize, base_menu_line: String) -> String {
+        if index < self.submenu.items.len() {
+            let text = self.submenu.items[index];
 
-        let pos_from_bottom = self.visible_items - (self.current - offset + 1);
+            let (prefix, color) = if index == self.submenu.current {
+                ("> ", COLORS.Yellow)
+            } else {
+                ("  ", COLORS.Gray)
+            };
 
-        if self.current < self.items.len() - 1 {
-            self.current += 1;
-        }
-
-        if pos_from_bottom == 1 && self.current < self.items.len() - 1 {
-            self.offset += 1
-        }
-    }
-
-    pub fn decrement(&mut self) {
-        let pos_from_top = self.current - self.offset;
-
-        if self.current > 0 {
-            self.current -= 1;
-        }
-
-        if self.offset > 0 && pos_from_top <= 1 {
-            self.offset -= 1
+            format!(
+                "{}{white}| {color}{prefix}{}{reset}",
+                base_menu_line,
+                text,
+                white = COLORS.White,
+                reset = COLORS.Reset
+            )
+        } else {
+            base_menu_line
         }
     }
 }

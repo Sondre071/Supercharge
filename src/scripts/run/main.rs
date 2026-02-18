@@ -18,7 +18,7 @@ pub fn main() {
         process::exit(0)
     }
 
-    let choice = menu::run("Select script folder", None, choices);
+    let choice = menu::run("Select script folder", None, choices, None);
 
     if let Some(folder) = choice {
         let scripts = {
@@ -40,7 +40,7 @@ pub fn main() {
             format!("Current directory: {}", displayed_path.display())
         };
 
-        let choice = menu::run("Select script", Some(vec![subheader.as_str(), ""]), options);
+        let choice = menu::run("Select script", Some(vec![subheader.as_str(), ""]), options, None);
 
         if let Some(script) = choice {
             let script_path = {

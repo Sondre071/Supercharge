@@ -11,6 +11,8 @@ pub struct Colors {
     pub Red: &'static str,
     pub Yellow: &'static str,
 
+    pub DimYellow: &'static str,
+
     pub Reset: &'static str,
 }
 
@@ -44,6 +46,8 @@ pub const COLORS: Colors = Colors {
     Red: "\x1b[1;31m",
     Yellow: "\x1b[1;33m",
 
+    DimYellow: "\x1b[0;33m",
+
     Reset: "\x1b[0m",
 };
 
@@ -60,5 +64,5 @@ pub const BACKGROUNDS: Backgrounds = Backgrounds {
 };
 
 pub const ACTIONS: Actions = Actions {
-    ClearLine: "\x1b[2K"
+    ClearLine: "\x1b[2K",
 };

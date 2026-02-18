@@ -15,6 +15,7 @@ pub fn select_model() {
             "Select model",
             Some(vec![]),
             models.iter().map(|m| m.as_str()).collect(),
+            None,
         )
         .unwrap()
         .to_owned()

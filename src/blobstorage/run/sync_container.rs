@@ -36,6 +36,7 @@ pub fn sync_container(account: &StorageAccount, all: bool) {
                 "Container not found",
                 Some(vec!["Create one?", ""]),
                 vec!["Yes", "No"],
+                None,
             )
             .unwrap();
 
@@ -60,7 +61,7 @@ pub fn sync_container(account: &StorageAccount, all: bool) {
         print_diff(&diff);
 
         if diff.sync_available() {
-            let choice = menu::run("Synchronize?", None, vec!["Yes", "No"]).unwrap();
+            let choice = menu::run("Synchronize?", None, vec!["Yes", "No"], None).unwrap();
 
             if choice == "Yes" {
                 sync_files(account, &name, diff);

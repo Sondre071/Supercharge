@@ -10,7 +10,7 @@ pub fn browse_containers(account: &StorageAccount) {
 
     let options: Vec<&str> = containers.iter().map(|s| s.as_str()).collect();
 
-    let container = menu::run("Containers", None, options).unwrap();
+    let container = menu::run("Containers", None, options, None).unwrap();
 
     let blobs = api::fetch_blobs(account, container).unwrap();
 

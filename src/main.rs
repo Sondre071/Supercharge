@@ -8,12 +8,13 @@ mod snippets;
 
 fn main() {
     jump_up_one_row();
-
+    
     loop {
         let result = shared::menu::run(
             "Supercharge",
             None,
             vec!["OpenRouter", "Blobstorage", "Scripts", "Snippets", "Exit"],
+            None,
         )
         .unwrap();
 

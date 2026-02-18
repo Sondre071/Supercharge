@@ -1,32 +1,25 @@
 $dataPath = Join-Path $env:UserProfile '.supercharge' 'data'
-$scriptsPath = Join-Path $env:UserProfile '.supercharge' 'scripts'
-$snippetsPath = Join-Path $dataPath 'snippets'
 
 $openrouterDataPath = Join-Path $dataPath 'openrouter.json'
 $blobstorageDataPath = Join-Path $dataPath 'blobstorage.json'
 
-if (-not (Test-Path $dataPath))
-{
-    New-Item -ItemType Directory -Path $dataPath
-} else
-{
-    Write-Host "data-path already exists, skipping this step.." -ForegroundColor DarkGreen
-}
+$genericPaths = @(
+    $dataPath,
+    (Join-Path $env:UserProfile '.supercharge' 'scripts'),
+    (Join-Path $dataPath 'snippets')
+)
 
-if (-not (Test-Path $scriptsPath))
+foreach ($path in $genericPaths)
 {
-    New-Item -ItemType Directory -Path $scriptsPath
-} else
-{
-    Write-Host "scripts-path already exists, skipping this step.." -ForegroundColor DarkGreen
-}
+    $name = Split-Path $path -Leaf
 
-if (-not (Test-Path $snippetsPath))
-{
-    New-Item -ItemType Directory -Path $snippetsPath
-} else
-{
-    Write-Host "scripts-path already exists, skipping this step.." -ForegroundColor DarkGreen
+    if (-not (Test-Path $path))
+    {
+        New-Item -ItemType Directory -Path $path
+    } else
+    {
+        Write-Host "$name path already exists, skipping this step.." -ForegroundColor DarkGreen
+    }
 }
 
 if (Test-Path $openRouterDataPath)

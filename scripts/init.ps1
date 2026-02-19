@@ -9,6 +9,8 @@ $genericPaths = @(
     (Join-Path $dataPath 'snippets')
 )
 
+Write-Host "======= Validating local files =======" -ForegroundColor Yellow
+
 foreach ($path in $genericPaths)
 {
     $name = Split-Path $path -Leaf
@@ -18,13 +20,13 @@ foreach ($path in $genericPaths)
         New-Item -ItemType Directory -Path $path
     } else
     {
-        Write-Host "$name path already exists, skipping this step.." -ForegroundColor DarkGreen
+        Write-Host "✅ $name path already exists." -ForegroundColor Green
     }
 }
 
 if (Test-Path $openRouterDataPath)
 {
-    Write-Host "openrouter.json already exists, skipping this step.." -ForegroundColor DarkGreen
+    Write-Host "✅ openrouter.json already exists." -ForegroundColor Green
 } else
 {
     $initialContent = @{
@@ -58,7 +60,7 @@ if (Test-Path $openRouterDataPath)
 
 if (Test-Path $blobstorageDataPath)
 {
-    Write-Host "blobstorage.json already exists, skipping this step.." -ForegroundColor DarkGreen
+    Write-Host "✅ blobstorage.json already exists." -ForegroundColor Green
 } else
 {
     $initialContent = @{
@@ -78,4 +80,13 @@ if (Test-Path $blobstorageDataPath)
     New-Item `
         -Path $blobstorageDataPath `
         -Value $json
+}
+
+$nvimCommand = Get-Command -ErrorAction SilentlyContinue nvim
+if ($null -eq $nvimCommand)
+{
+    Write-Host "❌ Neovim missing from path." -ForegroundColor Red
+} else
+{
+    Write-Host "✅ Neovim found in path." -ForegroundColor Green
 }

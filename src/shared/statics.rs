@@ -1,5 +1,4 @@
-use std::path::PathBuf;
-use std::sync::OnceLock;
+use std::{path::PathBuf, sync::OnceLock};
 
 static DATA_PATH: OnceLock<PathBuf> = OnceLock::new();
 static SCRIPTS_PATH: OnceLock<PathBuf> = OnceLock::new();

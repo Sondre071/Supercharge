@@ -1,5 +1,7 @@
-use crate::shared::menu::draw;
-use crate::shared::terminal::{ACTIONS, COLORS};
+use crate::shared::{
+    menu::draw,
+    terminal::{ACTIONS, COLORS},
+};
 use std::cmp;
 
 #[derive(Clone)]

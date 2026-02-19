@@ -1,3 +1,4 @@
+use crate::shared::menu::draw;
 use crate::shared::terminal::{ACTIONS, COLORS};
 use std::cmp;
 
@@ -45,7 +46,6 @@ pub struct Cursor {
 
     pub offset: usize,
     pub visible_items: usize,
-    pub total_height: usize,
 }
 
 impl Cursor {
@@ -79,7 +79,6 @@ impl Cursor {
 
     fn init(header: String, subheaders: Vec<String>, items: Vec<Item>) -> Self {
         let visible_items = items.len().min(20);
-        let total_height = 1 + subheaders.len() + visible_items;
         let submenu_x_offset = items.iter().map(|i| i.value.len()).max().unwrap() + 4;
 
         Self {
@@ -95,7 +94,6 @@ impl Cursor {
 
             offset: 0,
             visible_items,
-            total_height,
         }
     }
 }
@@ -155,7 +153,7 @@ impl Cursor {
         for line in &lines {
             println!("{}", line);
         }
-        
+
         lines.len()
     }
 
@@ -175,5 +173,10 @@ impl Cursor {
             gray = COLORS.DarkGray,
             reset = COLORS.Reset
         )
+    }
+
+    pub fn clear_menu(&self, rendered_items: usize) {
+        let len = rendered_items + 1 + self.subheaders.len();
+        draw::clear_menu(len);
     }
 }

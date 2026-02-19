@@ -23,7 +23,7 @@ pub fn run(cursor: &mut Cursor) -> Option<(String, Option<String>)> {
             match ch {
                 'q' | 'h' => match cursor.focus {
                     Focus::BaseMenu => {
-                        menu::clear_menu(rendered_items + 1 + cursor.subheaders.len());
+                        cursor.clear_menu(rendered_items);
                         terminal::set_cursor_visibility(true);
                         return None;
                     }
@@ -82,13 +82,13 @@ pub fn run(cursor: &mut Cursor) -> Option<(String, Option<String>)> {
                             cursor.focus = Focus::SubMenu;
                         }
                         (Focus::BaseMenu, true) => {
-                            menu::clear_menu(rendered_items + 1 + cursor.subheaders.len());
+                            cursor.clear_menu(rendered_items);
                             terminal::set_cursor_visibility(true);
 
                             return Some((current_item.value.clone(), None));
                         }
                         _ => {
-                            menu::clear_menu(rendered_items + 1 + cursor.subheaders.len());
+                            cursor.clear_menu(rendered_items);
                             terminal::set_cursor_visibility(true);
 
                             return Some((

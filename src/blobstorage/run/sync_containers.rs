@@ -1,6 +1,6 @@
 use crate::blobstorage::{api, types::FileDiff, utils};
 use crate::shared::{
-    menu::{self, Cursor},
+    menu::{self, Cursor, NONE},
     terminal,
 };
 use std::process::exit;
@@ -22,7 +22,7 @@ pub fn sync_containers() {
     let all: bool = {
         let Some((choice, _)) = menu::run(&mut Cursor::new(
             "Sync all?",
-            Some(vec![""]),
+            NONE,
             vec!["Yes", "No"],
         )) else {
             return;
@@ -76,7 +76,7 @@ pub fn sync_containers() {
         if diff.sync_available() {
             let (choice, _) = menu::run(&mut Cursor::new(
                 "Synchronize?",
-                Some(vec![""]),
+                NONE,
                 vec!["Yes", "No"],
             ))
             .unwrap();

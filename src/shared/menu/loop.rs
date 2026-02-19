@@ -25,6 +25,7 @@ pub fn run(cursor: &mut Cursor) -> Option<(String, Option<String>)> {
                     Focus::BaseMenu => {
                         cursor.clear_menu(rendered_items);
                         terminal::set_cursor_visibility(true);
+                        
                         return None;
                     }
                     Focus::SubMenu => {

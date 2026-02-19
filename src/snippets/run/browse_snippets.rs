@@ -52,9 +52,9 @@ pub fn browse_snippets() {
             if let Some((choice, _)) = menu::run(&mut Cursor::new(
                 "Delete snippet",
                 Some(vec![
-                    format!("Name: {}", &snippet),
-                    "Are you sure?".to_string(),
-                    "".to_string(),
+                    &format!("Name: {}", &snippet),
+                    "Are you sure?",
+                    "",
                 ]),
                 vec!["Yes", "No"],
             )) && choice == "No"

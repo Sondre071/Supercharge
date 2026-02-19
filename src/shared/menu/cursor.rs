@@ -2,7 +2,10 @@ use crate::shared::{
     menu::draw,
     terminal::{ACTIONS, COLORS},
 };
-use std::cmp;
+use std::{
+    cmp,
+    io::{Write, stdout},
+};
 
 #[derive(Clone)]
 pub struct Item {
@@ -152,9 +155,12 @@ impl Cursor {
             lines.push(line);
         }
 
+        #[allow(clippy::print_with_newline)] 
         for line in &lines {
-            println!("{}", line);
+            print!("{}\n", line);
         }
+
+        stdout().flush().unwrap();
 
         lines.len()
     }

@@ -1,5 +1,4 @@
 mod api;
-mod types;
 mod utils;
 
 mod run;

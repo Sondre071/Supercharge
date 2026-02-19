@@ -1,4 +1,5 @@
 use crate::shared::terminal::{ACTIONS, COLORS};
+use std::cmp;
 
 #[derive(Clone)]
 pub struct Item {
@@ -100,38 +101,49 @@ impl Cursor {
 }
 
 impl Cursor {
-    pub fn render_menu(&self) {
+    pub fn render_menu(&mut self) -> usize {
         let mut lines: Vec<String> = Vec::new();
 
         let height = self.items.len().min(20);
 
-        for i in self.offset..(height + self.offset) {
-            let current_item = self.items[i].clone();
+        let current_selected_item = self.items[self.current].clone();
+
+        let length = cmp::max(height + self.offset, current_selected_item.items.len());
+
+        for i in self.offset..length {
+            let relative_index = i - self.offset;
+
+            let color = match (i == self.current, &self.focus) {
+                (true, Focus::BaseMenu) => COLORS.Yellow,
+                (true, Focus::SubMenu) => COLORS.DimYellow,
+                (false, Focus::BaseMenu) => COLORS.Gray,
+                (false, Focus::SubMenu) => COLORS.DarkGray,
+            };
 
             let mut line = {
                 let prefix = if i == self.current { "> " } else { "  " };
 
-                let color = match (i == self.current, &self.focus) {
-                    (true, Focus::BaseMenu) => COLORS.Yellow,
-                    (true, Focus::SubMenu) => COLORS.DimYellow,
-                    (false, Focus::BaseMenu) => COLORS.Gray,
-                    (false, Focus::SubMenu) => COLORS.DarkGray,
-                };
+                let value = self
+                    .items
+                    .get(i)
+                    .map(|item| item.value.clone())
+                    .unwrap_or_default();
 
-                let content = format!("{}{}", prefix, current_item.value.clone());
-
-                let text = format!("{:<width$}", content, width = self.submenu_x_offset);
+                let content = format!("{}{}", prefix, value);
+                let padded_text = format!("{:<width$}", content, width = self.submenu_x_offset);
 
                 format!(
                     "{clear_line}{color}{}{reset}",
-                    text,
+                    padded_text,
                     clear_line = ACTIONS.ClearLine,
                     color = color,
                     reset = COLORS.Reset
                 )
             };
 
-            if matches!(self.focus, Focus::SubMenu) && i < self.items[self.current].items.len() {
+            if matches!(self.focus, Focus::SubMenu)
+                && relative_index < current_selected_item.items.len()
+            {
                 let submenu_items = self.items[self.current].clone();
 
                 line = self.add_submenu_text(i, submenu_items, line);
@@ -140,9 +152,11 @@ impl Cursor {
             lines.push(line);
         }
 
-        for line in lines {
+        for line in &lines {
             println!("{}", line);
         }
+        
+        lines.len()
     }
 
     fn add_submenu_text(&self, i: usize, current_item: Item, base_menu_line: String) -> String {

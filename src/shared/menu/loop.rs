@@ -15,7 +15,7 @@ pub fn run(cursor: &mut Cursor) -> Option<(String, Option<String>)> {
     loop {
         terminal::set_cursor_pos(0, start_y as usize);
 
-        cursor.render_menu();
+        let rendered_items = cursor.render_menu();
 
         let key = terminal::read_key_blocking();
 
@@ -23,7 +23,7 @@ pub fn run(cursor: &mut Cursor) -> Option<(String, Option<String>)> {
             match ch {
                 'q' | 'h' => match cursor.focus {
                     Focus::BaseMenu => {
-                        menu::clear_menu(cursor.total_height);
+                        menu::clear_menu(rendered_items + 1 + cursor.subheaders.len());
                         terminal::set_cursor_visibility(true);
                         return None;
                     }
@@ -82,13 +82,13 @@ pub fn run(cursor: &mut Cursor) -> Option<(String, Option<String>)> {
                             cursor.focus = Focus::SubMenu;
                         }
                         (Focus::BaseMenu, true) => {
-                            menu::clear_menu(cursor.total_height);
+                            menu::clear_menu(rendered_items + 1 + cursor.subheaders.len());
                             terminal::set_cursor_visibility(true);
 
                             return Some((current_item.value.clone(), None));
                         }
                         _ => {
-                            menu::clear_menu(cursor.total_height);
+                            menu::clear_menu(rendered_items + 1 + cursor.subheaders.len());
                             terminal::set_cursor_visibility(true);
 
                             return Some((
@@ -105,6 +105,6 @@ pub fn run(cursor: &mut Cursor) -> Option<(String, Option<String>)> {
             }
         }
 
-        start_y = terminal::get_cursor_pos().Y - cursor.visible_items as i16;
+        start_y = terminal::get_cursor_pos().Y - rendered_items as i16;
     }
 }

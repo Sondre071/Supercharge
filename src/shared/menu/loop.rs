@@ -3,7 +3,7 @@ use crate::shared::{
     terminal,
 };
 
-use menu::cursor::{Focus};
+use menu::cursor::Focus;
 
 pub fn run(cursor: &mut Cursor) -> Option<(String, Option<String>)> {
     terminal::set_cursor_visibility(false);
@@ -99,9 +99,7 @@ pub fn run(cursor: &mut Cursor) -> Option<(String, Option<String>)> {
                     }
                 }
 
-                _ => {
-                    continue;
-                }
+                _ => {}
             }
         }
 

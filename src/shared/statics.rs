@@ -11,24 +11,28 @@ static BLOBSTORAGE_CACHE_PATH: OnceLock<PathBuf> = OnceLock::new();
 
 static SNIPPETS_PATH: OnceLock<PathBuf> = OnceLock::new();
 
-pub fn data_dir() -> &'static PathBuf {
-    DATA_PATH.get_or_init(|| {
-        let mut path = std::env::home_dir().expect("Failed to fetch user home directory.");
-        path.push(".supercharge");
-        path.push("data");
+pub fn data_dir() -> PathBuf {
+    DATA_PATH
+        .get_or_init(|| {
+            let mut path = std::env::home_dir().expect("Failed to fetch user home directory.");
+            path.push("AppData");
+            path.push("Local");
+            path.push("Supercharge");
 
-        path
-    })
+            path
+        })
+        .to_owned()
 }
 
-pub fn scripts_dir() -> &'static PathBuf {
-    SCRIPTS_PATH.get_or_init(|| {
-        let mut path = std::env::home_dir().expect("Failed to fetch user home directory.");
-        path.push(".supercharge");
-        path.push("scripts");
+pub fn scripts_dir() -> PathBuf {
+    SCRIPTS_PATH
+        .get_or_init(|| {
+            let mut path = data_dir().to_owned();
+            path.push("scripts");
 
-        path
-    })
+            path
+        })
+        .to_owned()
 }
 
 pub fn prompts_dir() -> PathBuf {
@@ -42,22 +46,26 @@ pub fn prompts_dir() -> PathBuf {
         .to_owned()
 }
 
-pub fn openrouter_settings_path() -> &'static PathBuf {
-    OPENROUTER_SETTINGS_PATH.get_or_init(|| {
-        let mut path = data_dir().clone();
-        path.push("openrouter.json");
+pub fn openrouter_settings_path() -> PathBuf {
+    OPENROUTER_SETTINGS_PATH
+        .get_or_init(|| {
+            let mut path = data_dir().clone();
+            path.push("openrouter.json");
 
-        path
-    })
+            path
+        })
+        .to_owned()
 }
 
-pub fn blobstorage_settings_path() -> &'static PathBuf {
-    BLOBSTORAGE_SETTINGS_PATH.get_or_init(|| {
-        let mut path = data_dir().clone();
-        path.push("blobstorage.json");
+pub fn blobstorage_settings_path() -> PathBuf {
+    BLOBSTORAGE_SETTINGS_PATH
+        .get_or_init(|| {
+            let mut path = data_dir().clone();
+            path.push("blobstorage.json");
 
-        path
-    })
+            path
+        })
+        .to_owned()
 }
 
 pub fn blobstorage_cache_path() -> PathBuf {
@@ -69,7 +77,7 @@ pub fn blobstorage_cache_path() -> PathBuf {
 
             path
         })
-        .clone()
+        .to_owned()
 }
 
 pub fn snippets_path() -> PathBuf {
@@ -80,5 +88,5 @@ pub fn snippets_path() -> PathBuf {
 
             path
         })
-        .clone()
+        .to_owned()
 }

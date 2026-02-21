@@ -1,17 +1,17 @@
-$dataPath = Join-Path $env:UserProfile '.supercharge' 'data'
+$dataPath = Join-Path $env:UserProfile 'AppData' 'Local' 'Supercharge'
 
 $openrouterDataPath = Join-Path $dataPath 'openrouter.json'
 $blobstorageDataPath = Join-Path $dataPath 'blobstorage.json'
 
-$genericPaths = @(
+$folderPaths = @(
     $dataPath,
-    (Join-Path $env:UserProfile '.supercharge' 'scripts'),
+    (Join-Path $dataPath 'scripts'),
     (Join-Path $dataPath 'snippets')
 )
 
 Write-Host "======= Validating local files =======" -ForegroundColor Yellow
 
-foreach ($path in $genericPaths)
+foreach ($path in $folderPaths)
 {
     $name = Split-Path $path -Leaf
 

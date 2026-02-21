@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::{
     fs::{self, File},
     io::BufReader,
-    path::Path,
+    path::PathBuf,
 };
 
 #[allow(dead_code)]
@@ -51,14 +51,14 @@ impl Settings {
     }
 }
 
-fn save_json_atomic<T: serde::Serialize>(path: &Path, value: &T) {
+fn save_json_atomic<T: serde::Serialize>(path: PathBuf, value: &T) {
     let temp_path = path.with_extension("json.tmp");
 
     let data = serde_json::to_string_pretty(value).expect("Failed to serialize value");
 
     fs::write(&temp_path, data).expect("Failed to write serialized data to file.");
 
-    fs::remove_file(path).expect("Failed to remove file before replacement.");
+    fs::remove_file(&path).expect("Failed to remove file before replacement.");
 
     fs::rename(&temp_path, path).expect("Failed to replace old file with new.");
 }

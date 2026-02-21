@@ -8,7 +8,7 @@ use shared::menu::{Cursor, Item, NONE};
 
 fn main() {
     jump_up_one_row();
-
+    
     let mut menu = Cursor::new_with_subitems(
         "Supercharge",
         NONE,

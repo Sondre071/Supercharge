@@ -7,7 +7,7 @@ use std::{env, fs, path::PathBuf, process};
 pub fn main() {
     let path = statics::scripts_dir();
 
-    let directories = get_directories(path);
+    let directories = get_directories(&path);
     let choices = directories.iter().map(|e| e.as_str()).collect();
 
     if directories.is_empty() {

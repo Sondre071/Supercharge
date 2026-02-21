@@ -1,4 +1,4 @@
-pub mod utils;
-pub mod terminal;
 pub mod menu;
 pub mod statics;
+pub mod terminal;
+pub mod utils;

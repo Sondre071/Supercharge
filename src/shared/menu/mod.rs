@@ -1,7 +1,7 @@
 mod cursor;
-mod r#loop;
 mod draw;
+mod r#loop;
 
-pub use r#loop::run;
 pub use cursor::{Cursor, Item, NONE};
 pub use draw::*;
+pub use r#loop::run;

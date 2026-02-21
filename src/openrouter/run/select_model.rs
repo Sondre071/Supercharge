@@ -17,7 +17,7 @@ pub fn select_model() {
         ))
         .unwrap()
     };
-    
+
     settings::set_model(&model);
 
     println!(

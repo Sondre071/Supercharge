@@ -14,14 +14,8 @@ pub fn select_prompt() {
             .chain(prompts.iter().map(|p| p.name.as_str()))
             .collect(),
     ))
-    .map(|(f, _)| {
-        if f == "None" {
-            None
-        } else {
-            Some(f)
-        }
-    });
-    
+    .map(|(f, _)| if f == "None" { None } else { Some(f) });
+
     let Some(prompt_name) = result else {
         return;
     };

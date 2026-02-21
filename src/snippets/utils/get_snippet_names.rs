@@ -12,11 +12,6 @@ pub fn get_snippet_names() -> Vec<String> {
             entry.file_type().unwrap().is_file()
                 && entry.file_name().to_string_lossy().ends_with(".txt")
         })
-        .map(|f| {
-            f.file_name()
-                .to_string_lossy()
-                .to_string()
-                .to_owned()
-        })
+        .map(|f| f.file_name().to_string_lossy().to_string().to_owned())
         .collect()
 }

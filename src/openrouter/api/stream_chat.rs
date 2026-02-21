@@ -7,7 +7,7 @@ use std::io::{self, BufRead, Write};
 
 pub fn stream_chat(messages: Vec<&InputMessage>) -> Result<String, String> {
     let settings = settings();
-    
+
     let body = MessageRequestBody {
         model: &settings.model,
         input: messages,
@@ -26,7 +26,7 @@ pub fn stream_chat(messages: Vec<&InputMessage>) -> Result<String, String> {
         .body(body_json)
         .send()
         .map_err(|e| format!("Failed to execute request: {}", e))?;
-    
+
     if !response.status().is_success() {
         let status = response.status();
         let body_text = response

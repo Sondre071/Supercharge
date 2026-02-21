@@ -1,7 +1,7 @@
 use crate::shared::{
     menu::{self, Cursor, Item, NONE},
     statics::snippets_path,
-    terminal::{COLORS},
+    terminal::COLORS,
 };
 use crate::snippets::utils::get_snippet_names;
 
@@ -51,11 +51,7 @@ pub fn browse_snippets() {
         Some("Delete") => {
             if let Some((choice, _)) = menu::run(&mut Cursor::new(
                 "Delete snippet",
-                Some(vec![
-                    &format!("Name: {}", &snippet),
-                    "Are you sure?",
-                    "",
-                ]),
+                Some(vec![&format!("Name: {}", &snippet), "Are you sure?", ""]),
                 vec!["Yes", "No"],
             )) && choice == "No"
             {

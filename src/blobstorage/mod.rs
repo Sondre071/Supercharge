@@ -1,6 +1,6 @@
 mod api;
+mod run;
 mod types;
 mod utils;
-mod run;
 
-pub use run::{sync_containers, browse_containers};
+pub use run::{browse_containers, sync_containers};

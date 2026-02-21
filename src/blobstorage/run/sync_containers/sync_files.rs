@@ -60,9 +60,9 @@ pub fn sync_files(account: &StorageAccount, container_name: &str, diff: FileDiff
             gray = COLORS.Gray,
             reset = COLORS.Reset,
         );
-        
+
         let url = create_blob_url(account, container_name, &file.name);
-        
+
         api::delete_blob(&url);
     }
 

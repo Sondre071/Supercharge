@@ -21,7 +21,7 @@ pub fn new_chat() {
         println!();
 
         message_history.push(InputMessage {
-            role: "user".to_string(),
+            role: "user".to_owned(),
             content: message.clone(),
         });
 
@@ -32,7 +32,7 @@ pub fn new_chat() {
 
         if let Ok(text) = response_message {
             message_history.push(InputMessage {
-                role: "assistant".to_string(),
+                role: "assistant".to_owned(),
                 content: text,
             });
         }
@@ -64,7 +64,7 @@ fn get_system_prompt() -> Option<InputMessage> {
     let content = std::fs::read_to_string(file_path).expect("Failed to read prompt content.");
 
     Some(InputMessage {
-        role: "system".to_string(),
+        role: "system".to_owned(),
         content,
     })
 }

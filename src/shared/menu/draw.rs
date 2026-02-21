@@ -1,4 +1,4 @@
-use crate::shared::terminal::{COLORS, ACTIONS};
+use crate::shared::terminal::{ACTIONS, COLORS};
 
 use std::{io::Write, iter};
 

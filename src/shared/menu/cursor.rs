@@ -155,7 +155,7 @@ impl Cursor {
             lines.push(line);
         }
 
-        #[allow(clippy::print_with_newline)] 
+        #[allow(clippy::print_with_newline)]
         for line in &lines {
             print!("{}\n", line);
         }

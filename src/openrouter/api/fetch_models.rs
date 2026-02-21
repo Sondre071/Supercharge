@@ -2,7 +2,7 @@ use crate::openrouter::{api::types::FetchModelsResponse, utils::settings};
 
 pub fn fetch_models() -> Vec<String> {
     let settings = settings();
-    
+
     let client = reqwest::blocking::Client::new();
 
     let response = client

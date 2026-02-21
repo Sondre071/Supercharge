@@ -12,8 +12,7 @@ pub fn browse_containers() {
     let options: Vec<&str> = containers.iter().map(|s| s.as_str()).collect();
 
     let container = {
-        let Some((container, _)) =
-            menu::run(&mut Cursor::new("Select container", NONE, options))
+        let Some((container, _)) = menu::run(&mut Cursor::new("Select container", NONE, options))
         else {
             return;
         };

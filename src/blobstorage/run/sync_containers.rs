@@ -20,11 +20,8 @@ pub fn sync_containers() {
     let account = utils::select_storage_account();
 
     let all: bool = {
-        let Some((choice, _)) = menu::run(&mut Cursor::new(
-            "Sync all?",
-            NONE,
-            vec!["Yes", "No"],
-        )) else {
+        let Some((choice, _)) = menu::run(&mut Cursor::new("Sync all?", NONE, vec!["Yes", "No"]))
+        else {
             return;
         };
 
@@ -74,12 +71,8 @@ pub fn sync_containers() {
         print_diff(&diff);
 
         if diff.sync_available() {
-            let (choice, _) = menu::run(&mut Cursor::new(
-                "Synchronize?",
-                NONE,
-                vec!["Yes", "No"],
-            ))
-            .unwrap();
+            let (choice, _) =
+                menu::run(&mut Cursor::new("Synchronize?", NONE, vec!["Yes", "No"])).unwrap();
 
             if choice == "Yes" {
                 sync_files(&account, &name, diff);

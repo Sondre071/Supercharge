@@ -19,13 +19,22 @@ mod sync_files;
 pub fn sync_containers() {
     let account = utils::select_storage_account();
 
-    let all = match menu::run(&mut Cursor::new("Sync all?", NONE, vec!["Yes", "No"])) {
-        Some((choice, _)) => choice == "Yes",
-        _ => return,
-    };
+    let containers = {
+        let all: bool = {
+            if account.nested_containers {
+                match menu::run(&mut Cursor::new("Sync all?", NONE, vec!["Yes", "No"])) {
+                    Some((choice, _)) => choice == "Yes",
+                    _ => return,
+                }
+            } else {
+                false
+            }
+        };
 
-    let Some(containers) = select_local_container(all) else {
-        return;
+        match select_local_container(all) {
+            Some(containers) => containers,
+            _ => return,
+        }
     };
 
     let containers_len = containers.len();

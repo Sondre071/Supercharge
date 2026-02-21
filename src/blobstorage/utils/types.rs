@@ -12,6 +12,7 @@ pub struct StorageAccount {
     pub name: String,
     pub local_files_path: String,
     pub connection_string: String,
+    pub nested_containers: bool,
 
     #[serde(default)]
     pub blob_endpoint: String,

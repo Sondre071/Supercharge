@@ -69,6 +69,7 @@ if (Test-Path $blobstorageDataPath)
                 name              = ""
                 local_files_path  = ""
                 connection_string = ""
+                nested_containers = ""
             }
         )
     }

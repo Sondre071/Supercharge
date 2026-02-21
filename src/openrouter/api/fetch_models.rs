@@ -1,13 +1,13 @@
-use crate::openrouter;
+use crate::openrouter::{api::types::FetchModelsResponse, utils::settings};
 
-use openrouter::api::types::FetchModelsResponse;
-
-pub fn fetch_models(api_key: &str) -> Vec<String> {
+pub fn fetch_models() -> Vec<String> {
+    let settings = settings();
+    
     let client = reqwest::blocking::Client::new();
 
     let response = client
         .get("https://openrouter.ai/api/v1/models")
-        .header("Authorization", format!("Bearer {}", api_key))
+        .header("Authorization", format!("Bearer {}", &settings.api_key))
         .send()
         .expect("Failed to execute http call.");
 

@@ -24,60 +24,60 @@ pub fn main() {
         folder
     };
 
-    let scripts = {
-        let mut subdirectory_path = path.clone();
-        subdirectory_path.push(&folder);
+    let script = {
+        let scripts = {
+            let mut subdirectory_path = path.clone();
+            subdirectory_path.push(&folder);
 
-        get_files(&subdirectory_path)
-    };
-
-    let options = scripts.iter().map(|e| e.as_str()).collect();
-
-    let subheader = {
-        let current_dir = env::current_dir().expect("Failed to get current terminal location");
-
-        let skip = current_dir.iter().count().saturating_sub(3);
-
-        let displayed_path: PathBuf = current_dir.iter().skip(skip).collect();
-
-        format!("Current directory: {}", displayed_path.display())
-    };
-
-    let result = {
-        let mut menu = Cursor::new("Select script", Some(vec![subheader.as_str(), ""]), options);
-        menu::run(&mut menu)
-    };
-
-    if let Some((script, _)) = result {
-        let script_path = {
-            let mut script_path = path.clone();
-            script_path.push(folder);
-            script_path.push(&script);
-            script_path.to_string_lossy().to_string()
+            get_files(&subdirectory_path)
         };
 
-        println!(
-            "{yellow}Running {white}{}{reset}\n",
-            script,
-            yellow = COLORS.Yellow,
-            white = COLORS.White,
-            reset = COLORS.Reset
-        );
+        let options = scripts.iter().map(|e| e.as_str()).collect();
 
-        let _ = process::Command::new("pwsh")
-            .args([
-                "-NoProfile",
-                "-ExecutionPolicy",
-                "ByPass",
-                "-File",
-                &script_path,
-            ])
-            .spawn()
-            .expect("Failed to run script.")
-            .wait();
+        let subheader = {
+            let current_dir = env::current_dir().expect("Failed to get current terminal location");
 
-        process::exit(0);
-    }
+            let skip = current_dir.iter().count().saturating_sub(3);
+
+            let displayed_path: PathBuf = current_dir.iter().skip(skip).collect();
+
+            format!("Current directory: {}", displayed_path.display())
+        };
+
+        if let Some((script, _)) = menu::run(&mut Cursor::new(
+            "Select script",
+            Some(vec![subheader.as_str(), ""]),
+            options,
+        )) {
+            script
+        } else {
+            return;
+        }
+    };
+
+    let script_path: PathBuf = path.clone().join(folder).join(&script);
+
+    println!(
+        "{yellow}Running {white}{}{reset}\n",
+        script,
+        yellow = COLORS.Yellow,
+        white = COLORS.White,
+        reset = COLORS.Reset
+    );
+
+    let _ = process::Command::new("pwsh")
+        .args([
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "ByPass",
+            "-File",
+            script_path.to_str().unwrap(),
+        ])
+        .spawn()
+        .expect("Failed to run script.")
+        .wait();
+
+    process::exit(0);
 }
 
 fn get_directories(path: &PathBuf) -> Vec<String> {

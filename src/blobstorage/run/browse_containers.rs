@@ -7,17 +7,13 @@ use crate::shared::{
 pub fn browse_containers() {
     let account = select_storage_account();
 
-    let containers = api::fetch_containers(&account).unwrap();
-
-    let options: Vec<&str> = containers.iter().map(|s| s.as_str()).collect();
-
-    let container = {
-        let Some((container, _)) = menu::run(&mut Cursor::new("Select container", NONE, options))
-        else {
-            return;
-        };
-
-        container
+    let container = match menu::run(&mut Cursor::new(
+        "Select container",
+        NONE,
+        api::fetch_containers(&account).unwrap(),
+    )) {
+        Some((container, _)) => container,
+        _ => return,
     };
 
     let blobs = api::fetch_blobs(&account, &container).unwrap();

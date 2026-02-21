@@ -19,16 +19,15 @@ mod sync_files;
 pub fn sync_containers() {
     let account = utils::select_storage_account();
 
-    let all: bool = {
-        let Some((choice, _)) = menu::run(&mut Cursor::new("Sync all?", NONE, vec!["Yes", "No"]))
-        else {
-            return;
-        };
-
-        choice.as_str() == "Yes"
+    let all = match menu::run(&mut Cursor::new("Sync all?", NONE, vec!["Yes", "No"])) {
+        Some((choice, _)) => choice == "Yes",
+        _ => return,
     };
 
-    let containers = select_local_container(all);
+    let Some(containers) = select_local_container(all) else {
+        return;
+    };
+
     let containers_len = containers.len();
 
     for (name, path) in containers {
@@ -40,24 +39,26 @@ pub fn sync_containers() {
             reset = COLORS.Reset
         );
 
-        let mut blob_files = api::fetch_blobs(&account, name.as_str());
+        let blob_files = {
+            let response = api::fetch_blobs(&account, name.as_str());
 
-        if blob_files.is_none() {
-            let (choice, _) = menu::run(&mut Cursor::new(
-                "Container not found",
-                Some(vec!["Create one?", ""]),
-                vec!["Yes", "No"],
-            ))
-            .unwrap();
+            response.unwrap_or_else(|| {
+                let (choice, _) = menu::run(&mut Cursor::new(
+                    "Container not found",
+                    Some(vec!["Create one?", ""]),
+                    vec!["Yes", "No"],
+                ))
+                .unwrap();
 
-            match choice.as_str() {
-                "Yes" => {
-                    api::create_container(&account, &name);
-                    blob_files = api::fetch_blobs(&account, name.as_str());
+                match choice.as_str() {
+                    "Yes" => {
+                        api::create_container(&account, &name);
+                        api::fetch_blobs(&account, name.as_str()).unwrap()
+                    }
+                    _ => exit(0),
                 }
-                _ => exit(0),
-            }
-        }
+            })
+        };
 
         terminal::set_cursor_visibility(false);
 
@@ -66,7 +67,7 @@ pub fn sync_containers() {
 
         utils::set_container_cache(&account.name, &name, &local_files);
 
-        let diff: FileDiff = create_diff(local_files, blob_files.unwrap());
+        let diff: FileDiff = create_diff(local_files, blob_files);
 
         print_diff(&diff);
 

@@ -6,22 +6,23 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 
-pub fn select_local_container(all: bool) -> HashMap<String, PathBuf> {
+pub fn select_local_container(all: bool) -> Option<HashMap<String, PathBuf>> {
     let mut containers: HashMap<String, PathBuf> = HashMap::new();
 
     if all {
         let parent_dir = utils::select_directory().unwrap();
         let parent_path = parent_dir.1;
 
-        let (confirm, _) = menu::run(&mut Cursor::new(
+        let confirmed = menu::run(&mut Cursor::new(
             "Correct folder?",
             Some(vec![&parent_dir.0, ""]),
             vec!["Yes", "No"],
         ))
-        .unwrap();
+        .map(|(res, _)| res == "Yes")
+        .unwrap_or(false);
 
-        if confirm == "No" {
-            return containers;
+        if !confirmed {
+            return None;
         }
 
         for entry in fs::read_dir(&parent_path).unwrap() {
@@ -47,5 +48,5 @@ pub fn select_local_container(all: bool) -> HashMap<String, PathBuf> {
         containers.insert(dir.0, dir.1);
     }
 
-    containers
+    Some(containers)
 }

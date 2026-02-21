@@ -7,18 +7,9 @@ use crate::{
 };
 
 pub fn select_model() {
-    let model = {
-        let models = api::fetch_models();
-
-        let Some((prompt, _)) = menu::run(&mut Cursor::new(
-            "Select model",
-            NONE,
-            models.iter().map(|m| m.as_str()).collect(),
-        )) else {
-            return;
-        };
-
-        prompt
+    let Some((model, _)) = menu::run(&mut Cursor::new("Select model", NONE, api::fetch_models()))
+    else {
+        return;
     };
 
     settings::set_model(&model);

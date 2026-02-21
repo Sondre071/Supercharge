@@ -9,12 +9,13 @@ pub fn new_chat() {
 
     let mut message_history: Vec<InputMessage> = vec![];
 
-    let prompt = {
-        let Some(prompt) = select_prompt() else {
-            return;
-        };
-
-        prompt
+    let system_prompt = match select_prompt() {
+        Some(Some(prompt)) => Some(InputMessage {
+            role: "system".to_string(),
+            content: prompt,
+        }),
+        Some(None) => None,
+        None => return,
     };
 
     menu::write_headers("New chat", vec![&data.model, ""]);
@@ -28,11 +29,9 @@ pub fn new_chat() {
             content: message.clone(),
         });
 
-        let mut all_messages: Vec<InputMessage> = message_history.clone();
+        let request_messages = prepare_request_messages(&system_prompt, &message_history);
+        let response_message = api::stream_chat(request_messages);
 
-        set_sys_prompts(&prompt, &mut all_messages);
-
-        let response_message = api::stream_chat(&all_messages);
         println!("\n");
 
         if let Ok(text) = response_message {
@@ -44,17 +43,18 @@ pub fn new_chat() {
     }
 }
 
-fn set_sys_prompts(prompt: &Option<String>, messages: &mut Vec<InputMessage>) {
-    let Some(p) = prompt else { return };
+fn prepare_request_messages<'a>(
+    system_prompt: &'a Option<InputMessage>,
+    message_history: &'a [InputMessage],
+) -> Vec<&'a InputMessage> {
+    let mut result: Vec<&InputMessage> = message_history.iter().collect();
 
-    let m = InputMessage {
-        role: "system".to_string(),
-        content: p.clone(),
-    };
+    if let Some(sys) = system_prompt {
+        let insert_pos = result.len().saturating_sub(1);
+        result.insert(insert_pos, sys)
+    }
 
-    let index = messages.len().saturating_sub(2);
-
-    messages.insert(index, m)
+    result
 }
 
 fn select_prompt() -> Option<Option<String>> {

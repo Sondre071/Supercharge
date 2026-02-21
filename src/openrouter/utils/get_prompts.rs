@@ -1,12 +1,11 @@
 use crate::shared::statics;
-
 use super::types::PromptFile;
 
 pub fn get_prompts() -> Vec<PromptFile> {
     let entries =
-        std::fs::read_dir(statics::prompts_dir()).expect("Failed to read from prompts folder.");
+        std::fs::read_dir(statics::prompts_dir()).expect("Failed to iterate over prompts folder.");
 
-    let prompts: Vec<PromptFile> = entries
+    entries
         .filter_map(|entry| entry.ok())
         .filter(|entry| {
             let file_type = entry.file_type().unwrap();
@@ -21,7 +20,5 @@ pub fn get_prompts() -> Vec<PromptFile> {
                 path: file_path,
             }
         })
-        .collect();
-
-    prompts
+        .collect()
 }

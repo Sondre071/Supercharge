@@ -64,7 +64,7 @@ fn get_system_prompt() -> Option<InputMessage> {
     let content = std::fs::read_to_string(file_path).expect("Failed to read prompt content.");
 
     Some(InputMessage {
-        role: "user".to_string(),
+        role: "system".to_string(),
         content,
     })
 }

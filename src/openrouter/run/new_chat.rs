@@ -1,24 +1,20 @@
-use crate::openrouter::{
-    api::{self, types::InputMessage},
-    utils,
+use crate::shared::menu;
+use crate::{
+    openrouter::{
+        api::{self, types::InputMessage},
+        utils::settings,
+    },
+    shared::statics,
 };
-use crate::shared::menu::{self, Cursor, NONE};
 
 pub fn new_chat() {
-    let data = utils::get_local_data();
+    let settings = settings();
+
+    let system_prompt = get_system_prompt();
 
     let mut message_history: Vec<InputMessage> = vec![];
 
-    let system_prompt = match select_prompt() {
-        Some(Some(prompt)) => Some(InputMessage {
-            role: "system".to_string(),
-            content: prompt,
-        }),
-        Some(None) => None,
-        None => return,
-    };
-
-    menu::write_headers("New chat", vec![&data.model, ""]);
+    menu::write_headers("New chat", vec![&settings.model, ""]);
 
     loop {
         let message = menu::read_line("You: ");
@@ -47,40 +43,28 @@ fn prepare_request_messages<'a>(
     system_prompt: &'a Option<InputMessage>,
     message_history: &'a [InputMessage],
 ) -> Vec<&'a InputMessage> {
-    let mut result: Vec<&InputMessage> = message_history.iter().collect();
+    let mut messages: Vec<&InputMessage> = message_history.iter().collect();
 
-    if let Some(sys) = system_prompt {
-        let insert_pos = result.len().saturating_sub(1);
-        result.insert(insert_pos, sys)
-    }
+    if let Some(sys_p) = system_prompt {
+        let insert_pos = messages.len().saturating_sub(1);
+        messages.insert(insert_pos, sys_p);
+    };
 
-    result
+    messages
 }
 
-fn select_prompt() -> Option<Option<String>> {
-    let prompts = utils::get_prompts();
+fn get_system_prompt() -> Option<InputMessage> {
+    let Some(file_name) = &settings().prompt else {
+        return None;
+    };
 
-    if prompts.is_empty() {
-        Some(None)
-    } else {
-        let mut prompt_names = vec!["None"];
-        prompt_names.extend(prompts.iter().map(|p| p.name.as_str()));
+    let mut file_path = statics::prompts_dir();
+    file_path.push(file_name);
 
-        if let Some((choice, _)) = menu::run(&mut Cursor::new("Select prompt", NONE, prompt_names))
-        {
-            if choice == "None" {
-                Some(None)
-            } else {
-                let file = prompts
-                    .iter()
-                    .find(|f| f.name == choice)
-                    .expect("Failed to find prompt.");
-                let prompt = std::fs::read_to_string(&file.path).expect("Failed to parse prompt.");
+    let content = std::fs::read_to_string(file_path).expect("Failed to read prompt content.");
 
-                Some(Some(prompt))
-            }
-        } else {
-            None
-        }
-    }
+    Some(InputMessage {
+        role: "user".to_string(),
+        content,
+    })
 }

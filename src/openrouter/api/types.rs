@@ -20,7 +20,7 @@ pub struct InputMessage {
 
 #[derive(Debug, Serialize)]
 pub struct MessageRequestBody<'a> {
-    pub model: String,
+    pub model: &'a str,
     pub input: Vec<&'a InputMessage>,
     pub stream: bool,
 }

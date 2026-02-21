@@ -1,5 +1,8 @@
 mod types;
 
+pub mod settings;
+pub use settings::settings;
+
 mod get_local_data;
 pub use get_local_data::get_local_data;
 

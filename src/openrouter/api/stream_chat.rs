@@ -1,15 +1,15 @@
 use crate::openrouter::{
     api::types::{InputMessage, MessageRequestBody, MessageResponseStreamEvent},
-    utils,
+    utils::settings,
 };
 use crate::shared::terminal::{self, COLORS};
 use std::io::{self, BufRead, Write};
 
 pub fn stream_chat(messages: Vec<&InputMessage>) -> Result<String, String> {
-    let data = utils::get_local_data();
-
+    let settings = settings();
+    
     let body = MessageRequestBody {
-        model: data.model,
+        model: &settings.model,
         input: messages,
         stream: true,
     };
@@ -22,11 +22,11 @@ pub fn stream_chat(messages: Vec<&InputMessage>) -> Result<String, String> {
     let response = client
         .post("https://openrouter.ai/api/v1/responses")
         .header("Content-Type", "application/json")
-        .header("Authorization", format!("Bearer {}", data.api_key))
+        .header("Authorization", format!("Bearer {}", &settings.api_key))
         .body(body_json)
         .send()
         .map_err(|e| format!("Failed to execute request: {}", e))?;
-
+    
     if !response.status().is_success() {
         let status = response.status();
         let body_text = response

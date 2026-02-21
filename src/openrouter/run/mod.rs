@@ -1,9 +1,8 @@
 mod new_chat;
 
-mod settings;
-
 mod select_model;
-use select_model::select_model;
+mod select_prompt;
 
-pub use settings::settings;
 pub use new_chat::new_chat;
+pub use select_prompt::select_prompt;
+pub use select_model::select_model;

@@ -13,7 +13,10 @@ fn main() {
         "Supercharge",
         NONE,
         vec![
-            Item::new_with_subitems("OpenRouter", vec!["New chat", "Settings"]),
+            Item::new_with_subitems(
+                "OpenRouter",
+                vec!["New chat", "Select prompt", "Select model"],
+            ),
             Item::new_with_subitems("Blobstorage", vec!["Sync", "Browse"]),
             Item::new("Scripts"),
             Item::new_with_subitems("Snippets", vec!["Browse", "Open folder"]),
@@ -28,7 +31,8 @@ fn main() {
 
         match (module.as_str(), option.as_deref()) {
             ("OpenRouter", Some("New chat")) => openrouter::new_chat(),
-            ("OpenRouter", Some("Settings")) => openrouter::settings(),
+            ("OpenRouter", Some("Select prompt")) => openrouter::select_prompt(),
+            ("OpenRouter", Some("Select model")) => openrouter::select_model(),
 
             ("Blobstorage", Some("Sync")) => blobstorage::sync_containers(),
             ("Blobstorage", Some("Browse")) => blobstorage::browse_containers(),

@@ -31,13 +31,15 @@ pub fn scripts_dir() -> &'static PathBuf {
     })
 }
 
-pub fn prompts_dir() -> &'static PathBuf {
-    OPENROUTER_PROMPTS_PATH.get_or_init(|| {
-        let mut path = data_dir().clone();
-        path.push("prompts");
+pub fn prompts_dir() -> PathBuf {
+    OPENROUTER_PROMPTS_PATH
+        .get_or_init(|| {
+            let mut path = data_dir().to_owned();
+            path.push("prompts");
 
-        path
-    })
+            path
+        })
+        .to_owned()
 }
 
 pub fn openrouter_settings_path() -> &'static PathBuf {

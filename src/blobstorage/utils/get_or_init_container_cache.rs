@@ -12,7 +12,7 @@ pub fn get_or_init_container_cache(
 ) -> Option<HashMap<String, CsvRow>> {
     let csv_name = format!("{}.csv", container_name);
 
-    let mut path = statics::blobstorage_cache_path();
+    let mut path = statics::blobstorage_cache_dir();
     path.push(account_name);
     path.push(csv_name);
 

@@ -68,7 +68,7 @@ pub fn blobstorage_settings_path() -> PathBuf {
         .to_owned()
 }
 
-pub fn blobstorage_cache_path() -> PathBuf {
+pub fn blobstorage_cache_dir() -> PathBuf {
     BLOBSTORAGE_CACHE_PATH
         .get_or_init(|| {
             let mut path = data_dir().clone();
@@ -80,7 +80,7 @@ pub fn blobstorage_cache_path() -> PathBuf {
         .to_owned()
 }
 
-pub fn snippets_path() -> PathBuf {
+pub fn snippets_dir() -> PathBuf {
     SNIPPETS_PATH
         .get_or_init(|| {
             let mut path = data_dir().clone();

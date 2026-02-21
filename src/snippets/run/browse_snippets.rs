@@ -1,6 +1,6 @@
 use crate::shared::{
     menu::{self, Cursor, Item, NONE},
-    statics::snippets_path,
+    statics::snippets_dir,
     terminal::COLORS,
 };
 use crate::snippets::utils::get_snippet_names;
@@ -27,7 +27,7 @@ pub fn browse_snippets() {
         result
     };
 
-    let mut snippet_path = snippets_path();
+    let mut snippet_path = snippets_dir();
     snippet_path.push(&snippet);
 
     match action.as_deref() {

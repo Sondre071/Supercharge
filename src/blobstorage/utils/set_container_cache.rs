@@ -20,7 +20,7 @@ pub fn set_container_cache(
 
     let csv_name = format!("{}.csv", container_name);
 
-    let mut path = statics::blobstorage_cache_path();
+    let mut path = statics::blobstorage_cache_dir();
     path.push(account_name);
     path.push(csv_name);
 

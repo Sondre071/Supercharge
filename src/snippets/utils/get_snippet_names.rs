@@ -3,7 +3,7 @@ use crate::shared::statics;
 use std::fs;
 
 pub fn get_snippet_names() -> Vec<String> {
-    let files = fs::read_dir(statics::snippets_path()).unwrap();
+    let files = fs::read_dir(statics::snippets_dir()).unwrap();
 
     files
         .into_iter()

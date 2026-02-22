@@ -1,7 +1,4 @@
-use crate::blobstorage;
-
-use blobstorage::types::{BlobFile, FileDiff, LocalFile};
-
+use crate::blobstorage::types::{BlobFile, FileDiff, LocalFile};
 use std::collections::{HashMap, HashSet};
 
 pub fn create_diff(

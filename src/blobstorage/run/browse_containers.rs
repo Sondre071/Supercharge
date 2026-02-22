@@ -1,7 +1,9 @@
-use crate::blobstorage::{api, utils::select_storage_account};
-use crate::shared::{
-    menu::{self, Cursor, NONE},
-    terminal::COLORS,
+use crate::{
+    blobstorage::{api, utils::select_storage_account},
+    shared::{
+        menu::{self, Cursor, NONE},
+        terminal::COLORS,
+    },
 };
 
 pub fn browse_containers() {

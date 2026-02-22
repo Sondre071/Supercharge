@@ -1,10 +1,9 @@
-use crate::blobstorage::{self, api};
-use crate::shared::terminal;
+use crate::{
+    blobstorage::{api, types::FileDiff, utils::types::StorageAccount},
+    shared::terminal::{self, COLORS},
+};
 
-use blobstorage::types::FileDiff;
-use blobstorage::utils::types::StorageAccount;
 use std::io::{self, Write};
-use terminal::COLORS;
 
 const UPLOAD_THRESHOLD: usize = 20 * 1024 * 1024; // 20 MB
 

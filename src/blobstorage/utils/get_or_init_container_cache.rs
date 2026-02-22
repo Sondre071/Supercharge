@@ -1,10 +1,5 @@
-use crate::blobstorage;
-use crate::shared;
-
-use blobstorage::utils::types::CsvRow;
-use shared::statics;
-use std::collections::HashMap;
-use std::fs::File;
+use crate::{blobstorage::utils::types::CsvRow, shared::statics};
+use std::{collections::HashMap, fs::File};
 
 pub fn get_or_init_container_cache(
     account_name: &str,

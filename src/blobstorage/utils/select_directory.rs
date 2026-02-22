@@ -1,6 +1,4 @@
-use crate::blobstorage;
-
-use blobstorage::utils;
+use crate::blobstorage::utils;
 
 pub fn select_directory() -> Option<(String, std::path::PathBuf)> {
     let path = rfd::FileDialog::new().pick_folder().unwrap();

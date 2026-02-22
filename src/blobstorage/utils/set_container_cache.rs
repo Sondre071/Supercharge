@@ -1,11 +1,11 @@
-use crate::blobstorage;
-use crate::shared;
-
-use blobstorage::types::LocalFile;
-use blobstorage::utils::types::CsvRow;
-use shared::statics;
-use std::collections::HashMap;
-use std::fs::{self, OpenOptions};
+use crate::{
+    blobstorage::{types::LocalFile, utils::types::CsvRow},
+    shared::statics,
+};
+use std::{
+    collections::HashMap,
+    fs::{self, OpenOptions},
+};
 
 pub fn set_container_cache(
     account_name: &str,

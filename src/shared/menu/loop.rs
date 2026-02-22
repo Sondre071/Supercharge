@@ -1,10 +1,8 @@
 use crate::shared::{
-    menu::{self, Cursor},
+    menu::{self, Cursor, cursor::Focus},
     terminal::{self, read_key_blocking},
 };
 use crossterm::event::KeyCode;
-
-use menu::cursor::Focus;
 
 pub fn run(cursor: &mut Cursor) -> Option<(String, Option<String>)> {
     terminal::set_cursor_visibility(false);
@@ -12,7 +10,6 @@ pub fn run(cursor: &mut Cursor) -> Option<(String, Option<String>)> {
     menu::write_headers(&cursor.header, cursor.subheaders.clone());
 
     let mut start_y = terminal::get_cursor_pos().Y;
-    
 
     //crossterm::terminal::enable_raw_mode().unwrap();
 

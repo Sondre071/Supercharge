@@ -3,7 +3,6 @@ use windows_sys::Win32::System::Console::{
     CONSOLE_SCREEN_BUFFER_INFO, GetConsoleScreenBufferInfo, GetStdHandle, STD_OUTPUT_HANDLE,
 };
 
-#[allow(dead_code)]
 pub fn get_screen_width() -> usize {
     let stdout = unsafe { GetStdHandle(STD_OUTPUT_HANDLE) };
 

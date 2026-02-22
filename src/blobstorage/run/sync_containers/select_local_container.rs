@@ -1,10 +1,8 @@
-use crate::blobstorage;
-use crate::shared::menu::{self, Cursor};
-
-use blobstorage::utils;
-use std::collections::HashMap;
-use std::fs;
-use std::path::PathBuf;
+use crate::{
+    blobstorage::utils,
+    shared::menu::{self, Cursor},
+};
+use std::{collections::HashMap, fs, path::PathBuf};
 
 pub fn select_local_container(all: bool) -> Option<HashMap<String, PathBuf>> {
     let mut containers: HashMap<String, PathBuf> = HashMap::new();

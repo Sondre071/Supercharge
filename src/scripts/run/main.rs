@@ -1,7 +1,8 @@
-use crate::shared::menu::{self, Cursor, NONE};
-use crate::shared::statics;
-use crate::shared::terminal::COLORS;
-
+use crate::shared::{
+    menu::{self, Cursor, NONE},
+    statics,
+    terminal::COLORS,
+};
 use std::{env, fs, path::PathBuf, process};
 
 pub fn main() {

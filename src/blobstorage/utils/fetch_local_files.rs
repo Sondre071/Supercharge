@@ -1,13 +1,12 @@
-use crate::blobstorage;
-use crate::shared::terminal;
-
-use blobstorage::types::LocalFile;
-use blobstorage::utils::types::CsvRow;
-use std::collections::HashMap;
-use std::io::{self, Write};
-use std::path::PathBuf;
-use terminal::ACTIONS;
-use terminal::COLORS;
+use crate::{
+    blobstorage::{types::LocalFile, utils::types::CsvRow},
+    shared::terminal::{ACTIONS, COLORS},
+};
+use std::{
+    collections::HashMap,
+    io::{self, Write},
+    path::PathBuf,
+};
 use walkdir::WalkDir;
 
 pub fn fetch_local_files(

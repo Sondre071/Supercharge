@@ -1,7 +1,9 @@
-use crate::blobstorage::{api, types::FileDiff, utils};
-use crate::shared::{
-    menu::{self, Cursor, NONE},
-    terminal,
+use crate::{
+    blobstorage::{api, types::FileDiff, utils},
+    shared::{
+        menu::{self, Cursor, NONE},
+        terminal::{self, COLORS},
+    },
 };
 use std::process::exit;
 
@@ -9,7 +11,6 @@ use create_diff::create_diff;
 use print_diff::print_diff;
 use select_local_container::select_local_container;
 use sync_files::sync_files;
-use terminal::COLORS;
 
 mod create_diff;
 mod print_diff;

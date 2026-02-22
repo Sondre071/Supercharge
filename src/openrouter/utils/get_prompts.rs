@@ -1,5 +1,4 @@
-use super::types::PromptFile;
-use crate::shared::statics;
+use crate::{openrouter::utils::types::PromptFile, shared::statics};
 
 pub fn get_prompts() -> Vec<PromptFile> {
     let entries =

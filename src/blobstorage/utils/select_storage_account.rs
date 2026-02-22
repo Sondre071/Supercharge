@@ -1,5 +1,7 @@
-use crate::blobstorage::utils::{self, types::StorageAccount};
-use crate::shared::menu::{self, Cursor, NONE};
+use crate::{
+    blobstorage::utils::{self, types::StorageAccount},
+    shared::menu::{self, Cursor, NONE},
+};
 
 pub fn select_storage_account() -> StorageAccount {
     let data = utils::get_blob_settings();

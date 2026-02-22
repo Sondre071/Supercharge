@@ -1,10 +1,11 @@
-use crate::shared::{
-    menu::{self, Cursor, Item, NONE},
-    statics::snippets_dir,
-    terminal::COLORS,
+use crate::{
+    shared::{
+        menu::{self, Cursor, Item, NONE},
+        statics::snippets_dir,
+        terminal::COLORS,
+    },
+    snippets::utils::get_snippet_names,
 };
-use crate::snippets::utils::get_snippet_names;
-
 use std::{fs, process};
 
 pub fn browse_snippets() {

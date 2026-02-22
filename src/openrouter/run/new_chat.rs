@@ -1,10 +1,9 @@
-use crate::shared::menu;
 use crate::{
     openrouter::{
         api::{self, types::InputMessage},
         utils::settings,
     },
-    shared::statics,
+    shared::{menu, statics},
 };
 
 pub fn new_chat() {

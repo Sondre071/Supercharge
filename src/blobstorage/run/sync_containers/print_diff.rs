@@ -1,9 +1,8 @@
-use crate::blobstorage;
-use crate::shared::terminal;
-
-use blobstorage::types::{BlobFile, FileDiff, LocalFile};
+use crate::{
+    blobstorage::types::{BlobFile, FileDiff, LocalFile},
+    shared::terminal::COLORS,
+};
 use std::process;
-use terminal::COLORS;
 
 pub fn print_diff(diff: &FileDiff) {
     print_count("Local files", diff.local_files_count.to_string().as_str());

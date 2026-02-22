@@ -1,5 +1,4 @@
 use crate::shared::statics;
-
 use std::fs;
 
 pub fn get_snippet_names() -> Vec<String> {

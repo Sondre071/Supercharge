@@ -1,10 +1,5 @@
-use crate::blobstorage;
-use crate::shared::statics;
-
-use blobstorage::utils::types::BlobStorageData;
-use std::collections::HashMap;
-use std::fs;
-use std::io;
+use crate::{blobstorage::utils::types::BlobStorageData, shared::statics};
+use std::{collections::HashMap, fs, io};
 
 pub fn get_blob_settings() -> BlobStorageData {
     let file = fs::File::open(statics::blobstorage_settings_path())

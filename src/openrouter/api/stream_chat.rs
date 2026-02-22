@@ -1,8 +1,10 @@
-use crate::openrouter::{
-    api::types::{InputMessage, MessageRequestBody, MessageResponseStreamEvent},
-    utils::settings,
+use crate::{
+    openrouter::{
+        api::types::{InputMessage, MessageRequestBody, MessageResponseStreamEvent},
+        utils::settings,
+    },
+    shared::terminal::{self, COLORS},
 };
-use crate::shared::terminal::{self, COLORS};
 use std::io::{self, BufRead, Write};
 
 pub fn stream_chat(messages: Vec<&InputMessage>) -> Result<String, String> {

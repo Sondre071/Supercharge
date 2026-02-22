@@ -63,8 +63,9 @@ fn init() {
         let arg = args[1].to_owned();
 
         match arg.as_str() {
-            "--chat" | "-C" | "-c" => openrouter::new_chat(),
-            "--scripts" | "-S" | "-s" => scripts::run_script(),
+            "--chat" | "-C" | "--c" => openrouter::new_chat(),
+            "--blob" | "-B" | "--b" => blobstorage::sync_containers(),
+            "--scripts" | "-S" | "--s" => scripts::run_script(),
             _ => {}
         }
     }

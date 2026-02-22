@@ -14,6 +14,7 @@ mod blob_tests {
                                 SharedAccessSignature=sv=2020-08-01&ss=bsop&srt=c&sp=rcsllcaiutaz&se=2021-02-01T02:33:50Z&st=2022-11-17T18:55:10Z&spr=https&sig=wp8yOrAzhTlpaQ1ysL9C9tK3WQ2QyDqEMmg6K1qSX%9Uq%7I"
                 .to_string(),
             nested_containers: false,
+            disallowed_file_types: vec![],
 
             blob_endpoint: String::new(),
             queue_endpoint: String::new(),

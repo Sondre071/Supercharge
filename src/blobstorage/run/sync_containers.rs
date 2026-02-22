@@ -73,7 +73,7 @@ pub fn sync_containers() {
         terminal::set_cursor_visibility(false);
 
         let cache = utils::get_or_init_container_cache(&account.name, &name);
-        let local_files = utils::fetch_local_files(&path, &cache);
+        let local_files = utils::fetch_local_files(&path, &cache, &account);
 
         utils::set_container_cache(&account.name, &name, &local_files);
 

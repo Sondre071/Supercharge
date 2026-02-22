@@ -1,5 +1,8 @@
 use crate::{
-    blobstorage::{types::LocalFile, utils::types::CsvRow},
+    blobstorage::{
+        types::LocalFile,
+        utils::types::{CsvRow, StorageAccount},
+    },
     shared::terminal::{ACTIONS, COLORS},
 };
 use std::{
@@ -12,6 +15,7 @@ use walkdir::WalkDir;
 pub fn fetch_local_files(
     path: &PathBuf,
     cache: &Option<HashMap<String, CsvRow>>,
+    account: &StorageAccount,
 ) -> HashMap<String, LocalFile> {
     let files: HashMap<String, LocalFile> = WalkDir::new(path)
         .into_iter()
@@ -33,7 +37,7 @@ pub fn fetch_local_files(
             );
             io::stdout().flush().unwrap();
 
-            let file = LocalFile::from_entry_cached(&e, name, cache);
+            let file = LocalFile::from_entry_cached(&e, name, cache, account.disallowed_file_types.clone());
 
             (file.content_md5.to_owned(), file)
         })

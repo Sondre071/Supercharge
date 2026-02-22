@@ -3,7 +3,7 @@ use crate::{
     shared::utils::date,
 };
 use base64::{Engine as _, engine::general_purpose};
-use std::{collections::HashMap, fs, path::PathBuf};
+use std::{collections::HashMap, fs, mem::drop, path::PathBuf};
 use walkdir::{self, DirEntry};
 
 #[allow(dead_code)]
@@ -64,15 +64,24 @@ impl LocalFile {
         entry: &DirEntry,
         container_name: &str,
         cache: &Option<HashMap<String, CsvRow>>,
+        disallowed_file_types: Vec<String>,
     ) -> Self {
         let path = entry.path();
         let metadata = entry.metadata().expect("Failed to parse metadata.");
 
         let name = entry.file_name().to_string_lossy().into_owned();
 
-        if name.contains(".jif") {
-            panic!("Found a .jif file. Get rid of it.")
+        let file_type = entry
+            .path()
+            .extension()
+            .and_then(|s| s.to_str())
+            .unwrap_or("")
+            .to_string();
+
+        if disallowed_file_types.contains(&file_type) {
+            panic!("Found a {} file. Get rid of it.", &file_type)
         }
+        drop(file_type);
 
         let content_length = metadata.len() as usize;
 

@@ -70,6 +70,7 @@ if (Test-Path $blobstorageDataPath)
                 local_files_path  = ""
                 connection_string = ""
                 nested_containers = ""
+                disallowed_file_types = @()
             }
         )
     }

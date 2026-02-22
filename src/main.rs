@@ -10,9 +10,7 @@ use shared::{
 };
 
 fn main() {
-    jump_up_one_row();
-    capture_args();
-    enable_sigint();
+    init();
 
     let mut menu = Cursor::new_with_subitems(
         "Supercharge",
@@ -51,15 +49,15 @@ fn main() {
     }
 }
 
-fn jump_up_one_row() {
+fn init() {
+    enable_sigint();
+
     shared::terminal::move_cursor_pos(None, Some(-1));
     print!(
         "{clear_line}\r",
         clear_line = shared::terminal::ACTIONS.ClearLine
     );
-}
 
-fn capture_args() {
     let args: Vec<String> = std::env::args().collect();
     if args.len() > 1 {
         let arg = args[1].to_owned();

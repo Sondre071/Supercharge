@@ -39,7 +39,7 @@ fn main() {
 
             ("Blobstorage", Some("Sync")) => blobstorage::sync_containers(),
             ("Blobstorage", Some("Browse")) => blobstorage::browse_containers(),
-            ("Scripts", None) => scripts::main(),
+            ("Scripts", None) => scripts::run_script(),
 
             ("Snippets", Some("Browse")) => snippets::browse_snippets(),
             ("Snippets", Some("Open folder")) => snippets::open_folder(),
@@ -64,7 +64,7 @@ fn init() {
 
         match arg.as_str() {
             "--chat" | "-C" | "-c" => openrouter::new_chat(),
-            "--scripts" | "-S" | "-s" => scripts::main(),
+            "--scripts" | "-S" | "-s" => scripts::run_script(),
             _ => {}
         }
     }

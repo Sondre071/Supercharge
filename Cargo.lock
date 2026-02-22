@@ -2176,7 +2176,6 @@ dependencies = [
  "arboard",
  "arc-swap",
  "base64",
- "clipboard-win",
  "crossterm",
  "csv",
  "httpdate",

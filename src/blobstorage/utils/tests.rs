@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod blob_tests {
-    use crate::blobstorage::utils::types::StorageAccount;
+    use crate::blobstorage::utils::{self, types::StorageAccount};
 
     #[test]
     fn test_populate_account_from_connection_string() {

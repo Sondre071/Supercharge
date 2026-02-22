@@ -5,10 +5,13 @@ mod shared;
 mod snippets;
 
 use shared::menu::{Cursor, Item, NONE};
+use shared::terminal::enable_sigint;
 
 fn main() {
     jump_up_one_row();
     capture_args();
+    enable_sigint();
+    
 
     let mut menu = Cursor::new_with_subitems(
         "Supercharge",

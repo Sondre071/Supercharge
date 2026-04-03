@@ -4,7 +4,7 @@ use crate::{
         statics::snippets_dir,
         terminal::COLORS,
     },
-    snippets::utils::get_snippet_names,
+    snippets::{run::view_snippet, utils::get_snippet_names},
 };
 use std::{fs, process};
 
@@ -17,7 +17,7 @@ pub fn browse_snippets() {
             NONE,
             names
                 .into_iter()
-                .map(|f| Item::new_with_subitems(f, vec!["Open", "Copy", "Delete"]))
+                .map(|f| Item::new_with_subitems(f, vec!["Browse", "Open", "Delete"]))
                 .collect(),
         );
 
@@ -29,9 +29,12 @@ pub fn browse_snippets() {
     };
 
     let mut snippet_path = snippets_dir();
-    snippet_path.push(&snippet);
+    snippet_path.push(format!("{}.md", &snippet));
 
     match action.as_deref() {
+        Some("Browse") => {
+            view_snippet(&snippet);
+        }
         Some("Open") => {
             let _ = process::Command::new("nvim")
                 .args([&snippet_path])
@@ -40,13 +43,6 @@ pub fn browse_snippets() {
                 .wait();
 
             menu::clear_screen();
-            process::exit(0);
-        }
-        Some("Copy") => {
-            let mut clip = arboard::Clipboard::new().unwrap();
-            let content = fs::read_to_string(&snippet_path).expect("Failed to open snippet.");
-            clip.set_text(content).unwrap();
-
             process::exit(0);
         }
         Some("Delete") => {

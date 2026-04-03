@@ -9,8 +9,11 @@ pub fn get_snippet_names() -> Vec<String> {
         .filter_map(Result::ok)
         .filter(|entry| {
             entry.file_type().unwrap().is_file()
-                && entry.file_name().to_string_lossy().ends_with(".txt")
+                && entry.file_name().to_string_lossy().ends_with(".md")
         })
-        .map(|f| f.file_name().to_string_lossy().to_string().to_owned())
+        .map(|f| {
+            let name = f.file_name().to_string_lossy().to_string();
+            name.trim_end_matches(".md").to_string()
+        })
         .collect()
 }

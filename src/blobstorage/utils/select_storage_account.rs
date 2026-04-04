@@ -3,7 +3,7 @@ use crate::{
     shared::menu::{self, Cursor, NONE},
 };
 
-pub fn select_storage_account() -> StorageAccount {
+pub fn select_storage_account() -> Option<StorageAccount> {
     let data = utils::get_blob_settings();
 
     if data.storage_accounts.is_empty() {
@@ -11,7 +11,7 @@ pub fn select_storage_account() -> StorageAccount {
     }
 
     if data.storage_accounts.len() == 1 {
-        data.storage_accounts.first().unwrap().to_owned()
+        data.storage_accounts.first().cloned()
     } else {
         let options = data
             .storage_accounts
@@ -19,12 +19,11 @@ pub fn select_storage_account() -> StorageAccount {
             .map(|a| a.name.as_str())
             .collect();
 
-        let (name, _) = menu::run(&mut Cursor::new("Select account", NONE, options, None)).unwrap();
+        let (name, _) = menu::run(&mut Cursor::new("Select account", NONE, options, None))?;
 
         data.storage_accounts
             .iter()
             .find(|a| a.name == name)
-            .unwrap()
-            .to_owned()
+            .cloned()
     }
 }

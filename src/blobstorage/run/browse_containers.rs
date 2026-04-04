@@ -7,7 +7,7 @@ use crate::{
 };
 
 pub fn browse_containers() {
-    let account = select_storage_account();
+    let Some(account) = select_storage_account() else { return };
 
     let container = match menu::run(&mut Cursor::new(
         "Select container",

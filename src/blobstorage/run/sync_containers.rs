@@ -18,7 +18,7 @@ mod select_local_container;
 mod sync_files;
 
 pub fn sync_containers() {
-    let account = utils::select_storage_account();
+    let Some(account) = utils::select_storage_account() else { return };
 
     let containers = {
         let all: bool = {

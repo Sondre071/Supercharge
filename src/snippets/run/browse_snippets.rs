@@ -19,6 +19,7 @@ pub fn browse_snippets() {
                 .into_iter()
                 .map(|f| Item::new_with_subitems(f, vec!["Browse", "Open", "Delete"]))
                 .collect(),
+            None,
         );
 
         let Some(result) = menu::run(&mut cursor) else {
@@ -50,6 +51,7 @@ pub fn browse_snippets() {
                 "Delete snippet",
                 Some(vec![&format!("Name: {}", &snippet), "Are you sure?", ""]),
                 vec!["Yes", "No"],
+                None,
             )) && choice == "No"
             {
                 return;

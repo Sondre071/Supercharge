@@ -7,8 +7,12 @@ use crate::{
 };
 
 pub fn select_model() {
-    let Some((model, _)) = menu::run(&mut Cursor::new("Select model", NONE, api::fetch_models()))
-    else {
+    let Some((model, _)) = menu::run(&mut Cursor::new(
+        "Select model",
+        NONE,
+        api::fetch_models(),
+        None,
+    )) else {
         return;
     };
 

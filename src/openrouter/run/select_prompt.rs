@@ -13,6 +13,7 @@ pub fn select_prompt() {
         once("None")
             .chain(prompts.iter().map(|p| p.name.as_str()))
             .collect(),
+        None,
     ))
     .map(|(f, _)| if f == "None" { None } else { Some(f) });
 

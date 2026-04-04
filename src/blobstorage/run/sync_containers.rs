@@ -23,7 +23,7 @@ pub fn sync_containers() {
     let containers = {
         let all: bool = {
             if account.nested_containers {
-                match menu::run(&mut Cursor::new("Sync all?", NONE, vec!["Yes", "No"])) {
+                match menu::run(&mut Cursor::new("Sync all?", NONE, vec!["Yes", "No"], None)) {
                     Some((choice, _)) => choice == "Yes",
                     _ => return,
                 }
@@ -57,6 +57,7 @@ pub fn sync_containers() {
                     "Container not found",
                     Some(vec!["Create one?", ""]),
                     vec!["Yes", "No"],
+                    None,
                 ))
                 .unwrap();
 
@@ -82,8 +83,13 @@ pub fn sync_containers() {
         print_diff(&diff);
 
         if diff.sync_available() {
-            let (choice, _) =
-                menu::run(&mut Cursor::new("Synchronize?", NONE, vec!["Yes", "No"])).unwrap();
+            let (choice, _) = menu::run(&mut Cursor::new(
+                "Synchronize?",
+                NONE,
+                vec!["Yes", "No"],
+                None,
+            ))
+            .unwrap();
 
             if choice == "Yes" {
                 sync_files(&account, &name, diff);

@@ -25,6 +25,7 @@ fn main() {
             Item::new("Snippets"),
             Item::new("Exit"),
         ],
+        None,
     );
 
     loop {

@@ -1,13 +1,13 @@
 use crate::{
     shared::{
-        menu::{Cursor, NONE},
+        menu::{Cursor, Focus, NONE},
         statics,
         terminal::{self, ACTIONS, COLORS, read_key_blocking},
     },
     snippets::utils,
 };
 use crossterm::event::KeyCode;
-use std::{fs, io::{Write, stdout}, iter, path::PathBuf, process};
+use std::{fs, iter, path::PathBuf, process};
 
 pub fn view_snippet2() {
     terminal::set_cursor_visibility(false);
@@ -15,26 +15,18 @@ pub fn view_snippet2() {
     let snippets_dir = statics::snippets_dir();
     let snippet_names = utils::get_snippet_names();
 
-    let mut cursor = Cursor::new("Snippets", NONE, snippet_names);
-
-    let mut selected_snippet: String;
+    let mut cursor = Cursor::new(
+        "Snippets",
+        NONE,
+        snippet_names.to_owned(),
+        Some(Box::new(display_func)),
+    );
     let mut start_y = terminal::get_cursor_pos().Y;
 
     loop {
         terminal::set_cursor_pos(0, start_y as usize);
 
-        selected_snippet = cursor.items[cursor.current].value.clone();
-
-        let mut lines = cursor.assemble_menu();
-        
-        lines.append(&mut assemble_view(&snippets_dir, &selected_snippet));
-        
-        #[allow(clippy::print_with_newline)]
-        for line in &lines {
-            print!("{}\n", line);
-        }
-        
-        stdout().flush().unwrap();
+        let lines_len = cursor.render_menu();
 
         let key = read_key_blocking();
 
@@ -82,15 +74,25 @@ pub fn view_snippet2() {
         }
 
         // Recalculcates in case terminal window scrolls during initial render.
-        start_y = terminal::get_cursor_pos().Y - lines.len() as i16;
+        start_y = terminal::get_cursor_pos().Y - lines_len as i16;
     }
 }
 
-fn assemble_view(file_directory: &PathBuf, file_name: &str) -> Vec<String> {
+fn display_func(cursor: &Cursor) -> Vec<String> {
     let mut lines = Vec::<String>::new();
 
-    let mut file_path = file_directory.to_owned();
-    file_path.push(file_name);
+  //if matches!(cursor.focus, Focus::BaseMenu) {
+  //    return lines;
+  //};
+
+    let selected_snippet = cursor.items[cursor.current].value.clone();
+
+    let file_path = {
+        let mut pathbuf = statics::snippets_dir();
+        pathbuf.push(&selected_snippet);
+
+        pathbuf
+    };
 
     let border_color = COLORS.Gray;
     let text_color = COLORS.Cyan;
@@ -106,8 +108,8 @@ fn assemble_view(file_directory: &PathBuf, file_name: &str) -> Vec<String> {
         let width: usize = 30;
 
         // Truncate
-        let mut header = file_name.to_owned();
-
+        let mut header = selected_snippet.clone();
+            
         if header.chars().count() > width {
             let truncated: String = header.chars().take(width - 2).collect();
             header = format!("{truncated}..");

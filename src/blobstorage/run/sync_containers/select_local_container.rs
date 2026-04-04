@@ -15,6 +15,7 @@ pub fn select_local_container(all: bool) -> Option<HashMap<String, PathBuf>> {
             "Correct folder?",
             Some(vec![&parent_dir.0, ""]),
             vec!["Yes", "No"],
+            None,
         ))
         .map(|(res, _)| res == "Yes")
         .unwrap_or(false);

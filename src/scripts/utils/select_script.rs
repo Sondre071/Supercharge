@@ -16,7 +16,7 @@ pub fn select_script() -> Option<(String, PathBuf)> {
         return None;
     }
 
-    let (folder, _) = menu::run(&mut Cursor::new("Select folder", NONE, directories))?;
+    let (folder, _) = menu::run(&mut Cursor::new("Select folder", NONE, directories, None))?;
     current_path.push(folder);
 
     let scripts = get_files(&current_path);
@@ -25,7 +25,7 @@ pub fn select_script() -> Option<(String, PathBuf)> {
         return None;
     }
 
-    let (script, _) = menu::run(&mut Cursor::new("Select script", NONE, scripts))?;
+    let (script, _) = menu::run(&mut Cursor::new("Select script", NONE, scripts, None))?;
     current_path.push(&script);
 
     Some((script, current_path))

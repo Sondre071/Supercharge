@@ -29,6 +29,8 @@ pub enum Focus {
     SubMenu,
 }
 
+pub type DisplayFunc = Option<Box<dyn Fn(&Cursor) -> Vec<String>>>;
+
 pub struct Cursor {
     pub header: String,
     pub subheaders: Vec<String>,
@@ -42,10 +44,17 @@ pub struct Cursor {
 
     pub offset: usize,
     pub visible_items: usize,
+
+    pub display_func: DisplayFunc,
 }
 
 impl Cursor {
-    pub fn new<S, SH, I>(header: S, subheaders: Option<Vec<SH>>, items: Vec<I>) -> Self
+    pub fn new<S, SH, I>(
+        header: S,
+        subheaders: Option<Vec<SH>>,
+        items: Vec<I>,
+        display_func: DisplayFunc,
+    ) -> Self
     where
         S: Into<String>,
         SH: Into<String>,
@@ -55,6 +64,7 @@ impl Cursor {
             header.into(),
             subheaders.into_iter().flatten().map(Into::into).collect(),
             items.into_iter().map(Item::new).collect(),
+            display_func,
         )
     }
 
@@ -62,6 +72,7 @@ impl Cursor {
         header: S,
         subheaders: Option<Vec<SH>>,
         items: Vec<Item>,
+        display_func: DisplayFunc,
     ) -> Self
     where
         S: Into<String>,
@@ -70,10 +81,15 @@ impl Cursor {
         let header = header.into();
         let subheaders = subheaders.into_iter().flatten().map(Into::into).collect();
 
-        Self::init(header, subheaders, items)
+        Self::init(header, subheaders, items, display_func)
     }
 
-    fn init(header: String, subheaders: Vec<String>, items: Vec<Item>) -> Self {
+    fn init(
+        header: String,
+        subheaders: Vec<String>,
+        items: Vec<Item>,
+        display_func: DisplayFunc,
+    ) -> Self {
         let visible_items = items.len().min(20);
         let submenu_x_offset = items.iter().map(|i| i.value.len()).max().unwrap() + 4;
 
@@ -90,12 +106,14 @@ impl Cursor {
 
             offset: 0,
             visible_items,
+
+            display_func,
         }
     }
 }
 
 impl Cursor {
-    pub fn assemble_menu(&mut self) -> Vec<String> {
+    pub fn render_menu(&mut self) -> usize {
         let height = self.items.len().min(20);
 
         let length = cmp::max(height + self.offset, self.items[self.current].items.len());
@@ -114,8 +132,17 @@ impl Cursor {
 
             lines.push(line);
         }
+        
+        if let Some(func) = &self.display_func {
+            lines.append(&mut func(self));
+        }
 
-        lines
+        #[allow(clippy::print_with_newline)]
+        for line in &lines {
+            print!("{}\n", line);
+        }
+
+        lines.len()
     }
 
     fn format_line(

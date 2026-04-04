@@ -13,6 +13,7 @@ pub fn browse_containers() {
         "Select container",
         NONE,
         api::fetch_containers(&account).unwrap(),
+        None,
     )) {
         Some((container, _)) => container,
         _ => return,

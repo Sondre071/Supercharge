@@ -13,13 +13,8 @@ pub fn run(cursor: &mut Cursor) -> Option<(String, Option<String>)> {
     loop {
         terminal::set_cursor_pos(0, start_y as usize);
 
-        let lines = cursor.assemble_menu();
+        let lines_len = cursor.render_menu();
         
-        #[allow(clippy::print_with_newline)]
-        for line in &lines {
-            print!("{}\n", line);
-        }
-
         stdout().flush().unwrap();
 
         let key = read_key_blocking();
@@ -27,7 +22,7 @@ pub fn run(cursor: &mut Cursor) -> Option<(String, Option<String>)> {
         match key {
             KeyCode::Char('q') | KeyCode::Char('h') => match cursor.focus {
                 Focus::BaseMenu => {
-                    draw::clear_menu(lines.len());
+                    draw::clear_menu(lines_len);
                     terminal::set_cursor_visibility(true);
 
                     return None;
@@ -87,13 +82,13 @@ pub fn run(cursor: &mut Cursor) -> Option<(String, Option<String>)> {
                         cursor.focus = Focus::SubMenu;
                     }
                     (Focus::BaseMenu, true) => {
-                        draw::clear_menu(lines.len());
+                        draw::clear_menu(lines_len);
                         terminal::set_cursor_visibility(true);
 
                         return Some((current_item.value.clone(), None));
                     }
                     _ => {
-                        draw::clear_menu(lines.len());
+                        draw::clear_menu(lines_len);
                         terminal::set_cursor_visibility(true);
 
                         return Some((
@@ -108,6 +103,6 @@ pub fn run(cursor: &mut Cursor) -> Option<(String, Option<String>)> {
         }
 
         // Recalculcates in case terminal window scrolls during initial render.
-        start_y = terminal::get_cursor_pos().Y - lines.len() as i16;
+        start_y = terminal::get_cursor_pos().Y - lines_len as i16;
     }
 }

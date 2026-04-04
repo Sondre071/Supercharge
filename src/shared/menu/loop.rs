@@ -9,10 +9,6 @@ pub fn run(cursor: &mut Cursor) -> Option<(String, Option<String>)> {
 
     let mut start_y = terminal::get_cursor_pos().Y;
 
-    //crossterm::terminal::enable_raw_mode().unwrap();
-
-    //std::io::stdout().execute(Clear(ClearType::All)).unwrap();
-
     loop {
         terminal::set_cursor_pos(0, start_y as usize);
 
@@ -103,9 +99,6 @@ pub fn run(cursor: &mut Cursor) -> Option<(String, Option<String>)> {
             _ => {}
         }
 
-        start_y = terminal::get_cursor_pos().Y
-            - 1
-            - cursor.subheaders.len() as i16
-            - rendered_items as i16;
+        start_y = terminal::get_cursor_pos().Y - rendered_items as i16;
     }
 }

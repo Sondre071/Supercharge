@@ -119,6 +119,8 @@ impl Cursor {
             Focus::SubMenu => COLORS.DarkGray,
         };
 
+        lines.append(&mut self.write_headers(left_border_color));
+
         for index in self.offset..length {
             let relative_index = index - self.offset;
 
@@ -126,8 +128,6 @@ impl Cursor {
 
             lines.push(line);
         }
-
-        self.write_headers(left_border_color);
 
         #[allow(clippy::print_with_newline)]
         for line in &lines {
@@ -203,7 +203,9 @@ impl Cursor {
         )
     }
 
-    fn write_headers(&self, border_color: &str) {
+    fn write_headers(&self, border_color: &str) -> Vec<String> {
+        let mut lines = Vec::<String>::new();
+
         let header_text = {
             let width: usize = 30;
 
@@ -224,23 +226,25 @@ impl Cursor {
             format!("{} {} {}", pad_left, header, pad_right)
         };
 
-        println!(
+        lines.push(format!(
             "{border_color}┌{yellow}{}{reset}",
             header_text,
             border_color = border_color,
             yellow = COLORS.Yellow,
             reset = COLORS.Reset
-        );
+        ));
 
         for subheader in self.subheaders.iter() {
-            println!(
+            lines.push(format!(
                 "{border_color}│ {yellow}{}{reset}",
                 subheader,
                 border_color = border_color,
                 yellow = COLORS.Yellow,
                 reset = COLORS.Reset
-            )
+            ));
         }
+
+        lines
     }
 
     pub fn clear_menu(&self, rendered_items: usize) {

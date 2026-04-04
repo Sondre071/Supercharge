@@ -3,7 +3,6 @@ use crate::shared::{
     terminal::{self, read_key_blocking},
 };
 use crossterm::event::KeyCode;
-use std::io::{Write, stdout};
 
 pub fn run(cursor: &mut Cursor) -> Option<(String, Option<String>)> {
     terminal::set_cursor_visibility(false);
@@ -14,8 +13,6 @@ pub fn run(cursor: &mut Cursor) -> Option<(String, Option<String>)> {
         terminal::set_cursor_pos(0, start_y as usize);
 
         let lines_len = cursor.render_menu();
-        
-        stdout().flush().unwrap();
 
         let key = read_key_blocking();
 

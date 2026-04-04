@@ -22,7 +22,7 @@ fn main() {
             ),
             Item::new_with_subitems("Blobstorage", vec!["Sync", "Browse"]),
             Item::new("Scripts"),
-            Item::new("Snippets"),
+            Item::new_with_subitems("Snippets", vec!["Use", "Manage"]),
             Item::new("Exit"),
         ],
         None,
@@ -41,7 +41,8 @@ fn main() {
             ("Blobstorage", Some("Sync")) => blobstorage::sync_containers(),
             ("Blobstorage", Some("Browse")) => blobstorage::browse_containers(),
             ("Scripts", None) => scripts::run_script(),
-            ("Snippets", None) => snippets::view_snippet2(),
+            ("Snippets", Some("Use")) => snippets::view_snippets(),
+            ("Snippets", Some("Manage")) => snippets::open_folder(),
 
             _ => return,
         }

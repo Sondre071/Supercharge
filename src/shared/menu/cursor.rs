@@ -1,5 +1,8 @@
 use crate::shared::terminal::{ACTIONS, COLORS};
-use std::{cmp, iter};
+use std::{
+    io::{Write, stdout},
+    iter,
+};
 
 pub struct Item {
     pub value: String,
@@ -116,12 +119,12 @@ impl Cursor {
     pub fn render_menu(&mut self) -> usize {
         let height = self.items.len().min(20);
 
-        let length = cmp::max(height + self.offset, self.items[self.current].items.len());
-
-        let left_border_color = match self.focus {
-            Focus::BaseMenu => COLORS.Gray,
-            Focus::SubMenu => COLORS.DarkGray,
+        let length = match self.focus {
+            Focus::BaseMenu => height + self.offset,
+            Focus::SubMenu => (height + self.offset).max(self.items[self.current].items.len()),
         };
+
+        let left_border_color = COLORS.Gray;
 
         let mut lines = self.write_headers(left_border_color);
 
@@ -132,15 +135,24 @@ impl Cursor {
 
             lines.push(line);
         }
-        
+
         if let Some(func) = &self.display_func {
             lines.append(&mut func(self));
         }
+
+        lines.push(format!(
+            "{clear_line}{left_border_color}└{reset}{clear}",
+            clear_line = ACTIONS.ClearLine,
+            reset = COLORS.Reset,
+            clear = ACTIONS.ClearToEnd
+        ));
 
         #[allow(clippy::print_with_newline)]
         for line in &lines {
             print!("{}\n", line);
         }
+
+        stdout().flush().unwrap();
 
         lines.len()
     }
@@ -201,10 +213,8 @@ impl Cursor {
         };
 
         format!(
-            "{}{gray}│{color}{prefix}{}{reset}",
-            base_menu_line,
-            text,
-            gray = COLORS.Gray,
+            "{base_menu_line}{gray}│{color}{prefix}{text}{reset}",
+            gray = COLORS.DarkGray,
             reset = COLORS.Reset
         )
     }

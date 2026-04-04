@@ -1,5 +1,4 @@
 use crate::shared::{
-    menu::draw,
     terminal::{ACTIONS, COLORS},
 };
 use std::{
@@ -241,10 +240,5 @@ impl Cursor {
         }
 
         lines
-    }
-
-    pub fn clear_menu(&self, rendered_items: usize) {
-        let len = rendered_items + 1 + self.subheaders.len();
-        draw::clear_menu(len);
     }
 }

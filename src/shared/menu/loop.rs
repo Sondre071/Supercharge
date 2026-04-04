@@ -1,5 +1,5 @@
 use crate::shared::{
-    menu::{Cursor, cursor::Focus},
+    menu::{Cursor, cursor::Focus, draw},
     terminal::{self, read_key_blocking},
 };
 use crossterm::event::KeyCode;
@@ -19,7 +19,7 @@ pub fn run(cursor: &mut Cursor) -> Option<(String, Option<String>)> {
         match key {
             KeyCode::Char('q') | KeyCode::Char('h') => match cursor.focus {
                 Focus::BaseMenu => {
-                    cursor.clear_menu(rendered_items);
+                    draw::clear_menu(rendered_items);
                     terminal::set_cursor_visibility(true);
 
                     return None;
@@ -79,13 +79,13 @@ pub fn run(cursor: &mut Cursor) -> Option<(String, Option<String>)> {
                         cursor.focus = Focus::SubMenu;
                     }
                     (Focus::BaseMenu, true) => {
-                        cursor.clear_menu(rendered_items);
+                        draw::clear_menu(rendered_items);
                         terminal::set_cursor_visibility(true);
 
                         return Some((current_item.value.clone(), None));
                     }
                     _ => {
-                        cursor.clear_menu(rendered_items);
+                        draw::clear_menu(rendered_items);
                         terminal::set_cursor_visibility(true);
 
                         return Some((

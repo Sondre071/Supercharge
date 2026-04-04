@@ -5,6 +5,7 @@ use crate::shared::{
 use std::{
     cmp,
     io::{Write, stdout},
+    iter,
 };
 
 #[derive(Clone)]
@@ -113,47 +114,20 @@ impl Cursor {
 
         let length = cmp::max(height + self.offset, current_selected_item.items.len());
 
-        for i in self.offset..length {
-            let relative_index = i - self.offset;
+        let left_border_color = match self.focus {
+            Focus::BaseMenu => COLORS.Gray,
+            Focus::SubMenu => COLORS.DarkGray,
+        };
 
-            let color = match (i == self.current, &self.focus) {
-                (true, Focus::BaseMenu) => COLORS.Yellow,
-                (true, Focus::SubMenu) => COLORS.DimYellow,
-                (false, Focus::BaseMenu) => COLORS.Gray,
-                (false, Focus::SubMenu) => COLORS.DarkGray,
-            };
+        for index in self.offset..length {
+            let relative_index = index - self.offset;
 
-            let mut line = {
-                let prefix = if i == self.current { "> " } else { "  " };
-
-                let value = self
-                    .items
-                    .get(i)
-                    .map(|item| item.value.clone())
-                    .unwrap_or_default();
-
-                let content = format!("{}{}", prefix, value);
-                let padded_text = format!("{:<width$}", content, width = self.submenu_x_offset);
-
-                format!(
-                    "{clear_line}{color}{}{reset}",
-                    padded_text,
-                    clear_line = ACTIONS.ClearLine,
-                    color = color,
-                    reset = COLORS.Reset
-                )
-            };
-
-            if matches!(self.focus, Focus::SubMenu)
-                && relative_index < current_selected_item.items.len()
-            {
-                let submenu_items = self.items[self.current].clone();
-
-                line = self.add_submenu_text(i, submenu_items, line);
-            }
+            let line = self.format_line(index, relative_index, left_border_color);
 
             lines.push(line);
         }
+
+        self.write_headers(left_border_color);
 
         #[allow(clippy::print_with_newline)]
         for line in &lines {
@@ -165,8 +139,54 @@ impl Cursor {
         lines.len()
     }
 
-    fn add_submenu_text(&self, i: usize, current_item: Item, base_menu_line: String) -> String {
-        let text = current_item.items[i].clone();
+    fn format_line(
+        &self,
+        current_index: usize,
+        relative_index: usize,
+        border_color: &str,
+    ) -> String {
+        let prefix = if current_index == self.current {
+            "> "
+        } else {
+            "  "
+        };
+
+        let value = self
+            .items
+            .get(current_index)
+            .map(|item| item.value.clone())
+            .unwrap_or_default();
+
+        let content = format!("{}{}", prefix, value);
+        let padded_text = format!("{:<width$}", content, width = self.submenu_x_offset);
+
+        let color = match (current_index == self.current, &self.focus) {
+            (true, Focus::BaseMenu) => COLORS.Yellow,
+            (true, Focus::SubMenu) => COLORS.DimYellow,
+            (false, Focus::BaseMenu) => COLORS.Gray,
+            (false, Focus::SubMenu) => COLORS.DarkGray,
+        };
+
+        let mut text = format!(
+            "{clear_line}{border_color}│{color}{}{reset}",
+            padded_text,
+            clear_line = ACTIONS.ClearLine,
+            border_color = border_color,
+            color = color,
+            reset = COLORS.Reset
+        );
+
+        let current_item = &self.items[self.current];
+
+        if matches!(self.focus, Focus::SubMenu) && relative_index < current_item.items.len() {
+            text = self.add_submenu_text(current_index, text);
+        }
+
+        text
+    }
+
+    fn add_submenu_text(&self, i: usize, base_menu_line: String) -> String {
+        let text = &self.items[self.current].items[i];
 
         let (prefix, color) = if i == self.submenu_current {
             ("> ", COLORS.Yellow)
@@ -181,6 +201,46 @@ impl Cursor {
             gray = COLORS.DarkGray,
             reset = COLORS.Reset
         )
+    }
+
+    fn write_headers(&self, border_color: &str) {
+        let header_text = {
+            let width: usize = 30;
+
+            // Truncate
+            let mut header = self.header.to_owned();
+
+            if header.chars().count() > width {
+                let truncated: String = header.chars().take(width - 2).collect();
+                header = format!("{truncated}..");
+            }
+
+            // Format
+            let pad_left_len = (width.saturating_sub(header.chars().count()) - 2) / 2;
+            let pad_right_len = width - pad_left_len - header.chars().count();
+
+            let pad_left: String = iter::repeat_n("─", pad_left_len).collect();
+            let pad_right: String = iter::repeat_n("─", pad_right_len).collect();
+            format!("{} {} {}", pad_left, header, pad_right)
+        };
+
+        println!(
+            "{border_color}┌{yellow}{}{reset}",
+            header_text,
+            border_color = border_color,
+            yellow = COLORS.Yellow,
+            reset = COLORS.Reset
+        );
+
+        for subheader in self.subheaders.iter() {
+            println!(
+                "{border_color}│ {yellow}{}{reset}",
+                subheader,
+                border_color = border_color,
+                yellow = COLORS.Yellow,
+                reset = COLORS.Reset
+            )
+        }
     }
 
     pub fn clear_menu(&self, rendered_items: usize) {

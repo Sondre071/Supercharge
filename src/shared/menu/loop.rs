@@ -1,13 +1,11 @@
 use crate::shared::{
-    menu::{self, Cursor, cursor::Focus},
+    menu::{Cursor, cursor::Focus},
     terminal::{self, read_key_blocking},
 };
 use crossterm::event::KeyCode;
 
 pub fn run(cursor: &mut Cursor) -> Option<(String, Option<String>)> {
     terminal::set_cursor_visibility(false);
-
-    menu::write_headers(&cursor.header, cursor.subheaders.clone());
 
     let mut start_y = terminal::get_cursor_pos().Y;
 
@@ -105,6 +103,9 @@ pub fn run(cursor: &mut Cursor) -> Option<(String, Option<String>)> {
             _ => {}
         }
 
-        start_y = terminal::get_cursor_pos().Y - rendered_items as i16;
+        start_y = terminal::get_cursor_pos().Y
+            - 1
+            - cursor.subheaders.len() as i16
+            - rendered_items as i16;
     }
 }

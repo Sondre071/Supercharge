@@ -106,20 +106,16 @@ impl Cursor {
 
 impl Cursor {
     pub fn render_menu(&mut self) -> usize {
-        let mut lines: Vec<String> = Vec::new();
-
         let height = self.items.len().min(20);
 
-        let current_selected_item = self.items[self.current].clone();
-
-        let length = cmp::max(height + self.offset, current_selected_item.items.len());
+        let length = cmp::max(height + self.offset, self.items[self.current].items.len());
 
         let left_border_color = match self.focus {
             Focus::BaseMenu => COLORS.Gray,
             Focus::SubMenu => COLORS.DarkGray,
         };
-
-        lines.append(&mut self.write_headers(left_border_color));
+        
+        let mut lines = self.write_headers(left_border_color);
 
         for index in self.offset..length {
             let relative_index = index - self.offset;

@@ -12,8 +12,7 @@ pub fn get_snippet_names() -> Vec<String> {
                 && entry.file_name().to_string_lossy().ends_with(".md")
         })
         .map(|f| {
-            let name = f.file_name().to_string_lossy().to_string();
-            name.trim_end_matches(".md").to_string()
+            f.file_name().to_string_lossy().to_string()
         })
         .collect()
 }

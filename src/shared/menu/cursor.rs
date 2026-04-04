@@ -1,11 +1,5 @@
-use crate::shared::{
-    terminal::{ACTIONS, COLORS},
-};
-use std::{
-    cmp,
-    io::{Write, stdout},
-    iter,
-};
+use crate::shared::terminal::{ACTIONS, COLORS};
+use std::{cmp, iter};
 
 pub struct Item {
     pub value: String,
@@ -101,7 +95,7 @@ impl Cursor {
 }
 
 impl Cursor {
-    pub fn render_menu(&mut self) -> usize {
+    pub fn assemble_menu(&mut self) -> Vec<String> {
         let height = self.items.len().min(20);
 
         let length = cmp::max(height + self.offset, self.items[self.current].items.len());
@@ -110,7 +104,7 @@ impl Cursor {
             Focus::BaseMenu => COLORS.Gray,
             Focus::SubMenu => COLORS.DarkGray,
         };
-        
+
         let mut lines = self.write_headers(left_border_color);
 
         for index in self.offset..length {
@@ -121,14 +115,7 @@ impl Cursor {
             lines.push(line);
         }
 
-        #[allow(clippy::print_with_newline)]
-        for line in &lines {
-            print!("{}\n", line);
-        }
-
-        stdout().flush().unwrap();
-
-        lines.len()
+        lines
     }
 
     fn format_line(

@@ -1,4 +1,4 @@
-use crate::shared::terminal::{ACTIONS, COLORS};
+use crate::shared::terminal::{COLORS};
 use std::{io::Write, iter};
 
 pub fn write_headers<H, S>(header: H, subheaders: Vec<S>)
@@ -46,13 +46,6 @@ where
 pub fn clear_menu(height: usize) {
     print!("\x1b[{}A", height);
     print!("\x1b[0J");
-
-    std::io::stdout().flush().unwrap();
-}
-
-pub fn clear_screen() {
-    print!("{}", ACTIONS.ResetLocation);
-    print!("{}", ACTIONS.ClearScreen);
 
     std::io::stdout().flush().unwrap();
 }

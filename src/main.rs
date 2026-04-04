@@ -40,7 +40,7 @@ fn main() {
             ("Blobstorage", Some("Sync")) => blobstorage::sync_containers(),
             ("Blobstorage", Some("Browse")) => blobstorage::browse_containers(),
             ("Scripts", None) => scripts::run_script(),
-            ("Snippets", None) => snippets::browse_snippets(),
+            ("Snippets", None) => snippets::view_snippet2(),
 
             _ => return,
         }

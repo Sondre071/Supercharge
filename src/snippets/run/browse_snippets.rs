@@ -42,7 +42,7 @@ pub fn browse_snippets() {
                 .expect("Failed to open neovim.")
                 .wait();
 
-            menu::clear_screen();
+            //menu::clear_screen();
             process::exit(0);
         }
         Some("Delete") => {

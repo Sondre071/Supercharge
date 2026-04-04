@@ -146,7 +146,7 @@ impl Cursor {
         border_color: &str,
     ) -> String {
         let prefix = if current_index == self.current {
-            "> "
+            "► "
         } else {
             "  "
         };
@@ -189,16 +189,16 @@ impl Cursor {
         let text = &self.items[self.current].items[i];
 
         let (prefix, color) = if i == self.submenu_current {
-            ("> ", COLORS.Yellow)
+            ("► ", COLORS.Yellow)
         } else {
             ("  ", COLORS.Gray)
         };
 
         format!(
-            "{}{gray}│ {color}{prefix}{}{reset}",
+            "{}{gray}│{color}{prefix}{}{reset}",
             base_menu_line,
             text,
-            gray = COLORS.DarkGray,
+            gray = COLORS.Gray,
             reset = COLORS.Reset
         )
     }

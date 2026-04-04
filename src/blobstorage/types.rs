@@ -7,7 +7,7 @@ use std::{collections::HashMap, fs, mem::drop, path::PathBuf};
 use walkdir::{self, DirEntry};
 
 #[allow(dead_code)]
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct LocalFile {
     pub name: String,
     pub content_length: usize,
@@ -18,7 +18,7 @@ pub struct LocalFile {
 }
 
 #[allow(dead_code)]
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct BlobFile {
     pub name: String,
     pub content_length: usize,

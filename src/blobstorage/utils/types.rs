@@ -31,7 +31,7 @@ pub struct StorageAccount {
     pub shared_access_signature: String,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize)]
 pub struct CsvRow {
     pub name: String,
     pub content_md5: String,

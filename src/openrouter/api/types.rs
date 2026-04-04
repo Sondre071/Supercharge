@@ -12,7 +12,7 @@ pub struct ModelInfo {
     pub id: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct InputMessage {
     pub role: String,
     pub content: String,

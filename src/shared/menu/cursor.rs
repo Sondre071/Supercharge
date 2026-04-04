@@ -7,7 +7,6 @@ use std::{
     iter,
 };
 
-#[derive(Clone)]
 pub struct Item {
     pub value: String,
     pub items: Vec<String>,
@@ -31,13 +30,11 @@ impl Item {
 
 pub const NONE: Option<Vec<String>> = None;
 
-#[derive(Clone)]
 pub enum Focus {
     BaseMenu,
     SubMenu,
 }
 
-#[derive(Clone)]
 pub struct Cursor {
     pub header: String,
     pub subheaders: Vec<String>,

@@ -11,7 +11,7 @@ pub fn settings() -> Arc<Settings> {
 
 fn update_settings(mutator: impl FnOnce(&mut Settings)) {
     let current = SETTINGS.load_full();
-    let mut next = (*current).clone();
+    let mut next = (*current).to_owned();
 
     mutator(&mut next);
 

@@ -40,7 +40,7 @@ pub fn set_container_cache(
 
     for row in rows {
         writer
-            .serialize(row.clone())
+            .serialize(row)
             .expect("Failed to write row to CSV.");
     }
 

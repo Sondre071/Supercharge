@@ -7,9 +7,14 @@ use std::iter::once;
 pub fn select_prompt() {
     let prompts = get_prompts();
 
+    let current_prompt = settings().prompt.clone().unwrap_or("None".to_string());
+
     let result = menu::run(&mut Cursor::new(
         "Select prompt",
-        Some(vec![""]),
+        Some(vec![
+            format!("Current prompt: {current_prompt}").as_str(),
+            "",
+        ]),
         once("None")
             .chain(prompts.iter().map(|p| p.name.as_str()))
             .collect(),

@@ -13,7 +13,12 @@ pub fn new_chat() {
 
     let mut message_history: Vec<InputMessage> = vec![];
 
-    menu::write_headers("New chat", vec![&settings.model, ""]);
+    let subheader = settings
+        .prompt
+        .as_ref()
+        .map_or(vec!["".to_string()], |p| vec![p.clone(), "".to_string()]);
+
+    menu::write_headers("New chat", subheader);
 
     loop {
         let message = menu::read_line("You: ");

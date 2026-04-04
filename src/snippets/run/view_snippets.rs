@@ -6,7 +6,7 @@ use crate::{
     },
     snippets::utils,
 };
-use std::{fs, iter};
+use std::{fs, iter, process::exit};
 
 fn assemble_snippets() -> Vec<Item> {
     let snippets_dir = statics::snippets_dir();
@@ -57,6 +57,18 @@ pub fn view_snippets() {
             .unwrap()
             .set_text(section.content)
             .unwrap();
+
+        let feedback = format!(
+            "{yellow}Copied {white}{}{yellow}!{reset}",
+            section.title,
+            white = COLORS.White,
+            yellow = COLORS.Yellow,
+            reset = COLORS.Reset
+        );
+
+        println!("{}", feedback);
+
+        exit(0);
     }
 }
 

@@ -59,10 +59,10 @@ pub fn view_snippets() {
             .unwrap();
 
         let feedback = format!(
-            "{yellow}Copied {white}{}{yellow}!{reset}",
+            "{green}Copied {white}{}{green}!{reset}",
             section.title,
             white = COLORS.White,
-            yellow = COLORS.Yellow,
+            green = COLORS.Green,
             reset = COLORS.Reset
         );
 

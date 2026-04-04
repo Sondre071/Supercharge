@@ -228,14 +228,14 @@ impl Cursor {
             // Truncate
             let mut header = self.header.to_owned();
 
-            if header.chars().count() > width {
-                let truncated: String = header.chars().take(width - 2).collect();
+            if header.chars().count() > width - 6 {
+                let truncated: String = header.chars().take(width - 6).collect();
                 header = format!("{truncated}..");
             }
 
             // Format
-            let pad_left_len = (width.saturating_sub(header.chars().count()) - 2) / 2;
-            let pad_right_len = width - pad_left_len - header.chars().count();
+            let pad_left_len = (width.saturating_sub(header.chars().count()).saturating_sub(2)) / 2;
+            let pad_right_len = width.saturating_sub(pad_left_len).saturating_sub(header.chars().count());
 
             let pad_left: String = iter::repeat_n("─", pad_left_len).collect();
             let pad_right: String = iter::repeat_n("─", pad_right_len).collect();

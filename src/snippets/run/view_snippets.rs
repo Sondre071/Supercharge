@@ -35,14 +35,29 @@ fn assemble_snippets() -> Vec<Item> {
 pub fn view_snippets() {
     terminal::set_cursor_visibility(false);
 
-    let mut menu = Cursor::new_with_subitems(
+    let mut cursor = Cursor::new_with_subitems(
         "Snippets",
         NONE,
         assemble_snippets(),
         Some(Box::new(display_func)),
     );
 
-    menu::run(&mut menu);
+    let Some((file_name, Some(section_title))) = menu::run(&mut cursor) else {
+        return;
+    };
+
+    let mut path = statics::snippets_dir();
+    path.push(&file_name);
+
+    let content = fs::read_to_string(&path).expect("Failed to read snippet file.");
+    let sections = utils::parse_sections(&content);
+
+    if let Some(section) = sections.into_iter().find(|s| s.title == section_title) {
+        arboard::Clipboard::new()
+            .unwrap()
+            .set_text(section.content)
+            .unwrap();
+    }
 }
 
 fn display_func(cursor: &Cursor) -> Vec<String> {
@@ -75,16 +90,22 @@ fn display_func(cursor: &Cursor) -> Vec<String> {
         let width: usize = 30;
 
         // Truncate
-        let mut header = selected_snippet.clone();
+        let section_title = &cursor.items[cursor.current].items[cursor.submenu_current];
+        let mut header = format!("## {}", section_title);
 
-        if header.chars().count() > width {
-            let truncated: String = header.chars().take(width - 2).collect();
+        if header.chars().count() > width - 6 {
+            let truncated: String = header.chars().take(width - 6).collect();
             header = format!("{truncated}..");
         }
 
         // Format
-        let pad_left_len = (width.saturating_sub(header.chars().count()) - 2) / 2;
-        let pad_right_len = width - pad_left_len - header.chars().count();
+        let pad_left_len = (width
+            .saturating_sub(header.chars().count())
+            .saturating_sub(2))
+            / 2;
+        let pad_right_len = width
+            .saturating_sub(pad_left_len)
+            .saturating_sub(header.chars().count());
 
         let pad_left: String = iter::repeat_n("─", pad_left_len).collect();
         let pad_right: String = iter::repeat_n("─", pad_right_len).collect();

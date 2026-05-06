@@ -23,9 +23,9 @@ pub fn sync_containers() {
     let containers = {
         let all: bool = {
             if account.nested_containers {
-                match menu::run(&mut Cursor::new("Sync all?", NONE, vec!["Yes", "No"], None)) {
-                    Some((choice, _)) => choice == "Yes",
-                    _ => return,
+                match menu::run(&mut Cursor::new("Sync all containers?", NONE, vec!["All", "Single"], None)) {
+                    Some((choice, _)) => choice == "All",
+                    _ => false,
                 }
             } else {
                 false

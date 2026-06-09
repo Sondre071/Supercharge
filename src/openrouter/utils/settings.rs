@@ -23,10 +23,3 @@ fn update_settings(mutator: impl FnOnce(&mut Settings)) {
 pub fn set_model(model: impl Into<String>) {
     update_settings(|s| s.model = model.into());
 }
-
-pub fn set_prompt<T>(file_name: Option<T>)
-where
-    T: Into<String>,
-{
-    update_settings(|s| s.prompt = file_name.map(|n| n.into()));
-}

@@ -3,13 +3,16 @@ use crate::{
         api::{self, types::InputMessage},
         utils::settings,
     },
-    shared::{menu, statics},
+    shared::menu,
 };
+
+mod select_prompt;
+use select_prompt::*;
 
 pub fn new_chat() {
     let settings = settings();
 
-    let system_prompt = get_system_prompt();
+    let system_prompt = select_prompt();
 
     let mut message_history: Vec<InputMessage> = vec![];
 
@@ -55,20 +58,4 @@ fn prepare_request_messages<'a>(
     };
 
     messages
-}
-
-fn get_system_prompt() -> Option<InputMessage> {
-    let Some(file_name) = &settings().prompt else {
-        return None;
-    };
-
-    let mut file_path = statics::prompts_dir();
-    file_path.push(file_name);
-
-    let content = std::fs::read_to_string(file_path).expect("Failed to read prompt content.");
-
-    Some(InputMessage {
-        role: "system".to_owned(),
-        content,
-    })
 }

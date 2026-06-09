@@ -35,7 +35,6 @@ fn main() {
 
         match (module.as_str(), option.as_deref()) {
             ("OpenRouter", Some("New chat")) => openrouter::new_chat(),
-            ("OpenRouter", Some("Select prompt")) => openrouter::select_prompt(),
             ("OpenRouter", Some("Select model")) => openrouter::select_model(),
 
             ("Blobstorage", Some("Sync")) => blobstorage::sync_containers(),

@@ -72,7 +72,7 @@ pub const COLORPALETTE: ColorPalette = ColorPalette {
     //Secondary: "\x1b[38;2;244;211;94m",
     Secondary: "\x1b[38;2;254;225;120m",
     Tertiary: "\x1b[38;2;250;240;202m",
-    Complementary: "\x1b[38;2;107;177;242m",
+    Complementary: "\x1b[38;2;128;193;254m",
     
     SecondaryFaded: "\x1b[38;2;180;161;94m",
 };

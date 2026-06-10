@@ -18,7 +18,7 @@ fn main() {
         vec![
             Item::new_with_subitems(
                 "OpenRouter",
-                vec!["New chat", "Select model"],
+                vec!["New chat", "Manage prompts", "Select model"],
             ),
             Item::new_with_subitems("Blobstorage", vec!["Sync", "Browse"]),
             Item::new("Scripts"),
@@ -35,6 +35,7 @@ fn main() {
 
         match (module.as_str(), option.as_deref()) {
             ("OpenRouter", Some("New chat")) => openrouter::new_chat(),
+            ("OpenRouter", Some("Manage prompts")) => openrouter::manage_prompts(),
             ("OpenRouter", Some("Select model")) => openrouter::select_model(),
 
             ("Blobstorage", Some("Sync")) => blobstorage::sync_containers(),

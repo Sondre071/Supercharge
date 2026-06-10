@@ -19,7 +19,6 @@ pub struct Settings {
     pub model: String,
     pub models: Vec<String>,
     pub parameters: Parameters,
-    pub prompt: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Copy)]

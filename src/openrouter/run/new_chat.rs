@@ -1,27 +1,52 @@
+use crate::shared::menu;
 use crate::{
     openrouter::{
         api::{self, types::InputMessage},
-        utils::settings,
+        utils::get_prompts,
     },
-    shared::menu,
+    shared::{menu::Cursor, menu::NONE, statics},
 };
-
-mod select_prompt;
-use select_prompt::*;
+use std::iter::once;
 
 pub fn new_chat() {
-    let settings = settings();
+    let prompt = {
+        let cursor = &mut Cursor::new(
+            "Select prompt",
+            NONE,
+            once("None")
+                .chain(get_prompts().iter().map(|p| p.name.as_str()))
+                .collect(),
+            None,
+        );
+        menu::run(cursor)
+    };
 
-    let system_prompt = select_prompt();
+    // User wants to exit the menu.
+    if prompt.is_none() {
+        return;
+    };
+    
+    let system_prompt = 'block: {
+        let (prompt_name, _) = prompt.unwrap();
+        
+        if prompt_name == "None" {
+            break 'block None
+        };
+        
+        let mut file_path = statics::prompts_dir();
+        file_path.push(prompt_name);
+
+        let content = std::fs::read_to_string(file_path).expect("Failed to read prompt file content.");
+        
+        Some(InputMessage {
+            role: "system".to_owned(),
+            content,
+        })
+    };
 
     let mut message_history: Vec<InputMessage> = vec![];
 
-    let subheader = settings
-        .prompt
-        .as_ref()
-        .map_or(vec!["".to_string()], |p| vec![p.clone(), "".to_string()]);
-
-    menu::write_headers("New chat", subheader);
+    menu::write_headers("New chat", vec![""]);
 
     loop {
         let message = menu::read_line("You: ");
@@ -33,16 +58,15 @@ pub fn new_chat() {
         });
 
         let request_messages = prepare_request_messages(&system_prompt, &message_history);
-        let response_message = api::stream_chat(request_messages);
+        let response_message =
+            api::stream_chat(request_messages).expect("Failed to received response message.");
 
         println!("\n");
 
-        if let Ok(text) = response_message {
-            message_history.push(InputMessage {
-                role: "assistant".to_owned(),
-                content: text,
-            });
-        }
+        message_history.push(InputMessage {
+            role: "assistant".to_owned(),
+            content: response_message,
+        });
     }
 }
 

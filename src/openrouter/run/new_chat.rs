@@ -6,8 +6,8 @@ use crate::{
     },
     shared::{menu::Cursor, menu::NONE, statics},
 };
-use std::iter::once;
 use std::fs;
+use std::iter::once;
 
 pub fn new_chat() {
     let prompt = {
@@ -58,9 +58,18 @@ pub fn new_chat() {
             content: message,
         });
 
-        let request_messages = insert_system_prompt(&system_prompt, &message_history);
-        let response_message =
-            api::stream_chat(request_messages).expect("Failed to received response message.");
+        let message_history_with_system_prompt = {
+            let mut messages: Vec<&InputMessage> = message_history.iter().collect();
+
+            if let Some(system_prompt) = &system_prompt {
+                messages.insert(0, system_prompt);
+            }
+
+            messages
+        };
+
+        let response_message = api::stream_chat(message_history_with_system_prompt)
+            .expect("Failed to received response message.");
 
         println!("\n");
 
@@ -69,17 +78,4 @@ pub fn new_chat() {
             content: response_message,
         });
     }
-}
-
-fn insert_system_prompt<'a>(
-    system_prompt: &'a Option<InputMessage>,
-    message_history: &'a [InputMessage],
-) -> Vec<&'a InputMessage> {
-    let mut messages: Vec<&InputMessage> = message_history.iter().collect();
-
-    if let Some(system_prompt) = system_prompt {
-        messages.insert(0, system_prompt);
-    };
-
-    messages
 }

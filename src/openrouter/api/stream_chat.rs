@@ -3,7 +3,7 @@ use crate::{
         api::types::{InputMessage, MessageRequestBody, MessageResponseStreamEvent},
         utils::settings,
     },
-    shared::terminal::{self, COLORS, COLORPALETTE},
+    shared::terminal::{self, COLORPALETTE, COLORS},
 };
 use std::io::{self, BufRead, Write};
 

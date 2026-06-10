@@ -7,6 +7,7 @@ use crate::{
     shared::{menu::Cursor, menu::NONE, statics},
 };
 use std::iter::once;
+use std::fs;
 
 pub fn new_chat() {
     let prompt = {
@@ -25,21 +26,21 @@ pub fn new_chat() {
     if prompt.is_none() {
         return;
     };
-    
+
     let system_prompt = 'block: {
         let (prompt_name, _) = prompt.unwrap();
-        
+
         if prompt_name == "None" {
-            break 'block None
+            break 'block None;
         };
-        
+
         let mut file_path = statics::prompts_dir();
         file_path.push(prompt_name);
 
-        let content = std::fs::read_to_string(file_path).expect("Failed to read prompt file content.");
-        
+        let content = fs::read_to_string(file_path).expect("Failed to read prompt file content.");
+
         Some(InputMessage {
-            role: "system".to_owned(),
+            role: "system",
             content,
         })
     };
@@ -53,32 +54,31 @@ pub fn new_chat() {
         println!();
 
         message_history.push(InputMessage {
-            role: "user".to_owned(),
-            content: message.clone(),
+            role: "user",
+            content: message,
         });
 
-        let request_messages = prepare_request_messages(&system_prompt, &message_history);
+        let request_messages = insert_system_prompt(&system_prompt, &message_history);
         let response_message =
             api::stream_chat(request_messages).expect("Failed to received response message.");
 
         println!("\n");
 
         message_history.push(InputMessage {
-            role: "assistant".to_owned(),
+            role: "assistant",
             content: response_message,
         });
     }
 }
 
-fn prepare_request_messages<'a>(
+fn insert_system_prompt<'a>(
     system_prompt: &'a Option<InputMessage>,
     message_history: &'a [InputMessage],
 ) -> Vec<&'a InputMessage> {
     let mut messages: Vec<&InputMessage> = message_history.iter().collect();
 
-    if let Some(sys_p) = system_prompt {
-        let insert_pos = messages.len().saturating_sub(1);
-        messages.insert(insert_pos, sys_p);
+    if let Some(system_prompt) = system_prompt {
+        messages.insert(0, system_prompt);
     };
 
     messages

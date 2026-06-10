@@ -7,7 +7,9 @@ use crate::{
     shared::{menu::Cursor, menu::NONE, statics},
 };
 use std::fs;
+use std::io::Write;
 use std::iter::once;
+use std::path::PathBuf;
 
 pub fn new_chat() {
     let prompt = {
@@ -77,5 +79,25 @@ pub fn new_chat() {
             role: "assistant",
             content: response_message,
         });
+        
+        // wip
+        //write_history_to_file(&message_history);
     }
+}
+
+#[allow(dead_code)]
+fn write_history_to_file(messages: &Vec<InputMessage>) {
+    let mut path = PathBuf::new();
+    path.push(std::env::current_dir().unwrap());
+    path.push("history_output.txt");
+
+    let file = std::fs::File::create(path).expect("Failed to open output file.");
+    let mut writer = std::io::BufWriter::new(file);
+
+    for line in messages {
+        writeln!(writer, "{}: {}", line.role, line.content)
+            .expect("Failed to write line to output file.");
+    }
+    
+    writer.flush().expect("Failed to flush bufwriter.");
 }

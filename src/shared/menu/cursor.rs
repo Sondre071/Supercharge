@@ -1,16 +1,15 @@
-use crate::shared::terminal::{ACTIONS, COLORS};
+use crate::shared::terminal::{ACTIONS, COLORS, COLORPALETTE};
 use std::{
     io::{Write, stdout},
     iter,
 };
 
-const MENU_COLOR: &str = COLORS.SandyBrown;
-const HEADER_COLOR: &str = COLORS.SandyBrown;
+const PRIMARY_COLOR: &str = COLORPALETTE.Primary;
+const SECONDARY_COLOR: &str = COLORPALETTE.Secondary;
+const SECONDARY_COLOR_FADED: &str = COLORPALETTE.SecondaryFaded;
+const COMPLEMENTARY_COLOR: &str = COLORPALETTE.Complementary;
 
-const SELECTED_ITEM_COLOR: &str = COLORS.RoyalGold;
 const NON_SELECTED_ITEM_COLOR: &str = COLORS.Gray;
-
-const SELECTED_ITEM_DIM_COLOR: &str = COLORS.DimYellow;
 const NON_SELECTED_ITEM_DIM_COLOR: &str = COLORS.DarkGray;
 
 pub struct Item {
@@ -148,7 +147,7 @@ impl Cursor {
         }
 
         lines.push(format!(
-            "{clear_line}{MENU_COLOR}└{reset}{clear}",
+            "{clear_line}{PRIMARY_COLOR}└{reset}{clear}",
             clear_line = ACTIONS.ClearLine,
             reset = COLORS.Reset,
             clear = ACTIONS.ClearToEnd
@@ -185,14 +184,14 @@ impl Cursor {
         let padded_text = format!("{:<width$}", content, width = self.submenu_x_offset);
 
         let color = match (current_index == self.current, &self.focus) {
-            (true, Focus::BaseMenu) => SELECTED_ITEM_COLOR,
-            (true, Focus::SubMenu) => SELECTED_ITEM_DIM_COLOR,
+            (true, Focus::BaseMenu) => SECONDARY_COLOR,
+            (true, Focus::SubMenu) => SECONDARY_COLOR_FADED,
             (false, Focus::BaseMenu) => NON_SELECTED_ITEM_COLOR,
             (false, Focus::SubMenu) => NON_SELECTED_ITEM_DIM_COLOR,
         };
 
         let mut text = format!(
-            "{clear_line}{MENU_COLOR}│{color}{}{reset}",
+            "{clear_line}{PRIMARY_COLOR}│{color}{}{reset}",
             padded_text,
             clear_line = ACTIONS.ClearLine,
             color = color,
@@ -212,13 +211,13 @@ impl Cursor {
         let text = &self.items[self.current].items[i];
 
         let (prefix, color) = if i == self.submenu_current {
-            ("► ", COLORS.Yellow)
+            ("► ", SECONDARY_COLOR)
         } else {
-            ("  ", COLORS.Gray)
+            ("  ", NON_SELECTED_ITEM_COLOR)
         };
 
         format!(
-            "{base_menu_line}{MENU_COLOR}│{color}{prefix}{text}{reset}",
+            "{base_menu_line}{PRIMARY_COLOR}│{color}{prefix}{text}{reset}",
             reset = COLORS.Reset
         )
     }
@@ -247,15 +246,13 @@ impl Cursor {
         };
 
         lines.push(format!(
-            "{MENU_COLOR}┌{left_line} {HEADER_COLOR}{header}{MENU_COLOR} {right_line}{reset}",
+            "{PRIMARY_COLOR}┌{left_line} {PRIMARY_COLOR}{header}{PRIMARY_COLOR} {right_line}{reset}",
             reset = COLORS.Reset
         ));
 
         for subheader in self.subheaders.iter() {
             lines.push(format!(
-                "{MENU_COLOR}│ {yellow}{}{reset}",
-                subheader,
-                yellow = COLORS.Yellow,
+                "{PRIMARY_COLOR}│ {COMPLEMENTARY_COLOR}{subheader}{reset}",
                 reset = COLORS.Reset
             ));
         }

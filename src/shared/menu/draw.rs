@@ -1,8 +1,5 @@
-use crate::shared::terminal::{COLORS};
+use crate::shared::terminal::{COLORS, COLORPALETTE};
 use std::{io::Write, iter};
-
-const MENU_COLOR: &str = COLORS.Orange;
-const HEADER_COLOR: &str = COLORS.Orange;
 
 pub fn write_headers<H, S>(header: H, subheaders: Vec<S>)
 where
@@ -30,7 +27,8 @@ where
     };
 
     println!(
-        "{MENU_COLOR}{left_line} {HEADER_COLOR}{header} {right_line}{reset}",
+        "{menu_color}{left_line} {header} {right_line}{reset}",
+        menu_color = COLORPALETTE.Primary,
         reset = COLORS.Reset
     );
 

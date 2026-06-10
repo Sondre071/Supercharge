@@ -1,5 +1,5 @@
 mod ansi;
-pub use ansi::{ACTIONS, COLORS};
+pub use ansi::{ACTIONS, COLORS, COLORPALETTE};
 
 mod cursor;
 pub use cursor::{get_cursor_pos, move_cursor_pos, set_cursor_pos, set_cursor_visibility};

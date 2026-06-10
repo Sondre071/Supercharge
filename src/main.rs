@@ -18,7 +18,7 @@ fn main() {
         vec![
             Item::new_with_subitems(
                 "OpenRouter",
-                vec!["New chat", "Select prompt", "Select model"],
+                vec!["New chat", "Select model"],
             ),
             Item::new_with_subitems("Blobstorage", vec!["Sync", "Browse"]),
             Item::new("Scripts"),
@@ -39,7 +39,9 @@ fn main() {
 
             ("Blobstorage", Some("Sync")) => blobstorage::sync_containers(),
             ("Blobstorage", Some("Browse")) => blobstorage::browse_containers(),
+            
             ("Scripts", None) => scripts::run_script(),
+            
             ("Snippets", Some("Use")) => snippets::view_snippets(),
             ("Snippets", Some("Manage")) => snippets::open_folder(),
 

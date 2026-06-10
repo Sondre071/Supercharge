@@ -1,12 +1,15 @@
 use crate::shared::terminal::{COLORS};
 use std::{io::Write, iter};
 
+const MENU_COLOR: &str = COLORS.Orange;
+const HEADER_COLOR: &str = COLORS.Orange;
+
 pub fn write_headers<H, S>(header: H, subheaders: Vec<S>)
 where
     H: AsRef<str>,
     S: AsRef<str>,
 {
-    let header_text = {
+    let (header, left_line, right_line) = {
         let width: usize = 30;
 
         // Truncate
@@ -23,13 +26,11 @@ where
 
         let pad_left: String = iter::repeat_n("─", pad_left_len).collect();
         let pad_right: String = iter::repeat_n("─", pad_right_len).collect();
-        format!("{} {} {}", pad_left, header_str, pad_right)
+        (header_str, pad_left, pad_right)
     };
 
     println!(
-        "{yellow}{}{reset}",
-        header_text,
-        yellow = COLORS.Yellow,
+        "{MENU_COLOR}{left_line} {HEADER_COLOR}{header} {right_line}{reset}",
         reset = COLORS.Reset
     );
 

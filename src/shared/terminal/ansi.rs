@@ -11,10 +11,18 @@ pub struct Colors {
     pub Purple: &'static str,
     pub Red: &'static str,
     pub Yellow: &'static str,
+    pub DimOrange: &'static str,
+    pub Orange: &'static str,
 
     pub DimYellow: &'static str,
 
     pub Reset: &'static str,
+    
+    
+    pub RegalNavy: &'static str,
+    pub RoyalGold: &'static str,
+    pub SandyBrown: &'static str,
+    pub LemonChiffron: &'static str,
 }
 
 #[allow(non_snake_case, dead_code)]
@@ -50,8 +58,16 @@ pub const COLORS: Colors = Colors {
     Purple: "\x1b[1;35m",
     Red: "\x1b[1;31m",
     Yellow: "\x1b[1;33m",
+    
+    DimOrange: "\x1b[38;2;242;174;58m",
+    Orange: "\x1b[38;2;252;184;68m",
 
     DimYellow: "\x1b[0;33m",
+    
+    RegalNavy: "\x1b[38;2;13;59;102m",
+    RoyalGold: "\x1b[38;2;244;211;94m",
+    SandyBrown: "\x1b[38;2;238;150;75m",
+    LemonChiffron: "\x1b[38;2;250;240;202m",
 
     Reset: "\x1b[0m",
 };

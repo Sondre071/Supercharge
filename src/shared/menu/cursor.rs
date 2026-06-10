@@ -4,6 +4,15 @@ use std::{
     iter,
 };
 
+const MENU_COLOR: &str = COLORS.SandyBrown;
+const HEADER_COLOR: &str = COLORS.SandyBrown;
+
+const SELECTED_ITEM_COLOR: &str = COLORS.RoyalGold;
+const NON_SELECTED_ITEM_COLOR: &str = COLORS.Gray;
+
+const SELECTED_ITEM_DIM_COLOR: &str = COLORS.DimYellow;
+const NON_SELECTED_ITEM_DIM_COLOR: &str = COLORS.DarkGray;
+
 pub struct Item {
     pub value: String,
     pub items: Vec<String>,
@@ -124,14 +133,12 @@ impl Cursor {
             Focus::SubMenu => (height + self.offset).max(self.items[self.current].items.len()),
         };
 
-        let left_border_color = COLORS.Gray;
-
-        let mut lines = self.write_headers(left_border_color);
+        let mut lines = self.write_headers();
 
         for index in self.offset..length {
             let relative_index = index - self.offset;
 
-            let line = self.format_line(index, relative_index, left_border_color);
+            let line = self.format_line(index, relative_index);
 
             lines.push(line);
         }
@@ -141,7 +148,7 @@ impl Cursor {
         }
 
         lines.push(format!(
-            "{clear_line}{left_border_color}└{reset}{clear}",
+            "{clear_line}{MENU_COLOR}└{reset}{clear}",
             clear_line = ACTIONS.ClearLine,
             reset = COLORS.Reset,
             clear = ACTIONS.ClearToEnd
@@ -161,7 +168,6 @@ impl Cursor {
         &self,
         current_index: usize,
         relative_index: usize,
-        border_color: &str,
     ) -> String {
         let prefix = if current_index == self.current {
             "► "
@@ -179,17 +185,16 @@ impl Cursor {
         let padded_text = format!("{:<width$}", content, width = self.submenu_x_offset);
 
         let color = match (current_index == self.current, &self.focus) {
-            (true, Focus::BaseMenu) => COLORS.Yellow,
-            (true, Focus::SubMenu) => COLORS.DimYellow,
-            (false, Focus::BaseMenu) => COLORS.Gray,
-            (false, Focus::SubMenu) => COLORS.DarkGray,
+            (true, Focus::BaseMenu) => SELECTED_ITEM_COLOR,
+            (true, Focus::SubMenu) => SELECTED_ITEM_DIM_COLOR,
+            (false, Focus::BaseMenu) => NON_SELECTED_ITEM_COLOR,
+            (false, Focus::SubMenu) => NON_SELECTED_ITEM_DIM_COLOR,
         };
 
         let mut text = format!(
-            "{clear_line}{border_color}│{color}{}{reset}",
+            "{clear_line}{MENU_COLOR}│{color}{}{reset}",
             padded_text,
             clear_line = ACTIONS.ClearLine,
-            border_color = border_color,
             color = color,
             reset = COLORS.Reset
         );
@@ -213,16 +218,15 @@ impl Cursor {
         };
 
         format!(
-            "{base_menu_line}{gray}│{color}{prefix}{text}{reset}",
-            gray = COLORS.DarkGray,
+            "{base_menu_line}{MENU_COLOR}│{color}{prefix}{text}{reset}",
             reset = COLORS.Reset
         )
     }
 
-    fn write_headers(&self, border_color: &str) -> Vec<String> {
+    fn write_headers(&self) -> Vec<String> {
         let mut lines = Vec::<String>::new();
 
-        let header_text = {
+        let (header, left_line, right_line) = {
             let width: usize = 30;
 
             // Truncate
@@ -239,22 +243,18 @@ impl Cursor {
 
             let pad_left: String = iter::repeat_n("─", pad_left_len).collect();
             let pad_right: String = iter::repeat_n("─", pad_right_len).collect();
-            format!("{} {} {}", pad_left, header, pad_right)
+            (header, pad_left, pad_right)
         };
 
         lines.push(format!(
-            "{border_color}┌{yellow}{}{reset}",
-            header_text,
-            border_color = border_color,
-            yellow = COLORS.Yellow,
+            "{MENU_COLOR}┌{left_line} {HEADER_COLOR}{header}{MENU_COLOR} {right_line}{reset}",
             reset = COLORS.Reset
         ));
 
         for subheader in self.subheaders.iter() {
             lines.push(format!(
-                "{border_color}│ {yellow}{}{reset}",
+                "{MENU_COLOR}│ {yellow}{}{reset}",
                 subheader,
-                border_color = border_color,
                 yellow = COLORS.Yellow,
                 reset = COLORS.Reset
             ));

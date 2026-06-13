@@ -1,6 +1,6 @@
 use crate::{
     scripts::utils,
-    shared::{terminal::COLORS},
+    shared::{terminal::codes::*},
 };
 use std::process;
 
@@ -10,11 +10,8 @@ pub fn run_script() {
     };
 
     println!(
-        "{yellow}Running {white}{}{reset}\n",
+        "{INFO_COLOR}Running {TEXT_COLOR}{}{RESET_COLOR}\n",
         script,
-        yellow = COLORS.Yellow,
-        white = COLORS.White,
-        reset = COLORS.Reset
     );
 
     let _ = process::Command::new("pwsh")

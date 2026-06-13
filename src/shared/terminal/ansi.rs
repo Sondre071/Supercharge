@@ -1,97 +1,22 @@
 #[allow(non_snake_case, dead_code)]
-pub struct Colors {
-    pub Black: &'static str,
-    pub Gray: &'static str,
-    pub DarkGray: &'static str,
-    pub White: &'static str,
+pub mod codes {
+    pub const BORDER_COLOR: &str = "\x1b[38;2;238;150;75m";
+    pub const INFO_COLOR: &str = "\x1b[38;2;128;193;254m";
+    pub const CONTENT_COLOR: &str = "\x1b[38;2;169;213;254m";
 
-    pub Blue: &'static str,
-    pub Cyan: &'static str,
-    pub Green: &'static str,
-    pub Purple: &'static str,
-    pub Red: &'static str,
-    pub Yellow: &'static str,
+    pub const TEXT_HIGHLIGHTED_COLOR: &str = "\x1b[38;2;254;225;120m";
+    pub const TEXT_HIGHLIGHTED_FADED_COLOR: &str = "\x1b[38;2;180;161;94m";
+    pub const TEXT_COLOR: &str = "\x1b[0;37m";
+    pub const TEXT_FADED_COLOR: &str = "\x1b[1;30m";
 
-    pub DimYellow: &'static str,
-
-    pub Reset: &'static str,
-}
-
-#[allow(non_snake_case, dead_code)]
-pub struct ColorPalette {
-    pub Primary: &'static str,
-    pub Secondary: &'static str,
-    pub Tertiary: &'static str,
-    pub Complementary: &'static str,
+    pub const SUCCESS_COLOR: &str = "\x1b[1;32m";
+    pub const WARNING_COLOR: &str = "\x1b[38;2;254;225;120m";
+    pub const DANGER_COLOR: &str = "\x1b[1;31m";
     
-    pub SecondaryFaded: &'static str,
-}
-
-#[allow(non_snake_case, dead_code)]
-pub struct Backgrounds {
-    pub Black: &'static str,
-    pub Red: &'static str,
-    pub Green: &'static str,
-    pub Yellow: &'static str,
-    pub Blue: &'static str,
-    pub Purple: &'static str,
-    pub Cyan: &'static str,
-    pub White: &'static str,
-}
-
-#[allow(non_snake_case, dead_code)]
-pub struct Actions {
-    pub ClearLine: &'static str,
-    pub ClearScreen: &'static str,
-    pub ClearToEnd: &'static str,
-    pub ResetLocation: &'static str,
-}
-
-#[allow(non_snake_case, dead_code)]
-pub const COLORS: Colors = Colors {
-    Black: "\x1b[0;30m",
-    Gray: "\x1b[0;37m",
-    DarkGray: "\x1b[1;30m",
-    White: "\x1b[1;37m",
-
-    Blue: "\x1b[1;34m",
-    Cyan: "\x1b[1;36m",
-    Green: "\x1b[1;32m",
-    Purple: "\x1b[1;35m",
-    Red: "\x1b[1;31m",
-    Yellow: "\x1b[1;33m",
+    pub const RESET_COLOR: &str = "\x1b[0m";
     
-    DimYellow: "\x1b[0;33m",
-
-    Reset: "\x1b[0m",
-};
-
-#[allow(non_snake_case, dead_code)]
-pub const COLORPALETTE: ColorPalette = ColorPalette {
-    Primary: "\x1b[38;2;238;150;75m",
-    //Secondary: "\x1b[38;2;244;211;94m",
-    Secondary: "\x1b[38;2;254;225;120m",
-    Tertiary: "\x1b[38;2;250;240;202m",
-    Complementary: "\x1b[38;2;128;193;254m",
-    
-    SecondaryFaded: "\x1b[38;2;180;161;94m",
-};
-
-#[allow(non_snake_case, dead_code)]
-pub const BACKGROUNDS: Backgrounds = Backgrounds {
-    Black: "\x1b[40m",
-    Red: "\x1b[41m",
-    Green: "\x1b[42m",
-    Yellow: "\x1b[43m",
-    Blue: "\x1b[44m",
-    Purple: "\x1b[45m",
-    Cyan: "\x1b[46m",
-    White: "\x1b[47m",
-};
-
-pub const ACTIONS: Actions = Actions {
-    ClearLine: "\x1b[2K",
-    ClearScreen: "\x1b[2J",
-    ClearToEnd: "\x1b[J",
-    ResetLocation: "\x1b[H",
-};
+    pub const CLEAR_LINE: &str = "\x1b[2K";
+    pub const CLEAR_SCREEN: &str = "\x1b[2J";
+    pub const CLEAR_TO_END: &str = "\x1b[J";
+    pub const RESET_LOCATION: &str = "\x1b[H";
+}

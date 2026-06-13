@@ -1,4 +1,4 @@
-use crate::shared::terminal::{COLORS, COLORPALETTE};
+use crate::shared::terminal::codes::*;
 use std::{io::Write, iter};
 
 pub fn write_headers<H, S>(header: H, subheaders: Vec<S>)
@@ -26,19 +26,10 @@ where
         (header_str, pad_left, pad_right)
     };
 
-    println!(
-        "{menu_color}{left_line} {header} {right_line}{reset}",
-        menu_color = COLORPALETTE.Primary,
-        reset = COLORS.Reset
-    );
+    println!("{BORDER_COLOR}{left_line} {header} {right_line}{RESET_COLOR}",);
 
     for subheader in subheaders.iter() {
-        println!(
-            "{yellow}{}{reset}",
-            subheader.as_ref(),
-            yellow = COLORS.Yellow,
-            reset = COLORS.Reset
-        )
+        println!("{INFO_COLOR}{}{RESET_COLOR}", subheader.as_ref(),)
     }
 }
 

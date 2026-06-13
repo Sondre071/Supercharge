@@ -3,7 +3,7 @@ use crate::{
         types::LocalFile,
         utils::types::{CsvRow, StorageAccount},
     },
-    shared::terminal::{ACTIONS, COLORS},
+    shared::terminal::codes::*,
 };
 use std::{
     collections::HashMap,
@@ -26,14 +26,9 @@ pub fn fetch_local_files(
             let kb = e.metadata().unwrap().len() / 1024;
 
             print!(
-                "\r{clear_line}{yellow}Hashing: {white}{}{gray} ({} kb){reset}",
+                "\r{CLEAR_LINE}{TEXT_COLOR}Hashing: {TEXT_HIGHLIGHTED_COLOR}{}{TEXT_HIGHLIGHTED_FADED_COLOR} ({} kb){RESET_COLOR}",
                 name,
                 kb,
-                clear_line = ACTIONS.ClearLine,
-                yellow = COLORS.Yellow,
-                white = COLORS.White,
-                gray = COLORS.Gray,
-                reset = COLORS.Reset
             );
             io::stdout().flush().unwrap();
 
@@ -43,7 +38,7 @@ pub fn fetch_local_files(
         })
         .collect();
 
-    print!("\r{clear_line}", clear_line = ACTIONS.ClearLine);
+    print!("\r{CLEAR_LINE}");
     io::stdout().flush().unwrap();
 
     files

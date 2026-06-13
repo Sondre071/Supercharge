@@ -2,7 +2,7 @@ use crate::{
     openrouter::{api, utils::settings},
     shared::{
         menu::{self, Cursor},
-        terminal::COLORS,
+        terminal::codes::*,
     },
 };
 
@@ -25,11 +25,5 @@ pub fn select_model() {
 
     settings::set_model(&model);
 
-    println!(
-        "{yellow}Model set to: {white}{}{reset}",
-        model,
-        yellow = COLORS.Yellow,
-        white = COLORS.White,
-        reset = COLORS.Reset
-    );
+    println!("{INFO_COLOR}Model set to: {TEXT_COLOR}{}{RESET_COLOR}", model);
 }

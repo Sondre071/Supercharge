@@ -2,7 +2,7 @@ use crate::{
     blobstorage::{api, utils::select_storage_account},
     shared::{
         menu::{self, Cursor, NONE},
-        terminal::COLORS,
+        terminal::codes::*,
     },
 };
 
@@ -23,27 +23,18 @@ pub fn browse_containers() {
 
     for blob in blobs.values() {
         println!(
-            "{yellow}Name:      {white}{}{reset}",
-            blob.name,
-            yellow = COLORS.Yellow,
-            white = COLORS.White,
-            reset = COLORS.Reset
+            "{INFO_COLOR}Name:      {TEXT_COLOR}{}{RESET_COLOR}",
+            blob.name
         );
 
         println!(
-            "{yellow}Size:      {gray}{} kb{reset}",
+            "{INFO_COLOR}Size:      {TEXT_FADED_COLOR}{} kb{RESET_COLOR}",
             blob.content_length / 1024,
-            yellow = COLORS.Yellow,
-            gray = COLORS.Gray,
-            reset = COLORS.Reset
         );
 
         println!(
-            "{yellow}Modified:  {green}{}{reset}",
-            blob.last_modified,
-            yellow = COLORS.Yellow,
-            green = COLORS.Green,
-            reset = COLORS.Reset
+            "{INFO_COLOR}Modified:  {SUCCESS_COLOR}{}{RESET_COLOR}",
+            blob.last_modified
         );
 
         println!()

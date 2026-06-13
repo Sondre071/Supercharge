@@ -1,6 +1,6 @@
 use crate::{
     blobstorage::{api, types::FileDiff, utils::types::StorageAccount},
-    shared::terminal::{self, COLORS},
+    shared::terminal::{self, codes::*},
 };
 
 use std::io::{self, Write};
@@ -14,13 +14,9 @@ pub fn sync_files(account: &StorageAccount, container_name: &str, diff: FileDiff
         let url = create_blob_url(account, container_name, &file.name);
 
         println!(
-            "{yellow}Uploading {white}{}{gray} ({} kb){reset}",
+            "{TEXT_COLOR}Uploading {TEXT_HIGHLIGHTED_COLOR}{}{TEXT_HIGHLIGHTED_FADED_COLOR} ({} kb){RESET_COLOR}",
             file.name,
             file.content_length / 1024,
-            yellow = COLORS.Yellow,
-            white = COLORS.White,
-            gray = COLORS.Gray,
-            reset = COLORS.Reset,
         );
 
         io::stdout().flush().unwrap();
@@ -34,12 +30,8 @@ pub fn sync_files(account: &StorageAccount, container_name: &str, diff: FileDiff
 
     for (local, remote) in diff.changed_files.values() {
         println!(
-            "{yellow}Renaming {white}{}{yellow} to {white}{}{reset}",
-            &remote.name,
-            &local.name,
-            yellow = COLORS.Yellow,
-            white = COLORS.White,
-            reset = COLORS.Reset,
+            "{TEXT_COLOR}Renaming {TEXT_HIGHLIGHTED_COLOR}{}{TEXT_COLOR} to {TEXT_HIGHLIGHTED_COLOR}{}{RESET_COLOR}",
+            &remote.name, &local.name,
         );
 
         let source_url = create_blob_url(account, container_name, &remote.name);
@@ -51,13 +43,9 @@ pub fn sync_files(account: &StorageAccount, container_name: &str, diff: FileDiff
 
     for file in diff.deleted_files.values() {
         println!(
-            "{yellow}Deleting {white}{}{gray} ({} kb){reset}",
+            "{DANGER_COLOR}Deleting {TEXT_HIGHLIGHTED_COLOR}{}{TEXT_HIGHLIGHTED_FADED_COLOR} ({} kb){RESET_COLOR}",
             file.name,
             file.content_length / 1024,
-            yellow = COLORS.Yellow,
-            white = COLORS.White,
-            gray = COLORS.Gray,
-            reset = COLORS.Reset,
         );
 
         let url = create_blob_url(account, container_name, &file.name);
@@ -66,11 +54,8 @@ pub fn sync_files(account: &StorageAccount, container_name: &str, diff: FileDiff
     }
 
     println!(
-        "{yellow}\nContainer {white}{}{yellow} updated!{reset}\n",
+        "{SUCCESS_COLOR}\nContainer {TEXT_HIGHLIGHTED_COLOR}{}{SUCCESS_COLOR} updated!{RESET_COLOR}\n",
         container_name,
-        white = COLORS.White,
-        yellow = COLORS.Yellow,
-        reset = COLORS.Reset
     );
 }
 

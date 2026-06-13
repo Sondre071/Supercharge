@@ -3,7 +3,7 @@ use crate::{
         api::types::{InputMessage, MessageRequestBody, MessageResponseStreamEvent},
         utils::settings,
     },
-    shared::terminal::{self, COLORPALETTE, COLORS},
+    shared::terminal::{self, codes::*},
 };
 use std::io::{self, BufRead, Write};
 
@@ -68,12 +68,7 @@ pub fn stream_chat(messages: Vec<&InputMessage>) -> Result<String, String> {
                 && event.event_type == "response.output_text.delta"
                 && !event.delta.is_empty()
             {
-                print!(
-                    "{text_color}{}{reset}",
-                    event.delta,
-                    text_color = COLORPALETTE.Complementary,
-                    reset = COLORS.Reset
-                );
+                print!("{CONTENT_COLOR}{}{RESET_COLOR}", event.delta);
                 io::stdout().flush().unwrap();
 
                 total_response.push_str(event.delta.as_str());

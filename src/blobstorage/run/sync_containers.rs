@@ -2,7 +2,7 @@ use crate::{
     blobstorage::{api, types::FileDiff, utils},
     shared::{
         menu::{self, Cursor, NONE},
-        terminal::{self, COLORS},
+        terminal::{self, codes::*},
     },
 };
 use std::process::exit;
@@ -18,12 +18,19 @@ mod select_local_container;
 mod sync_files;
 
 pub fn sync_containers() {
-    let Some(account) = utils::select_storage_account() else { return };
+    let Some(account) = utils::select_storage_account() else {
+        return;
+    };
 
     let containers = {
         let all: bool = {
             if account.nested_containers {
-                match menu::run(&mut Cursor::new("Sync all containers?", NONE, vec!["All", "Single"], None)) {
+                match menu::run(&mut Cursor::new(
+                    "Sync all containers?",
+                    NONE,
+                    vec!["All", "Single"],
+                    None,
+                )) {
                     Some((choice, _)) => choice == "All",
                     _ => false,
                 }
@@ -42,11 +49,8 @@ pub fn sync_containers() {
 
     for (name, path) in containers {
         println!(
-            "\n{yellow}Selected container: {white}{}{reset}",
+            "\n{TEXT_COLOR}Selected container: {TEXT_HIGHLIGHTED_COLOR}{}{RESET_COLOR}",
             &name,
-            yellow = COLORS.Yellow,
-            white = COLORS.White,
-            reset = COLORS.Reset
         );
 
         let blob_files = {
@@ -98,11 +102,8 @@ pub fn sync_containers() {
     }
 
     println!(
-        "\n{white}{} {yellow}container(s) synced.{reset}\n",
-        containers_len,
-        white = COLORS.White,
-        yellow = COLORS.Yellow,
-        reset = COLORS.Reset
+        "\n{TEXT_HIGHLIGHTED_COLOR}{} {TEXT_COLOR}container(s) synced.{RESET_COLOR}\n",
+        containers_len
     );
 
     terminal::set_cursor_visibility(true);

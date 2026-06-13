@@ -6,7 +6,7 @@ mod snippets;
 
 use shared::{
     menu::{Cursor, Item, NONE},
-    terminal::enable_sigint,
+    terminal::{codes::*, enable_sigint},
 };
 
 fn main() {
@@ -40,9 +40,9 @@ fn main() {
 
             ("Blobstorage", Some("Sync")) => blobstorage::sync_containers(),
             ("Blobstorage", Some("Browse")) => blobstorage::browse_containers(),
-            
+
             ("Scripts", None) => scripts::run_script(),
-            
+
             ("Snippets", Some("Use")) => snippets::view_snippets(),
             ("Snippets", Some("Manage")) => snippets::open_folder(),
 
@@ -55,10 +55,7 @@ fn init() {
     enable_sigint();
 
     shared::terminal::move_cursor_pos(None, Some(-1));
-    print!(
-        "{clear_line}\r",
-        clear_line = shared::terminal::ACTIONS.ClearLine
-    );
+    print!("{CLEAR_LINE}\r",);
 
     let args: Vec<String> = std::env::args().collect();
     if args.len() > 1 {

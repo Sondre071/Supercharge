@@ -1,16 +1,8 @@
-use crate::shared::terminal::{ACTIONS, COLORS, COLORPALETTE};
+use crate::shared::terminal::codes::*;
 use std::{
     io::{Write, stdout},
     iter,
 };
-
-const PRIMARY_COLOR: &str = COLORPALETTE.Primary;
-const SECONDARY_COLOR: &str = COLORPALETTE.Secondary;
-const SECONDARY_COLOR_FADED: &str = COLORPALETTE.SecondaryFaded;
-const COMPLEMENTARY_COLOR: &str = COLORPALETTE.Complementary;
-
-const NON_SELECTED_ITEM_COLOR: &str = COLORS.Gray;
-const NON_SELECTED_ITEM_DIM_COLOR: &str = COLORS.DarkGray;
 
 pub struct Item {
     pub value: String,
@@ -147,10 +139,7 @@ impl Cursor {
         }
 
         lines.push(format!(
-            "{clear_line}{PRIMARY_COLOR}└{reset}{clear}",
-            clear_line = ACTIONS.ClearLine,
-            reset = COLORS.Reset,
-            clear = ACTIONS.ClearToEnd
+            "{CLEAR_LINE}{BORDER_COLOR}└{RESET_COLOR}{CLEAR_TO_END}"
         ));
 
         #[allow(clippy::print_with_newline)]
@@ -163,11 +152,7 @@ impl Cursor {
         lines.len()
     }
 
-    fn format_line(
-        &self,
-        current_index: usize,
-        relative_index: usize,
-    ) -> String {
+    fn format_line(&self, current_index: usize, relative_index: usize) -> String {
         let prefix = if current_index == self.current {
             "► "
         } else {
@@ -183,19 +168,16 @@ impl Cursor {
         let content = format!("{}{}", prefix, value);
         let padded_text = format!("{:<width$}", content, width = self.submenu_x_offset);
 
-        let color = match (current_index == self.current, &self.focus) {
-            (true, Focus::BaseMenu) => SECONDARY_COLOR,
-            (true, Focus::SubMenu) => SECONDARY_COLOR_FADED,
-            (false, Focus::BaseMenu) => NON_SELECTED_ITEM_COLOR,
-            (false, Focus::SubMenu) => NON_SELECTED_ITEM_DIM_COLOR,
+        let text_color = match (current_index == self.current, &self.focus) {
+            (true, Focus::BaseMenu) => TEXT_HIGHLIGHTED_COLOR,
+            (true, Focus::SubMenu) => TEXT_HIGHLIGHTED_FADED_COLOR,
+            (false, Focus::BaseMenu) => TEXT_COLOR,
+            (false, Focus::SubMenu) => TEXT_FADED_COLOR,
         };
 
         let mut text = format!(
-            "{clear_line}{PRIMARY_COLOR}│{color}{}{reset}",
+            "{CLEAR_LINE}{BORDER_COLOR}│{text_color}{}{RESET_COLOR}",
             padded_text,
-            clear_line = ACTIONS.ClearLine,
-            color = color,
-            reset = COLORS.Reset
         );
 
         let current_item = &self.items[self.current];
@@ -211,15 +193,12 @@ impl Cursor {
         let text = &self.items[self.current].items[i];
 
         let (prefix, color) = if i == self.submenu_current {
-            ("► ", SECONDARY_COLOR)
+            ("► ", TEXT_HIGHLIGHTED_COLOR)
         } else {
-            ("  ", NON_SELECTED_ITEM_COLOR)
+            ("  ", TEXT_COLOR)
         };
 
-        format!(
-            "{base_menu_line}{PRIMARY_COLOR}│{color}{prefix}{text}{reset}",
-            reset = COLORS.Reset
-        )
+        format!("{base_menu_line}{BORDER_COLOR}│{color}{prefix}{text}{RESET_COLOR}",)
     }
 
     fn write_headers(&self) -> Vec<String> {
@@ -237,8 +216,13 @@ impl Cursor {
             }
 
             // Format
-            let pad_left_len = (width.saturating_sub(header.chars().count()).saturating_sub(2)) / 2;
-            let pad_right_len = width.saturating_sub(pad_left_len).saturating_sub(header.chars().count());
+            let pad_left_len = (width
+                .saturating_sub(header.chars().count())
+                .saturating_sub(2))
+                / 2;
+            let pad_right_len = width
+                .saturating_sub(pad_left_len)
+                .saturating_sub(header.chars().count());
 
             let pad_left: String = iter::repeat_n("─", pad_left_len).collect();
             let pad_right: String = iter::repeat_n("─", pad_right_len).collect();
@@ -246,14 +230,12 @@ impl Cursor {
         };
 
         lines.push(format!(
-            "{PRIMARY_COLOR}┌{left_line} {PRIMARY_COLOR}{header}{PRIMARY_COLOR} {right_line}{reset}",
-            reset = COLORS.Reset
+            "{BORDER_COLOR}┌{left_line} {header} {right_line}{RESET_COLOR}",
         ));
 
         for subheader in self.subheaders.iter() {
             lines.push(format!(
-                "{PRIMARY_COLOR}│ {COMPLEMENTARY_COLOR}{subheader}{reset}",
-                reset = COLORS.Reset
+                "{BORDER_COLOR}│ {INFO_COLOR}{subheader}{RESET_COLOR}",
             ));
         }
 

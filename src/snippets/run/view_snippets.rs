@@ -2,7 +2,7 @@ use crate::{
     shared::{
         menu::{self, Cursor, Focus, Item, NONE},
         statics,
-        terminal::{self, ACTIONS, COLORS},
+        terminal::{self, codes::*},
     },
     snippets::utils,
 };
@@ -59,11 +59,8 @@ pub fn view_snippets() {
             .unwrap();
 
         let feedback = format!(
-            "{green}Copied {white}{}{green}!{reset}",
+            "{SUCCESS_COLOR}Copied {TEXT_COLOR}{}{SUCCESS_COLOR}!{RESET_COLOR}",
             section.title,
-            white = COLORS.White,
-            green = COLORS.Green,
-            reset = COLORS.Reset
         );
 
         println!("{}", feedback);
@@ -88,15 +85,7 @@ fn display_func(cursor: &Cursor) -> Vec<String> {
         pathbuf
     };
 
-    let border_color = COLORS.Gray;
-    let text_color = COLORS.Cyan;
-
-    lines.push(format!(
-        "{clear_line}{border_color}│{reset}",
-        clear_line = ACTIONS.ClearLine,
-        border_color = border_color,
-        reset = COLORS.Reset
-    ));
+    lines.push(format!("{CLEAR_LINE}{BORDER_COLOR}│{RESET_COLOR}",));
 
     let header_text = {
         let width: usize = 30;
@@ -123,12 +112,8 @@ fn display_func(cursor: &Cursor) -> Vec<String> {
         let pad_right: String = iter::repeat_n("─", pad_right_len).collect();
 
         format!(
-            "├{color}{} {} {}{reset}",
-            pad_left,
-            header,
-            pad_right,
-            color = border_color,
-            reset = COLORS.Reset
+            "{BORDER_COLOR}├{} {} {}{RESET_COLOR}",
+            pad_left, header, pad_right,
         )
     };
 
@@ -140,11 +125,8 @@ fn display_func(cursor: &Cursor) -> Vec<String> {
     if let Some(section) = sections.get(cursor.submenu_current) {
         section.content.lines().take(10).for_each(|l| {
             lines.push(format!(
-                "{clear_line}{border_color}│ {text_color}{}{reset}",
+                "{CLEAR_LINE}{BORDER_COLOR}│ {CONTENT_COLOR}{}{RESET_COLOR}",
                 l,
-                clear_line = ACTIONS.ClearLine,
-                text_color = text_color,
-                reset = COLORS.Reset
             ));
         });
     }

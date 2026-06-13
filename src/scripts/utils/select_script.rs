@@ -1,7 +1,7 @@
 use crate::shared::{
     menu::{self, Cursor, NONE},
     statics,
-    terminal::COLORS,
+    terminal::codes::*,
 };
 
 use std::{fs, path::PathBuf};
@@ -12,7 +12,7 @@ pub fn select_script() -> Option<(String, PathBuf)> {
     let directories = get_directories(&current_path);
 
     if directories.is_empty() {
-        println!("{}No folders found.{}", COLORS.Yellow, COLORS.Reset);
+        println!("{INFO_COLOR}No folders found.{RESET_COLOR}");
         return None;
     }
 
@@ -21,7 +21,7 @@ pub fn select_script() -> Option<(String, PathBuf)> {
 
     let scripts = get_files(&current_path);
     if scripts.is_empty() {
-        println!("{}No scripts found.{}", COLORS.Yellow, COLORS.Reset);
+        println!("{INFO_COLOR}No scripts found.{RESET_COLOR}");
         return None;
     }
 

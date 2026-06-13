@@ -2,7 +2,7 @@ use crate::blobstorage;
 use crate::shared::terminal;
 
 use blobstorage::utils::types::StorageAccount;
-use terminal::COLORS;
+use terminal::codes::*;
 
 pub fn create_container(account: &StorageAccount, name: &str) {
     let url = format!(
@@ -29,10 +29,7 @@ pub fn create_container(account: &StorageAccount, name: &str) {
     }
 
     println!(
-        "{yellow}Container: {white}{}{yellow} created!{reset}\n",
+        "{INFO_COLOR}Container: {TEXT_COLOR}{}{INFO_COLOR} created!{RESET_COLOR}\n",
         name,
-        yellow = COLORS.Yellow,
-        white = COLORS.White,
-        reset = COLORS.Reset
     );
 }

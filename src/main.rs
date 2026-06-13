@@ -12,7 +12,7 @@ use shared::{
 fn main() {
     init();
 
-    let mut menu = Cursor::new_with_subitems(
+    let mut cursor = Cursor::new_with_subitems(
         "Supercharge",
         NONE,
         vec![
@@ -29,7 +29,7 @@ fn main() {
     );
 
     loop {
-        let Some((module, option)) = shared::menu::run(&mut menu) else {
+        let Some((module, option)) = shared::menu::run(&mut cursor) else {
             return;
         };
 
@@ -62,9 +62,10 @@ fn init() {
         let arg = args[1].to_owned();
 
         match arg.as_str() {
-            "--chat" | "-C" | "--c" => openrouter::new_chat(),
-            "--blob" | "-B" | "--b" => blobstorage::sync_containers(),
-            "--scripts" | "-S" | "--s" => scripts::run_script(),
+            "--chat" | "-c" => openrouter::new_chat(),
+            "--blob" | "-b" => blobstorage::sync_containers(),
+            "--scripts" | "-sc" => scripts::run_script(),
+            "--snippets" | "-sn" => snippets::view_snippets(),
             _ => {}
         }
     }
